@@ -9,9 +9,11 @@ import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
+import { ToastNotification, ToastData } from './components/ToastNotification';
+import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { ProductoElaborado, GrupoOpciones, CartItem, TenantInfo, MarcaInfo } from './types/food';
 import { fetchNaluCatalogo, TENANT_INFO, MARCA_INFO } from './services/api';
-import { CheckCircle2, Sparkles, MessageCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Sparkles, MessageCircle, ArrowRight, WifiOff } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [tenant, setTenant] = useState<TenantInfo>(TENANT_INFO);
@@ -19,6 +21,10 @@ export const App: React.FC = () => {
   const [platos, setPlatos] = useState<ProductoElaborado[]>([]);
   const [grupos, setGrupos] = useState<GrupoOpciones[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
+
+  // Notificación flotante Toast
+  const [toast, setToast] = useState<ToastData | null>(null);
 
   // Estados de modales y drawers
   const [isCustomizerOpen, setIsCustomizerOpen] = useState<boolean>(false);
@@ -40,6 +46,18 @@ export const App: React.FC = () => {
 
   // Pestaña activa móvil
   const [mobileTab, setMobileTab] = useState<'inicio' | 'menu'>('inicio');
+
+  // Listener para estado de conexión
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Guardar carrito en LocalStorage
   useEffect(() => {
@@ -84,7 +102,7 @@ export const App: React.FC = () => {
   };
 
   // Agregar al carrito producto ya armado o de agregado directo
-  const handleAddToCart = (item: CartItem) => {
+  const handleAddToCart = (item: CartItem, openDrawer: boolean = false) => {
     setCart(prev => {
       const existingIdx = prev.findIndex(
         i =>
@@ -102,7 +120,19 @@ export const App: React.FC = () => {
       return [...prev, item];
     });
 
-    setIsCartOpen(true);
+    setToast({
+      id: `${item.id}_${Date.now()}`,
+      title: item.nombre,
+      subtitle: item.modificadores && item.modificadores.length > 0
+        ? `${item.modificadores.length} opciones personalizadas`
+        : '¡Agregado con éxito al pedido!',
+      image: item.imagen_url || undefined,
+      price: item.precio_unitario * item.cantidad,
+    });
+
+    if (openDrawer) {
+      setIsCartOpen(true);
+    }
   };
 
   // Quick add para platos sin personalización obligatoria
@@ -119,7 +149,7 @@ export const App: React.FC = () => {
       imagen_url: plato.imagen_url || '/hero_bandejas_nalu.jpg',
       modificadores: [],
     };
-    handleAddToCart(cartItem);
+    handleAddToCart(cartItem, false);
   };
 
   // Actualizar cantidad en carrito
@@ -162,6 +192,33 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-layout">
+      {/* Alerta de modo offline */}
+      {!isOnline && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          background: '#D97706',
+          color: 'white',
+          textAlign: 'center',
+          padding: '6px 12px',
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '6px'
+        }}>
+          <WifiOff size={14} />
+          <span>Modo offline activado — Puedes continuar navegando y armando tu pedido.</span>
+        </div>
+      )}
+
+      {/* Banner de instalación PWA para móvil y desktop */}
+      <PWAInstallBanner />
+
       {/* Barra de Navegación Principal */}
       <Navbar
         marca={marca}
@@ -185,6 +242,7 @@ export const App: React.FC = () => {
 
         <MenuSection
           platos={platos}
+          loading={loading}
           onSelectPlatoParaPersonalizar={handleSelectPlatoParaPersonalizar}
           onQuickAddToCart={handleQuickAddToCart}
         />
@@ -211,13 +269,20 @@ export const App: React.FC = () => {
         onOpenCart={() => setIsCartOpen(true)}
       />
 
+      {/* Notificación Flotante Toast al agregar items */}
+      <ToastNotification
+        toast={toast}
+        onClose={() => setToast(null)}
+        onOpenCart={() => setIsCartOpen(true)}
+      />
+
       {/* Modal de Personalización "Arma tu Poke" con Fotos de Ingredientes */}
       {isCustomizerOpen && (
         <PokeCustomizerModal
           plato={platoPersonalizando}
           grupos={grupos}
           onClose={() => setIsCustomizerOpen(false)}
-          onAddToCart={handleAddToCart}
+          onAddToCart={item => handleAddToCart(item, true)}
         />
       )}
 

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { X, Check, ArrowRight, ArrowLeft, Plus, Sparkles, AlertCircle } from 'lucide-react';
 import { ProductoElaborado, GrupoOpciones, OpcionPersonalizacion, CartItem } from '../types/food';
+import { triggerHaptic } from '../utils/haptics';
 
 interface PokeCustomizerModalProps {
   plato: ProductoElaborado | null;
@@ -36,6 +37,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
 
   // Alternar selección
   const handleToggleOpcion = (grupo: GrupoOpciones, opc: OpcionPersonalizacion) => {
+    triggerHaptic('light');
     const yaSeleccionada = opcionesElegidas.some(
       item => item.grupo_id === grupo.grupo_id && item.opcion.opcion_id === opc.opcion_id
     );
@@ -62,6 +64,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
 
   // Remover opción desde el visualizador en vivo
   const handleRemoveOpcion = (opcId: number) => {
+    triggerHaptic('light');
     setOpcionesElegidas(prev => prev.filter(item => item.opcion.opcion_id !== opcId));
   };
 
@@ -103,6 +106,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
       notas: notasCocina.trim() || undefined,
     };
 
+    triggerHaptic('success');
     onAddToCart(cartItem);
     onClose();
   };
@@ -112,6 +116,9 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container" onClick={e => e.stopPropagation()}>
+        {/* Indicador de arrastre en móvil */}
+        <div className="modal-drag-indicator" />
+
         {/* Cabecera con Imagen de Presentación de Nalú Poke */}
         <div className="modal-header-hero" style={{ height: '140px' }}>
           <img
@@ -282,7 +289,10 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
             {pasoActivo > 0 && (
               <button
                 type="button"
-                onClick={() => setPasoActivo(prev => prev - 1)}
+                onClick={() => {
+                  triggerHaptic('light');
+                  setPasoActivo(prev => prev - 1);
+                }}
                 className="btn-secondary"
                 style={{ padding: '10px 16px', fontSize: '0.85rem' }}
               >
@@ -300,7 +310,10 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
             {!esUltimoPaso ? (
               <button
                 type="button"
-                onClick={() => setPasoActivo(prev => prev + 1)}
+                onClick={() => {
+                  triggerHaptic('light');
+                  setPasoActivo(prev => prev + 1);
+                }}
                 disabled={!pasoValido}
                 className="btn-primary"
                 style={{

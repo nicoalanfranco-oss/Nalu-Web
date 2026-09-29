@@ -2235,3 +2235,393 @@ button {
     transform: none;
   }
 }
+
+/* ==========================================================================
+   TOAST NOTIFICATION (MÓVIL & DESKTOP)
+   ========================================================================== */
+
+.toast-notification-wrapper {
+  position: fixed;
+  bottom: 84px;
+  right: 24px;
+  z-index: 1100;
+  pointer-events: none;
+  animation: toastSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes toastSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toast-notification-card {
+  pointer-events: auto;
+  background: #1E252B;
+  color: white;
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  max-width: 380px;
+  min-width: 300px;
+}
+
+.toast-img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.toast-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+}
+
+.toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.toast-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toast-price {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--accent-gold);
+}
+
+.toast-subtitle {
+  font-size: 0.74rem;
+  color: #94A3B8;
+  margin: 2px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toast-action-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.toast-action-btn:hover {
+  background: var(--primary-hover);
+  transform: translateX(2px);
+}
+
+.toast-close-btn {
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color var(--transition-fast);
+}
+
+.toast-close-btn:hover {
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .toast-notification-wrapper {
+    left: 16px;
+    right: 16px;
+    bottom: 78px;
+  }
+  .toast-notification-card {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+/* ==========================================================================
+   PWA INSTALL BANNER
+   ========================================================================== */
+
+.pwa-install-banner {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(30, 37, 43, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-full);
+  padding: 8px 16px 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  animation: pwaSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  max-width: 92vw;
+}
+
+@keyframes pwaSlideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.pwa-install-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pwa-install-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.pwa-install-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.pwa-install-text strong {
+  font-size: 0.82rem;
+  color: white;
+  font-weight: 800;
+}
+
+.pwa-install-text span {
+  font-size: 0.72rem;
+  color: #94A3B8;
+}
+
+.pwa-install-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pwa-btn-install {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 4px 12px rgba(255, 90, 54, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.pwa-btn-install:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.pwa-btn-close {
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.pwa-btn-close:hover {
+  color: white;
+}
+
+.pwa-ios-modal {
+  max-width: 440px;
+  padding: 28px 24px;
+  text-align: left;
+}
+
+.pwa-ios-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.pwa-ios-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+}
+
+.pwa-ios-header h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.pwa-ios-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.pwa-ios-steps {
+  font-size: 0.84rem;
+  line-height: 1.7;
+  padding-left: 20px;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+/* ==========================================================================
+   MODAL DRAG INDICATOR & MOBILE BOTTOM SHEET
+   ========================================================================== */
+
+.modal-drag-indicator {
+  display: none;
+  width: 40px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 99px;
+  margin: 8px auto 4px;
+}
+
+@media (max-width: 768px) {
+  .modal-drag-indicator {
+    display: block;
+  }
+}
+
+/* ==========================================================================
+   SKELETON LOADERS
+   ========================================================================== */
+
+.skeleton-box {
+  background: linear-gradient(90deg, #F1EFEA 25%, #E5E1D8 50%, #F1EFEA 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+}
+
+.skeleton-img {
+  width: 100%;
+  height: 200px;
+}
+
+.skeleton-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 20px;
+}
+
+.skeleton-desc {
+  width: 90%;
+  height: 14px;
+}
+
+.skeleton-desc-short {
+  width: 50%;
+  height: 14px;
+}
+
+.skeleton-footer {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.skeleton-price {
+  width: 60px;
+  height: 24px;
+}
+
+.skeleton-btn {
+  width: 100px;
+  height: 36px;
+  border-radius: var(--radius-full);
+}
+

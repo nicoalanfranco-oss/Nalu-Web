@@ -1,0 +1,787 @@
+{
+  "tenant": {
+    "tenant_id": 1,
+    "nombre": "Nalú & De Una",
+    "rut": "219988770014",
+    "direccion": "Avenida Presidente Jorge Batlle Ibañez",
+    "telefono": "+598 99 123 456",
+    "email": "contacto@naludeuna.com"
+  },
+  "marca": {
+    "marca_id": 1,
+    "nombre": "Nalú",
+    "color_primario": "#788c50",
+    "dias_atencion": "Lunes a Viernes",
+    "horario_atencion": "10:00 a 13:00 hs",
+    "permite_salon": false,
+    "permite_delivery": true,
+    "permite_takeaway": true
+  },
+  "platos": [
+    {
+      "producto_elaborado_id": 10,
+      "marca_id": 1,
+      "nombre": "POKE HASTA 2 PROTEINAS",
+      "categoria": "Pokes",
+      "descripcion": "Armá tu combinación ideal paso a paso y disfrutá de un bowl totalmente personalizado. Comenzá eligiendo hasta 2 bases a elección (como arroz, fideos o hojas verdes), sumá de 1 a 2 proteínas de tu preferencia y complementá con hasta 3 variedad de verduras frescas. Agregá hasta 2 toppings para darle textura, aderezá con 1 salsa a elección y dale el toque final con hasta 2 opciones de chips crujientes. Un plato completo, fresco y a la medida de tu antojo.",
+      "precio_venta": "290.00",
+      "es_personalizable": true,
+      "imagen_url": "/ingredients/plato_10.webp",
+      "activo": true
+    },
+    {
+      "producto_elaborado_id": 11,
+      "marca_id": 1,
+      "nombre": "Ensalada César",
+      "categoria": "Ensaladas",
+      "descripcion": "Ensalada César con Pollo Grillado\n\nUn clásico irresistible, fresco y crocante. Base abundante de lechuga fresca seleccionada, acompañada de jugosas tiras de pechuga de pollo grillada a la plancha, crujientes crutones tostados y finas lascas de queso parmesano. Se sirve acompañada de nuestra cremosa salsa César tradicional.",
+      "precio_venta": "350.00",
+      "es_personalizable": false,
+      "imagen_url": "/ingredients/plato_11.webp",
+      "activo": true
+    },
+    {
+      "producto_elaborado_id": 12,
+      "marca_id": 1,
+      "nombre": "Poke Nalú Especial",
+      "categoria": "Pokes",
+      "descripcion": "Poke Bowl de Atún & Fideos Integrales\n\nUna alternativa fresca, nutritiva y proteica. Combina una base doble de fideos integrales y lechuga fresca, acompañada de sabrosos lomitos de atún, huevo duro y garbanzos. Se complementa con tomate fresco en cubos, zanahoria rallada y maíz tierno, coronado con el toque crujiente de nuestros chips de boniato artesanales y la salsa que más te guste.",
+      "precio_venta": "320.00",
+      "es_personalizable": true,
+      "imagen_url": "/ingredients/plato_12.webp",
+      "activo": true
+    },
+    {
+      "producto_elaborado_id": 14,
+      "marca_id": 1,
+      "nombre": "MAIU",
+      "categoria": "Pokes",
+      "descripcion": "Poke Bowl de Pollo Teriyaki & Alioli\nUn bowl fresco, completo y equilibrado. Base de arroz sazonado acompañado de jugosas tiras de pollo, crujientes garbanzos, aguacate (palta) cremoso y cubos de mango fresco. Se complementa con zanahoria, pepino, cebolla morada fina y un toque de semillas de sésamo. Coronado con la combinación perfecta de salsa Teriyaki dulce y Alioli cremoso.",
+      "precio_venta": "320.00",
+      "es_personalizable": false,
+      "imagen_url": "/ingredients/plato_14.webp",
+      "activo": true
+    },
+    {
+      "producto_elaborado_id": 15,
+      "marca_id": 1,
+      "nombre": "OHANA",
+      "categoria": "Pokes",
+      "descripcion": "Poke Bowl de Cerdo Barbacoa & Ananá\n\nUna propuesta ahumada, agridulce y súper crujiente. Base de arroz sazonado acompañado de jugoso cerdo braseado al estilo barbacoa, choclo tierno, tomate fresco en cubos y rodajas de ananá que aportan el toque tropical justo. Se complementa con cebolla morada fina, repollo en finas tiras y el toque 'crunch' de nuestros crutones tostados. Coronado con salsa Barbacoa ahumada y un toque de Alioli cremoso.",
+      "precio_venta": "320.00",
+      "es_personalizable": false,
+      "imagen_url": "/ingredients/plato_15.webp",
+      "activo": true
+    },
+    {
+      "producto_elaborado_id": 16,
+      "marca_id": 1,
+      "nombre": "POKE 3 PROTEINAS",
+      "categoria": "Pokes",
+      "descripcion": "Llevá tu experiencia al siguiente nivel armando un bowl cargado de sabor y energía. Seleccioná hasta 2 bases para iniciar tu plato, agregá de 1 a 3 proteínas a tu gusto e incorporá hasta 3 opciones de verduras frescas. Personalizalo con de 1 a 3 salsas para lograr la cremosidad perfecta, elegí hasta 3 toppings y dale el cierre crocante ideal con hasta 2 variedades de chips artesanales.",
+      "precio_venta": "340.00",
+      "es_personalizable": true,
+      "imagen_url": "/ingredients/plato_16.webp",
+      "activo": true
+    }
+  ],
+  "gruposOpciones": [
+    {
+      "grupo_id": 6,
+      "producto_elaborado_id": 7,
+      "nombre": "Gustos Adicionales",
+      "paso_orden": 1,
+      "min_opciones": 0,
+      "max_opciones": 5,
+      "opciones": []
+    },
+    {
+      "grupo_id": 8,
+      "producto_elaborado_id": 8,
+      "nombre": "Extras",
+      "paso_orden": 6,
+      "min_opciones": 0,
+      "max_opciones": 3,
+      "opciones": []
+    },
+    {
+      "grupo_id": 9,
+      "producto_elaborado_id": 9,
+      "nombre": "Extras",
+      "paso_orden": 6,
+      "min_opciones": 0,
+      "max_opciones": 3,
+      "opciones": []
+    },
+    {
+      "grupo_id": 10,
+      "producto_elaborado_id": 10,
+      "nombre": "Base",
+      "paso_orden": 1,
+      "min_opciones": 1,
+      "max_opciones": 2,
+      "opciones": [
+        {
+          "opcion_id": 16,
+          "nombre": "Arroz",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_16.jpg"
+        },
+        {
+          "opcion_id": 17,
+          "nombre": "Arroz integral",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_17.jpg"
+        },
+        {
+          "opcion_id": 18,
+          "nombre": "Fideo integral",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_18.jpg"
+        },
+        {
+          "opcion_id": 19,
+          "nombre": "Quinoa",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_19.jpg"
+        },
+        {
+          "opcion_id": 20,
+          "nombre": "Lechuga",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_20.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 11,
+      "producto_elaborado_id": 10,
+      "nombre": "Proteína",
+      "paso_orden": 2,
+      "min_opciones": 1,
+      "max_opciones": 2,
+      "opciones": [
+        {
+          "opcion_id": 21,
+          "nombre": "Carne",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_21.jpg"
+        },
+        {
+          "opcion_id": 22,
+          "nombre": "Pollo",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_22.jpg"
+        },
+        {
+          "opcion_id": 23,
+          "nombre": "Cerdo barbacoa",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_23.jpg"
+        },
+        {
+          "opcion_id": 24,
+          "nombre": "Huevo",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_24.jpg"
+        },
+        {
+          "opcion_id": 25,
+          "nombre": "Camarones (premium - costo extra)",
+          "precio_extra": 90,
+          "imagen_url": "/ingredients/opt_25.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 12,
+      "producto_elaborado_id": 10,
+      "nombre": "Verduras",
+      "paso_orden": 3,
+      "min_opciones": 1,
+      "max_opciones": 3,
+      "opciones": [
+        {
+          "opcion_id": 26,
+          "nombre": "Remolacha",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_26.jpg"
+        },
+        {
+          "opcion_id": 27,
+          "nombre": "Zanahoria",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_27.jpg"
+        },
+        {
+          "opcion_id": 28,
+          "nombre": "Tomate",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_28.jpg"
+        },
+        {
+          "opcion_id": 29,
+          "nombre": "Repollo",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_29.jpg"
+        },
+        {
+          "opcion_id": 30,
+          "nombre": "Pepino",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_30.jpg"
+        },
+        {
+          "opcion_id": 31,
+          "nombre": "Cebolla morada",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_31.jpg"
+        },
+        {
+          "opcion_id": 32,
+          "nombre": "Brócoli",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_32.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 13,
+      "producto_elaborado_id": 10,
+      "nombre": "Toppings",
+      "paso_orden": 4,
+      "min_opciones": 0,
+      "max_opciones": 2,
+      "opciones": [
+        {
+          "opcion_id": 33,
+          "nombre": "Chaucha",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_33.jpg"
+        },
+        {
+          "opcion_id": 34,
+          "nombre": "Choclo",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_34.jpg"
+        },
+        {
+          "opcion_id": 35,
+          "nombre": "Arvejas",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_35.jpg"
+        },
+        {
+          "opcion_id": 36,
+          "nombre": "Palta",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_36.jpg"
+        },
+        {
+          "opcion_id": 37,
+          "nombre": "Palmitos",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_37.jpg"
+        },
+        {
+          "opcion_id": 38,
+          "nombre": "Ananá",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_38.jpg"
+        },
+        {
+          "opcion_id": 39,
+          "nombre": "Mango",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_39.jpg"
+        },
+        {
+          "opcion_id": 40,
+          "nombre": "Garbanzos",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_40.jpg"
+        },
+        {
+          "opcion_id": 41,
+          "nombre": "Lentejas",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_41.jpg"
+        },
+        {
+          "opcion_id": 42,
+          "nombre": "Poroto manteca",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_42.jpg"
+        },
+        {
+          "opcion_id": 43,
+          "nombre": "Crutones",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_43.jpg"
+        },
+        {
+          "opcion_id": 44,
+          "nombre": "Sésamo",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_44.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 14,
+      "producto_elaborado_id": 10,
+      "nombre": "Salsas & Aderesos",
+      "paso_orden": 5,
+      "min_opciones": 1,
+      "max_opciones": 1,
+      "opciones": [
+        {
+          "opcion_id": 45,
+          "nombre": "Vinagreta",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_45.jpg"
+        },
+        {
+          "opcion_id": 46,
+          "nombre": "Soja",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_46.jpg"
+        },
+        {
+          "opcion_id": 47,
+          "nombre": "César",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_47.jpg"
+        },
+        {
+          "opcion_id": 48,
+          "nombre": "Alioli",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_48.jpg"
+        },
+        {
+          "opcion_id": 49,
+          "nombre": "Mostaza y miel",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_49.jpg"
+        },
+        {
+          "opcion_id": 50,
+          "nombre": "Teriyaki",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_50.jpg"
+        },
+        {
+          "opcion_id": 51,
+          "nombre": "Aceite de oliva",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_51.jpg"
+        },
+        {
+          "opcion_id": 52,
+          "nombre": "Albahaca",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_52.jpg"
+        },
+        {
+          "opcion_id": 53,
+          "nombre": "Tártara",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_53.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 15,
+      "producto_elaborado_id": 10,
+      "nombre": "Chips",
+      "paso_orden": 6,
+      "min_opciones": 0,
+      "max_opciones": 2,
+      "opciones": [
+        {
+          "opcion_id": 54,
+          "nombre": "Chip Boniato",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_54.jpg"
+        },
+        {
+          "opcion_id": 55,
+          "nombre": "Maíz canchita",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_55.jpg"
+        },
+        {
+          "opcion_id": 56,
+          "nombre": "Maní",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_56.jpg"
+        },
+        {
+          "opcion_id": 57,
+          "nombre": "Cebolla crispy",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_57.jpg"
+        },
+        {
+          "opcion_id": 58,
+          "nombre": "Sésamo",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_58.jpg"
+        },
+        {
+          "opcion_id": 59,
+          "nombre": "Crutones",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_59.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 23,
+      "producto_elaborado_id": 12,
+      "nombre": "Salsas",
+      "paso_orden": 1,
+      "min_opciones": 1,
+      "max_opciones": 3,
+      "opciones": [
+        {
+          "opcion_id": 108,
+          "nombre": "Teriyaki",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_108.jpg"
+        },
+        {
+          "opcion_id": 109,
+          "nombre": "Alioli",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_109.jpg"
+        },
+        {
+          "opcion_id": 110,
+          "nombre": "César",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_110.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 17,
+      "producto_elaborado_id": 16,
+      "nombre": "Base",
+      "paso_orden": 1,
+      "min_opciones": 1,
+      "max_opciones": 2,
+      "opciones": [
+        {
+          "opcion_id": 60,
+          "nombre": "Arroz",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_60.jpg"
+        },
+        {
+          "opcion_id": 61,
+          "nombre": "Arroz integral",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_61.jpg"
+        },
+        {
+          "opcion_id": 62,
+          "nombre": "Fideo integral",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_62.jpg"
+        },
+        {
+          "opcion_id": 63,
+          "nombre": "Quinoa",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_63.jpg"
+        },
+        {
+          "opcion_id": 64,
+          "nombre": "Lechuga",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_64.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 20,
+      "producto_elaborado_id": 16,
+      "nombre": "Proteína",
+      "paso_orden": 1,
+      "min_opciones": 1,
+      "max_opciones": 3,
+      "opciones": [
+        {
+          "opcion_id": 81,
+          "nombre": "Camarones (premium - costo extra)",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_81.jpg"
+        },
+        {
+          "opcion_id": 82,
+          "nombre": "Carne",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_82.jpg"
+        },
+        {
+          "opcion_id": 83,
+          "nombre": "Cerdo barbacoa",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_83.jpg"
+        },
+        {
+          "opcion_id": 84,
+          "nombre": "Pollo",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_84.jpg"
+        },
+        {
+          "opcion_id": 85,
+          "nombre": "Huevo",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_85.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 18,
+      "producto_elaborado_id": 16,
+      "nombre": "Verduras",
+      "paso_orden": 2,
+      "min_opciones": 1,
+      "max_opciones": 3,
+      "opciones": [
+        {
+          "opcion_id": 65,
+          "nombre": "Brócoli",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_65.jpg"
+        },
+        {
+          "opcion_id": 66,
+          "nombre": "Cebolla morada",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_66.jpg"
+        },
+        {
+          "opcion_id": 67,
+          "nombre": "Pepino",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_67.jpg"
+        },
+        {
+          "opcion_id": 68,
+          "nombre": "Remolacha",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_68.jpg"
+        },
+        {
+          "opcion_id": 69,
+          "nombre": "Repollo",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_69.jpg"
+        },
+        {
+          "opcion_id": 70,
+          "nombre": "Tomate",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_70.jpg"
+        },
+        {
+          "opcion_id": 71,
+          "nombre": "Zanahoria",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_71.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 19,
+      "producto_elaborado_id": 16,
+      "nombre": "Salsas",
+      "paso_orden": 3,
+      "min_opciones": 1,
+      "max_opciones": 3,
+      "opciones": [
+        {
+          "opcion_id": 72,
+          "nombre": "Aceite de oliva",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_72.jpg"
+        },
+        {
+          "opcion_id": 73,
+          "nombre": "Albahaca",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_73.jpg"
+        },
+        {
+          "opcion_id": 74,
+          "nombre": "Alioli",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_74.jpg"
+        },
+        {
+          "opcion_id": 75,
+          "nombre": "César",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_75.jpg"
+        },
+        {
+          "opcion_id": 76,
+          "nombre": "Mostaza y miel",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_76.jpg"
+        },
+        {
+          "opcion_id": 77,
+          "nombre": "Soja",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_77.jpg"
+        },
+        {
+          "opcion_id": 78,
+          "nombre": "Tártara",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_78.jpg"
+        },
+        {
+          "opcion_id": 79,
+          "nombre": "Teriyaki",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_79.jpg"
+        },
+        {
+          "opcion_id": 80,
+          "nombre": "Vinagreta",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_80.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 21,
+      "producto_elaborado_id": 16,
+      "nombre": "Toppings",
+      "paso_orden": 5,
+      "min_opciones": 0,
+      "max_opciones": 3,
+      "opciones": [
+        {
+          "opcion_id": 86,
+          "nombre": "Ananá",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_86.jpg"
+        },
+        {
+          "opcion_id": 88,
+          "nombre": "Chip Boniato",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_88.jpg"
+        },
+        {
+          "opcion_id": 89,
+          "nombre": "Garbanzos",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_89.jpg"
+        },
+        {
+          "opcion_id": 90,
+          "nombre": "Lentejas",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_90.jpg"
+        },
+        {
+          "opcion_id": 92,
+          "nombre": "Mango",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_92.jpg"
+        },
+        {
+          "opcion_id": 94,
+          "nombre": "Palmitos",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_94.jpg"
+        },
+        {
+          "opcion_id": 95,
+          "nombre": "Poroto manteca",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_95.jpg"
+        },
+        {
+          "opcion_id": 98,
+          "nombre": "Arvejas",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_98.jpg"
+        },
+        {
+          "opcion_id": 99,
+          "nombre": "Chaucha",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_99.jpg"
+        },
+        {
+          "opcion_id": 100,
+          "nombre": "Choclo",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_100.jpg"
+        },
+        {
+          "opcion_id": 101,
+          "nombre": "Palta",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_101.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 22,
+      "producto_elaborado_id": 16,
+      "nombre": "Chips",
+      "paso_orden": 6,
+      "min_opciones": 0,
+      "max_opciones": 2,
+      "opciones": [
+        {
+          "opcion_id": 102,
+          "nombre": "Cebolla crispy",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_102.jpg"
+        },
+        {
+          "opcion_id": 103,
+          "nombre": "Chip Boniato",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_103.jpg"
+        },
+        {
+          "opcion_id": 104,
+          "nombre": "Maíz canchita",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_104.jpg"
+        },
+        {
+          "opcion_id": 105,
+          "nombre": "Maní",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_105.jpg"
+        },
+        {
+          "opcion_id": 106,
+          "nombre": "Sésamo",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_106.jpg"
+        },
+        {
+          "opcion_id": 107,
+          "nombre": "Crutones",
+          "precio_extra": 0,
+          "imagen_url": "/ingredients/opt_107.jpg"
+        }
+      ]
+    }
+  ]
+}

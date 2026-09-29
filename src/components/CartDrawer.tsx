@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 import { CartItem } from '../types/food';
+import { triggerHaptic } from '../utils/haptics';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   return (
     <div className="cart-drawer-backdrop" onClick={onClose}>
       <div className="cart-drawer-content" onClick={e => e.stopPropagation()}>
+        <div className="modal-drag-indicator" />
         {/* Cabecera del Carrito */}
         <div className="cart-drawer-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -81,7 +83,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <div className="cart-item-bottom">
                   <div className="qty-counter">
                     <button
-                      onClick={() => onUpdateQty(item.id, -1)}
+                      onClick={() => {
+                        triggerHaptic('light');
+                        onUpdateQty(item.id, -1);
+                      }}
                       className="qty-btn"
                       aria-label="Disminuir cantidad"
                     >
@@ -89,7 +94,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     </button>
                     <span style={{ fontSize: '0.88rem', fontWeight: 800 }}>{item.cantidad}</span>
                     <button
-                      onClick={() => onUpdateQty(item.id, 1)}
+                      onClick={() => {
+                        triggerHaptic('light');
+                        onUpdateQty(item.id, 1);
+                      }}
                       className="qty-btn"
                       aria-label="Aumentar cantidad"
                     >
@@ -98,7 +106,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   </div>
 
                   <button
-                    onClick={() => onRemoveItem(item.id)}
+                    onClick={() => {
+                      triggerHaptic('medium');
+                      onRemoveItem(item.id);
+                    }}
                     style={{ color: 'var(--text-subtle)', padding: '6px' }}
                     title="Eliminar producto"
                   >
@@ -118,7 +129,14 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <span>${total.toLocaleString()}</span>
             </div>
 
-            <button onClick={onOpenCheckout} className="btn-primary" style={{ width: '100%', padding: '14px' }}>
+            <button
+              onClick={() => {
+                triggerHaptic('success');
+                onOpenCheckout();
+              }}
+              className="btn-primary"
+              style={{ width: '100%', padding: '14px' }}
+            >
               <span>Continuar al Checkout</span>
               <ArrowRight size={18} />
             </button>

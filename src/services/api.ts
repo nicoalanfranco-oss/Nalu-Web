@@ -1,5 +1,5 @@
 import { ProductoElaborado, ProductoReventa, GrupoOpciones, TenantInfo, MarcaInfo } from '../types/food';
-import realData from './nalu_real_data.json';
+import realData from './nalu_catalog.json';
 
 export const TENANT_INFO: TenantInfo = {
   tenant_id: realData.tenant?.tenant_id || 1,
@@ -22,7 +22,7 @@ export const MARCA_INFO: MarcaInfo = {
   logo_url: '/Logo_nalu-sinfondo.png',
 };
 
-// Platos oficiales de la base de datos de Nalú Poke (Tenant 1, Marca 1)
+// Imagen fallback por plato
 const DEFAULT_PLATO_IMGS: Record<number, string> = {
   10: '/hero_bandejas_nalu.jpg', // POKE HASTA 2 PROTEINAS
   16: '/hero_bandejas_nalu.jpg', // POKE 3 PROTEINAS

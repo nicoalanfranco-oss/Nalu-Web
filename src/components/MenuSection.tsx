@@ -5,6 +5,7 @@ import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 interface MenuSectionProps {
   platos: ProductoElaborado[];
+  loading?: boolean;
   onSelectPlatoParaPersonalizar: (plato: ProductoElaborado) => void;
   onQuickAddToCart: (plato: ProductoElaborado) => void;
 }
@@ -20,6 +21,7 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 
 export const MenuSection: React.FC<MenuSectionProps> = ({
   platos,
+  loading = false,
   onSelectPlatoParaPersonalizar,
   onQuickAddToCart,
 }) => {
@@ -68,9 +70,24 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
           </div>
         </div>
 
-        {/* Grilla de Platos con animaciones */}
+        {/* Grilla de Platos con animaciones o Skeletons */}
         <div className="dishes-grid">
-          {platosFiltrados.map((plato, idx) => {
+          {loading ? (
+            Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="skeleton-card">
+                <div className="skeleton-img skeleton-box" />
+                <div className="skeleton-body">
+                  <div className="skeleton-title skeleton-box" />
+                  <div className="skeleton-desc skeleton-box" />
+                  <div className="skeleton-desc-short skeleton-box" />
+                  <div className="skeleton-footer">
+                    <div className="skeleton-price skeleton-box" />
+                    <div className="skeleton-btn skeleton-box" />
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : platosFiltrados.map((plato, idx) => {
             const isCustom = plato.es_personalizable;
 
             return (

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, Utensils, Sparkles, ShoppingBag } from 'lucide-react';
+import { triggerHaptic } from '../utils/haptics';
 
 interface MobileBottomNavProps {
   activeTab: 'inicio' | 'menu';
@@ -20,7 +21,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
     <nav className="mobile-bottom-nav">
       <button
         type="button"
-        onClick={() => onNavigate('inicio')}
+        onClick={() => {
+          triggerHaptic('light');
+          onNavigate('inicio');
+        }}
         className={`mobile-nav-item ${activeTab === 'inicio' ? 'active' : ''}`}
       >
         <Home size={20} />
@@ -29,7 +33,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
 
       <button
         type="button"
-        onClick={() => onNavigate('menu')}
+        onClick={() => {
+          triggerHaptic('light');
+          onNavigate('menu');
+        }}
         className={`mobile-nav-item ${activeTab === 'menu' ? 'active' : ''}`}
       >
         <Utensils size={20} />
@@ -39,7 +46,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       {/* Botón Central Destacado: Armar Poke */}
       <button
         type="button"
-        onClick={onOpenCustomizer}
+        onClick={() => {
+          triggerHaptic('medium');
+          onOpenCustomizer();
+        }}
         className="mobile-nav-item"
         style={{ color: 'var(--primary)' }}
       >
@@ -63,7 +73,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       {/* Carrito con Contador */}
       <button
         type="button"
-        onClick={onOpenCart}
+        onClick={() => {
+          triggerHaptic('light');
+          onOpenCart();
+        }}
         className="mobile-nav-item"
       >
         <div style={{ position: 'relative' }}>
