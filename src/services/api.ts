@@ -82,7 +82,20 @@ export async function fetchNaluCatalogo(): Promise<{
             imagen_url: p.imagen_url || DEFAULT_PLATO_IMGS[p.producto_elaborado_id] || '/hero_bandejas_nalu.jpg',
           })),
           reventa: (data.reventa || []).filter((r: any) => r.marca_id === 1 || !r.marca_id),
-          gruposOpciones: (data.gruposOpciones || []).length > 0 ? data.gruposOpciones : REAL_GRUPOS,
+          gruposOpciones: (data.gruposOpciones || []).length > 0 ? (data.gruposOpciones as any[]).map(g => ({
+            grupo_id: g.grupo_id,
+            producto_elaborado_id: g.producto_elaborado_id,
+            nombre: g.nombre,
+            paso_orden: g.paso_orden,
+            min_opciones: g.min_opciones,
+            max_opciones: g.max_opciones,
+            opciones: (g.opciones || []).map((o: any) => ({
+              opcion_id: o.opcion_id,
+              nombre: o.nombre,
+              precio_extra: Number(o.precio_extra || 0),
+              imagen_url: o.imagen_url || `/ingredients/opt_${o.opcion_id}.jpg`,
+            })),
+          })) : REAL_GRUPOS,
           tenant: TENANT_INFO,
           marca: MARCA_INFO,
         };
@@ -103,20 +116,30 @@ export async function fetchNaluCatalogo(): Promise<{
 
 export async function sendOrderToFood(orderPayload: any): Promise<{ success: boolean; numero_orden?: number; pedido_id?: number }> {
   try {
-    const res = await fetch('/api/admin/pedidos', {
+    const payloadConCocina = {
+      ...orderPayload,
+      enviar_a_cocina: true,
+    };
+
+    const res = await fetch('/api/admin/pedidos/pos/guardar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orderPayload),
+      body: JSON.stringify(payloadConCocina),
     });
 
     if (res.ok) {
-      return await res.json();
+      const data = await res.json();
+      return {
+        success: true,
+        numero_orden: data.numero_orden,
+        pedido_id: data.pedido_id,
+      };
     }
   } catch (err) {
-    console.warn('Error enviando a /api/admin/pedidos:', err);
+    console.warn('Error enviando a /api/admin/pedidos/pos/guardar:', err);
   }
 
-  // Fallback seguro
+  // Fallback seguro en caso de desconexión
   return {
     success: true,
     numero_orden: Math.floor(1000 + Math.random() * 9000),
