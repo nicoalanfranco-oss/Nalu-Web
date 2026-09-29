@@ -7,7 +7,7 @@ interface CheckoutModalProps {
   isOpen: boolean;
   items: CartItem[];
   onClose: () => void;
-  onOrderSuccess: (orderNumber: number) => void;
+  onOrderSuccess: (orderNumber: number, whatsappUrl: string) => void;
 }
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({
@@ -89,8 +89,43 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
       const res = await sendOrderToFood(payload);
 
+      // Generar mensaje estructurado de WhatsApp
+      const numOrden = res.numero_orden || Math.floor(1000 + Math.random() * 9000);
+      const lineasItems = items.map(it => {
+        let mods = '';
+        if (it.modificadores && it.modificadores.length > 0) {
+          mods = '\n' + it.modificadores.map(m => `   • ${m.nombre}${m.precio_extra > 0 ? ` (+$${m.precio_extra})` : ''}`).join('\n');
+        }
+        const notasItem = it.notas ? `\n   📝 Nota: ${it.notas}` : '';
+        return `*${it.cantidad}x ${it.nombre}* ($${it.precio_unitario * it.cantidad})${mods}${notasItem}`;
+      }).join('\n\n');
+
+      const canalTxt = tipoEntrega === 'delivery' ? `🛵 Delivery ($${costoEnvio})` : '🏪 Retiro en Mostrador (Take Away)';
+      const dirTxt = tipoEntrega === 'delivery' ? `\n📍 *Dirección:* ${direccion.trim()}${apartamento.trim() ? ` (${apartamento.trim()})` : ''}` : '';
+      const pagoTxt = metodoPago === 'efectivo'
+        ? `Efectivo${pagaCon.trim() ? ` (Paga con $${pagaCon.trim()})` : ''}`
+        : metodoPago === 'pos_tarjeta'
+        ? 'POS Tarjeta'
+        : 'Transferencia Bancaria';
+
+      const textoWhatsApp = `*¡Hola Nalú Poke Bowls Tacuarembó!* 🥗🌊
+Acabo de realizar el *Pedido #${numOrden}* desde la web oficial:
+
+👤 *Cliente:* ${nombre.trim()}
+📱 *Teléfono:* ${telefono.trim()}
+🛵 *Entrega:* ${canalTxt}${dirTxt}
+💳 *Pago:* ${pagoTxt}
+
+*Detalle del Pedido:*
+${lineasItems}
+
+*TOTAL A PAGAR: $${total} UYU*
+${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
+
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoWhatsApp)}`;
+
       if (res.success) {
-        onOrderSuccess(res.numero_orden || 101);
+        onOrderSuccess(numOrden, whatsappUrl);
       } else {
         setErrorMsg('No se pudo registrar el pedido en el sistema. Intenta de nuevo.');
       }

@@ -26,6 +26,7 @@ export const App: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
   const [orderSuccessNumber, setOrderSuccessNumber] = useState<number | null>(null);
+  const [orderWhatsAppUrl, setOrderWhatsAppUrl] = useState<string>('');
 
   // Estado del Carrito
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -85,7 +86,6 @@ export const App: React.FC = () => {
   // Agregar al carrito producto ya armado o de agregado directo
   const handleAddToCart = (item: CartItem) => {
     setCart(prev => {
-      // Si ya existe exactamente el mismo producto con las mismas notas y modificadores, incrementar cantidad
       const existingIdx = prev.findIndex(
         i =>
           i.producto_id === item.producto_id &&
@@ -143,8 +143,9 @@ export const App: React.FC = () => {
   };
 
   // Pedido completado con éxito
-  const handleOrderSuccess = (orderNumber: number) => {
+  const handleOrderSuccess = (orderNumber: number, whatsappUrl?: string) => {
     setOrderSuccessNumber(orderNumber);
+    if (whatsappUrl) setOrderWhatsAppUrl(whatsappUrl);
     setCart([]);
     setIsCheckoutOpen(false);
     setIsCartOpen(false);
@@ -279,7 +280,7 @@ export const App: React.FC = () => {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
               <a
-                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                href={orderWhatsAppUrl || `https://api.whatsapp.com/send?text=${encodeURIComponent(
                   `¡Hola Nalú Poke! Acabo de realizar el Pedido #${orderSuccessNumber} desde la web.`
                 )}`}
                 target="_blank"
@@ -288,7 +289,7 @@ export const App: React.FC = () => {
                 style={{ background: '#25D366', boxShadow: '0 8px 24px rgba(37, 211, 102, 0.3)', width: '100%' }}
               >
                 <MessageCircle size={18} />
-                <span>Consultar por WhatsApp</span>
+                <span>Enviar Pedido a WhatsApp</span>
               </a>
 
               <button

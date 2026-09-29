@@ -1,5 +1,5 @@
-import React from 'react';
-import { Sparkles, Utensils, MapPin, Clock, ArrowRight, Bike, Store } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Sparkles, Utensils, MapPin, Clock, ArrowRight, Bike, Store, Star, Users } from 'lucide-react';
 import { MarcaInfo, TenantInfo } from '../types/food';
 
 interface HeroSectionProps {
@@ -15,14 +15,44 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onOpenCustomizer,
   onExploreMenu,
 }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [bowlCount, setBowlCount] = useState(0);
+
+  // Animación de entrada al montar
+  useEffect(() => {
+    requestAnimationFrame(() => setIsLoaded(true));
+  }, []);
+
+  // Contador animado de bowls "vendidos"
+  useEffect(() => {
+    const target = 2847;
+    const duration = 2200;
+    const startTime = Date.now();
+    const timer = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setBowlCount(Math.floor(eased * target));
+      if (progress >= 1) clearInterval(timer);
+    }, 30);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <section id="inicio" className="hero-section">
+      {/* Decoración de fondo animada */}
+      <div className="hero-bg-decoration">
+        <div className="hero-blob hero-blob-1" />
+        <div className="hero-blob hero-blob-2" />
+        <div className="hero-blob hero-blob-3" />
+      </div>
+
       <div className="page-container">
         <div className="hero-grid">
           {/* Columna de Texto y Llamados a la Acción */}
-          <div className="hero-content">
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              <span className="badge-tag">
+          <div className={`hero-content ${isLoaded ? 'hero-animate-in' : ''}`}>
+            <div className="hero-badges-row">
+              <span className="badge-tag badge-pulse">
                 <MapPin size={13} /> TACUAREMBÓ • AV. JORGE BATLLE IBÁÑEZ
               </span>
               <span className="badge-tag green">
@@ -32,7 +62,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
             <h1 className="hero-title">
               El Auténtico Sabor Hawaiano <br />
-              <span className="highlight">Ahora en Tacuarembó.</span>
+              <span className="highlight">
+                Ahora en Tacuarembó.
+                <svg className="highlight-underline" viewBox="0 0 300 12" preserveAspectRatio="none">
+                  <path d="M2 8C50 2 120 2 150 6C180 10 250 3 298 7" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
             </h1>
 
             <p className="hero-subtitle">
@@ -40,13 +75,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </p>
 
             <div className="hero-cta-group">
-              <button onClick={onOpenCustomizer} className="btn-primary" style={{ padding: '14px 28px', fontSize: '1rem' }}>
-                <Sparkles size={18} />
+              <button onClick={onOpenCustomizer} className="btn-primary btn-glow" style={{ padding: '16px 32px', fontSize: '1.05rem' }}>
+                <Sparkles size={20} />
                 <span>Arma tu Poke a Medida</span>
                 <ArrowRight size={18} />
               </button>
 
-              <button onClick={onExploreMenu} className="btn-secondary" style={{ padding: '14px 24px', fontSize: '1rem' }}>
+              <button onClick={onExploreMenu} className="btn-secondary" style={{ padding: '16px 28px', fontSize: '1rem' }}>
                 <Utensils size={18} />
                 <span>Explorar la Carta</span>
               </button>
@@ -78,10 +113,33 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               )}
             </div>
+
+            {/* Social Proof - Estadística animada */}
+            <div className="hero-social-proof">
+              <div className="hero-stat">
+                <div className="hero-stat-avatars">
+                  <div className="hero-avatar">🧑‍🍳</div>
+                  <div className="hero-avatar">👩</div>
+                  <div className="hero-avatar">👨</div>
+                </div>
+                <div>
+                  <span className="hero-stat-number">+{bowlCount.toLocaleString()}</span>
+                  <span className="hero-stat-label">bowls servidos</span>
+                </div>
+              </div>
+              <div className="hero-rating">
+                <div style={{ display: 'flex', gap: '2px' }}>
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <Star key={i} size={14} fill="#F59E0B" color="#F59E0B" />
+                  ))}
+                </div>
+                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-body)' }}>4.9 en Google</span>
+              </div>
+            </div>
           </div>
 
           {/* Columna Visual: Foto de Presentación y Bowl de Nalú Poke */}
-          <div className="hero-visual-wrapper">
+          <div className={`hero-visual-wrapper ${isLoaded ? 'hero-visual-animate' : ''}`}>
             <div className="hero-visual-card">
               <img
                 src="/hero_bandejas_nalu.jpg"
@@ -100,6 +158,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 >
                   Personalizar
                 </button>
+              </div>
+
+              {/* Badge flotante superior derecho */}
+              <div className="hero-freshness-badge">
+                <span className="hero-freshness-pulse" />
+                <span>🥬 Ingredientes del Día</span>
               </div>
             </div>
           </div>

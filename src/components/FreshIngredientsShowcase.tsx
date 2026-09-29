@@ -1,7 +1,10 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ArrowRight } from 'lucide-react';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 export const FreshIngredientsShowcase: React.FC = () => {
+  const { ref: sectionRef, isVisible } = useScrollAnimation({ threshold: 0.1 });
+
   const trays = [
     {
       image: '/tray_bases.jpg',
@@ -9,7 +12,9 @@ export const FreshIngredientsShowcase: React.FC = () => {
       limit: 'Hasta 2 opciones',
       title: 'Bases Nutritivas',
       subtitle: 'La base perfecta para tu bowl: ingredientes limpios, equilibrados y llenos de energía.',
-      items: ['Arroz', 'Arroz integral', 'Fideo integral', 'Quinoa', 'Lechuga']
+      items: ['Arroz', 'Arroz integral', 'Fideo integral', 'Quinoa', 'Lechuga'],
+      accent: 'var(--secondary)',
+      accentBg: 'var(--secondary-light)',
     },
     {
       image: '/tray_proteinas.jpg',
@@ -17,7 +22,9 @@ export const FreshIngredientsShowcase: React.FC = () => {
       limit: 'Hasta 3 opciones',
       title: 'Proteínas Seleccionadas',
       subtitle: 'Carnes tiernas y pescados frescos preparados a diario en nuestra cocina de Tacuarembó.',
-      items: ['Carne vacuna', 'Pollo', 'Cerdo barbacoa', 'Atún', 'Camarones', 'Huevo']
+      items: ['Carne vacuna', 'Pollo', 'Cerdo barbacoa', 'Atún', 'Camarones', 'Huevo'],
+      accent: 'var(--primary)',
+      accentBg: 'var(--primary-light)',
     },
     {
       image: '/tray_vegetales.jpg',
@@ -25,7 +32,9 @@ export const FreshIngredientsShowcase: React.FC = () => {
       limit: 'Hasta 3 opciones',
       title: 'Verduras & Frutas Tropicales',
       subtitle: 'Color, crocancia y nutrientes esenciales cortados en el momento para conservar su frescura.',
-      items: ['Palta', 'Mango', 'Ananá', 'Tomate', 'Pepino', 'Choclo', 'Remolacha']
+      items: ['Palta', 'Mango', 'Ananá', 'Tomate', 'Pepino', 'Choclo', 'Remolacha'],
+      accent: '#16A34A',
+      accentBg: 'rgba(22, 163, 74, 0.08)',
     },
     {
       image: '/tray_salsas_chips.jpg',
@@ -33,14 +42,16 @@ export const FreshIngredientsShowcase: React.FC = () => {
       limit: 'De 1 a 3 salsas y chips',
       title: 'Salsas Artesanales & Chips',
       subtitle: 'El toque maestro que amalgama cada bocado con aderezos caseros y textura crujiente.',
-      items: ['Teriyaki', 'Alioli', 'Mostaza y miel', 'Cebolla crispy', 'Chip Boniato', 'Sésamo']
+      items: ['Teriyaki', 'Alioli', 'Mostaza y miel', 'Cebolla crispy', 'Chip Boniato', 'Sésamo'],
+      accent: 'var(--accent-gold)',
+      accentBg: 'var(--accent-gold-light)',
     }
   ];
 
   return (
-    <section id="bandejas" className="ingredients-showcase-section">
+    <section id="bandejas" className="ingredients-showcase-section" ref={sectionRef}>
       <div className="page-container">
-        <div className="section-header">
+        <div className={`section-header scroll-reveal ${isVisible ? 'revealed' : ''}`}>
           <span className="badge-tag green section-tag">
             <Sparkles size={14} /> BANDEJAS FRESCAS A LA VISTA
           </span>
@@ -52,38 +63,38 @@ export const FreshIngredientsShowcase: React.FC = () => {
 
         <div className="trays-grid">
           {trays.map((tray, idx) => (
-            <div key={idx} className="tray-card" style={{ padding: '0', overflow: 'hidden', textAlign: 'left', alignItems: 'stretch' }}>
-              {/* Fotografía Real de la Bandeja */}
-              <div style={{ position: 'relative', width: '100%', height: '190px', overflow: 'hidden', background: 'var(--bg-sand)' }}>
+            <div
+              key={idx}
+              className={`tray-card scroll-reveal ${isVisible ? 'revealed' : ''}`}
+              style={{
+                padding: '0',
+                overflow: 'hidden',
+                textAlign: 'left',
+                alignItems: 'stretch',
+                transitionDelay: isVisible ? `${idx * 120}ms` : '0ms',
+              }}
+            >
+              {/* Fotografía Real de la Bandeja con overlay sutil */}
+              <div className="tray-image-wrapper">
                 <img
                   src={tray.image}
                   alt={tray.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
                   className="tray-photo"
+                  loading="lazy"
                 />
-                <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  left: '12px',
-                  background: 'rgba(255, 255, 255, 0.94)',
-                  backdropFilter: 'blur(6px)',
-                  padding: '4px 10px',
-                  borderRadius: 'var(--radius-full)',
-                  fontSize: '0.72rem',
-                  fontWeight: 800,
-                  color: 'var(--text-main)',
-                  boxShadow: 'var(--shadow-sm)'
-                }}>
+                <div className="tray-image-overlay" />
+                <div className="tray-step-badge" style={{ borderColor: tray.accent }}>
+                  <span className="tray-step-dot" style={{ background: tray.accent }} />
                   {tray.step}
                 </div>
               </div>
 
               {/* Contenido de la Bandeja */}
-              <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+              <div className="tray-card-body">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                   <h3 style={{ fontSize: '1.12rem', fontWeight: 800 }}>{tray.title}</h3>
                 </div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '8px' }}>
+                <span className="tray-limit-badge" style={{ color: tray.accent, background: tray.accentBg }}>
                   {tray.limit}
                 </span>
 
@@ -92,20 +103,9 @@ export const FreshIngredientsShowcase: React.FC = () => {
                 </p>
 
                 {/* Chips de los insumos exactos */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                <div className="tray-chips-row">
                   {tray.items.map((item, i) => (
-                    <span
-                      key={i}
-                      style={{
-                        fontSize: '0.72rem',
-                        fontWeight: 700,
-                        background: 'var(--bg-page)',
-                        border: '1px solid var(--border-light)',
-                        padding: '3px 8px',
-                        borderRadius: 'var(--radius-full)',
-                        color: 'var(--text-body)'
-                      }}
-                    >
+                    <span key={i} className="tray-ingredient-chip">
                       {item}
                     </span>
                   ))}

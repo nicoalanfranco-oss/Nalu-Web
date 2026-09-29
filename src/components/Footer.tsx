@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, MapPin, Clock, Bike, Store } from 'lucide-react';
+import { Phone, MapPin, Clock, Bike, Store, Heart, ExternalLink } from 'lucide-react';
 import { TenantInfo, MarcaInfo } from '../types/food';
 
 interface FooterProps {
@@ -9,59 +9,87 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ marca, tenant }) => {
   return (
-    <footer style={{ background: '#13191D', color: '#CBD5E1', padding: '60px 0 40px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+    <footer className="site-footer">
+      {/* Cinta decorativa superior con gradiente */}
+      <div className="footer-ribbon" />
+
       <div className="page-container">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '40px', marginBottom: '40px' }}>
+        {/* CTA Banner antes del footer */}
+        <div className="footer-cta-banner">
+          <div className="footer-cta-text">
+            <h3>¿Listo para armar tu Poke Bowl?</h3>
+            <p>Pedí ahora y recibilo fresco en tu puerta o retirá en nuestro local de Tacuarembó</p>
+          </div>
+          <a
+            href="#menu"
+            className="btn-primary"
+            style={{ padding: '14px 28px', fontSize: '0.95rem', flexShrink: 0 }}
+          >
+            <span>Ver la Carta</span>
+            <ExternalLink size={16} />
+          </a>
+        </div>
+
+        <div className="footer-grid">
           {/* Logo y Eslogan en Tacuarembó */}
-          <div>
+          <div className="footer-brand-col">
             <img
               src="/Logo_nalu-sinfondo.png"
               alt="Nalú Poke Bowls"
-              style={{ height: '46px', marginBottom: '16px', filter: 'brightness(0) invert(1)' }}
+              className="footer-logo"
             />
-            <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6 }}>
+            <p className="footer-brand-desc">
               Pokes bowls hawaianos frescos, saludables y preparados al instante en Tacuarembó. Carne vacuna, pollo, cerdo barbacoa, atún y camarones con las mejores materias primas.
             </p>
+            <div className="footer-channels">
+              {marca.permite_delivery && (
+                <span className="footer-channel-pill">
+                  <Bike size={13} color="var(--primary)" /> Delivery
+                </span>
+              )}
+              {marca.permite_takeaway && (
+                <span className="footer-channel-pill">
+                  <Store size={13} color="var(--secondary)" /> Take Away
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Horarios de Atención desde food.marcas */}
-          <div>
-            <h4 style={{ color: 'white', fontSize: '1rem', fontWeight: 800, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="footer-col">
+            <h4 className="footer-col-title">
               <Clock size={18} color="var(--primary)" /> Días y Horarios
             </h4>
-            <p style={{ fontSize: '0.85rem', color: '#94A3B8', lineHeight: 1.6 }}>
-              <strong>{marca.dias_atencion}</strong><br />
-              {marca.horario_atencion}
-            </p>
-            <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
-              <span style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.08)', padding: '4px 10px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Bike size={13} color="var(--primary)" /> Delivery
-              </span>
-              <span style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.08)', padding: '4px 10px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Store size={13} color="var(--secondary)" /> Take Away
-              </span>
+            <div className="footer-schedule-card">
+              <div className="footer-schedule-days">{marca.dias_atencion}</div>
+              <div className="footer-schedule-hours">{marca.horario_atencion}</div>
             </div>
           </div>
 
           {/* Contacto y Ubicación en Tacuarembó */}
-          <div>
-            <h4 style={{ color: 'white', fontSize: '1rem', fontWeight: 800, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="footer-col">
+            <h4 className="footer-col-title">
               <MapPin size={18} color="var(--secondary)" /> Ubicación & Contacto
             </h4>
-            <p style={{ fontSize: '0.85rem', color: '#94A3B8', lineHeight: 1.6, marginBottom: '8px' }}>
+            <p className="footer-address">
               {tenant.direccion}<br />
               Tacuarembó, Uruguay
             </p>
-            <p style={{ fontSize: '0.85rem', color: '#94A3B8', lineHeight: 1.6, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <a href={`tel:${tenant.telefono}`} className="footer-phone-link">
               <Phone size={15} color="var(--primary)" /> {tenant.telefono}
-            </p>
+            </a>
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', fontSize: '0.78rem', color: '#64748B' }}>
-          <div>© {new Date().getFullYear()} {marca.nombre} • {tenant.nombre} • Tacuarembó</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            Conectado a Cocina y POS Food
+        {/* Copyright */}
+        <div className="footer-bottom">
+          <div className="footer-copyright">
+            © {new Date().getFullYear()} {marca.nombre} • Tacuarembó, Uruguay
+          </div>
+          <div className="footer-powered">
+            <span>Hecho con</span>
+            <Heart size={13} color="var(--primary)" fill="var(--primary)" />
+            <span>en Tacuarembó • Conectado a Cocina y POS Food</span>
           </div>
         </div>
       </div>

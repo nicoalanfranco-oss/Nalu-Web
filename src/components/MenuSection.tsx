@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Sparkles, ShoppingBag } from 'lucide-react';
-import { ProductoElaborado, CartItem } from '../types/food';
+import { Plus, Sparkles } from 'lucide-react';
+import { ProductoElaborado } from '../types/food';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 interface MenuSectionProps {
   platos: ProductoElaborado[];
@@ -8,12 +9,22 @@ interface MenuSectionProps {
   onQuickAddToCart: (plato: ProductoElaborado) => void;
 }
 
+const CATEGORY_EMOJIS: Record<string, string> = {
+  'todos': '✨',
+  'Pokes': '🥗',
+  'Ensaladas': '🥬',
+  'Bebidas': '🥤',
+  'Postres': '🍨',
+  'Acompañamientos': '🍟',
+};
+
 export const MenuSection: React.FC<MenuSectionProps> = ({
   platos,
   onSelectPlatoParaPersonalizar,
   onQuickAddToCart,
 }) => {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('todos');
+  const { ref: sectionRef, isVisible } = useScrollAnimation({ threshold: 0.05 });
 
   // Extraer categorías únicas
   const categorias = useMemo(() => {
@@ -28,9 +39,9 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
   }, [platos, categoriaSeleccionada]);
 
   return (
-    <section id="menu" className="menu-section">
+    <section id="menu" className="menu-section" ref={sectionRef}>
       <div className="page-container">
-        <div className="section-header">
+        <div className={`section-header scroll-reveal ${isVisible ? 'revealed' : ''}`}>
           <span className="badge-tag gold section-tag">
             <Sparkles size={14} /> NUESTRA CARTA
           </span>
@@ -50,24 +61,30 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                 onClick={() => setCategoriaSeleccionada(cat)}
                 className={`category-tab-btn ${categoriaSeleccionada === cat ? 'active' : ''}`}
               >
-                {cat === 'todos' ? '✨ Todos los Platos' : cat}
+                <span>{CATEGORY_EMOJIS[cat] || '🍽️'}</span>
+                {cat === 'todos' ? 'Todos los Platos' : cat}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Grilla de Platos */}
+        {/* Grilla de Platos con animaciones */}
         <div className="dishes-grid">
-          {platosFiltrados.map(plato => {
+          {platosFiltrados.map((plato, idx) => {
             const isCustom = plato.es_personalizable;
 
             return (
-              <div key={plato.producto_elaborado_id} className="dish-card">
+              <div
+                key={plato.producto_elaborado_id}
+                className={`dish-card scroll-reveal ${isVisible ? 'revealed' : ''}`}
+                style={{ transitionDelay: isVisible ? `${Math.min(idx * 80, 400)}ms` : '0ms' }}
+              >
                 <div className="dish-image-wrapper">
                   <img
                     src={plato.imagen_url || '/hero_bandejas_nalu.jpg'}
                     alt={plato.nombre}
                     className="dish-image"
+                    loading="lazy"
                   />
                   {isCustom && (
                     <span className="dish-custom-badge">
@@ -75,6 +92,9 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                       Personalizable
                     </span>
                   )}
+
+                  {/* Overlay gradiente sutil en hover */}
+                  <div className="dish-image-hover-overlay" />
                 </div>
 
                 <div className="dish-body">
@@ -94,7 +114,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                     {isCustom ? (
                       <button
                         onClick={() => onSelectPlatoParaPersonalizar(plato)}
-                        className="dish-add-btn"
+                        className="dish-add-btn dish-add-btn-custom"
                         title="Armar bowl a medida"
                       >
                         <Sparkles size={15} />

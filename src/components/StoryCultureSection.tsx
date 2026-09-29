@@ -1,106 +1,131 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Sun, Waves, Sparkles } from 'lucide-react';
+import { Heart, Sun, Waves, Sparkles, Leaf, UtensilsCrossed } from 'lucide-react';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 export const StoryCultureSection: React.FC = () => {
-  // Animación de rotación sutil de fotos inspirada en Get Poke Bowl & Poke House
+  const { ref: sectionRef, isVisible } = useScrollAnimation({ threshold: 0.1 });
+
+  // Rotación sutil de fotos inspirada en Get Poke Bowl & Poke House
   const photos = [
     {
-      url: '/hero_bandejas_nalu.jpg',
-      caption: 'Bandejas preparadas diariamente con pesca fresca y vegetales locales'
+      url: '/tray_proteinas.jpg',
+      caption: 'Proteínas frescas preparadas a diario en nuestra cocina de Tacuarembó'
     },
     {
       url: '/hero_bandejas_nalu.jpg',
+      caption: 'Bandejas preparadas diariamente con cortes seleccionados y vegetales de la huerta'
+    },
+    {
+      url: '/tray_vegetales.jpg',
+      caption: 'Verduras y frutas tropicales cortadas en el momento para cada bowl'
+    },
+    {
+      url: '/tray_salsas_chips.jpg',
       caption: 'Aderezos artesanales fusionando sabores asiáticos y notas tropicales'
     }
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % photos.length);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentIndex(prev => (prev + 1) % photos.length);
+        setIsTransitioning(false);
+      }, 400);
     }, 4500);
     return () => clearInterval(timer);
   }, [photos.length]);
 
+  const valores = [
+    {
+      icon: <Sun size={24} color="#F59E0B" />,
+      title: 'Energía Limpia',
+      desc: 'Sin procesados pesados. Solo carbohidratos complejos, proteínas limpias y grasas buenas.',
+    },
+    {
+      icon: <Heart size={24} color="var(--primary)" />,
+      title: 'Amor por el Detalle',
+      desc: 'Cada bowl se arma a mano cuidando la estética, el equilibrio de texturas y el crunch.',
+    },
+    {
+      icon: <Leaf size={24} color="var(--secondary)" />,
+      title: 'Frescura Garantizada',
+      desc: 'Ingredientes que llegan frescos a nuestra cocina cada mañana y son preparados al instante.',
+    },
+    {
+      icon: <UtensilsCrossed size={24} color="var(--sea-blue)" />,
+      title: 'Fusión de Culturas',
+      desc: 'La tradición hawaiana del poke con un toque rioplatense que solo encontrás en Tacuarembó.',
+    },
+  ];
+
   return (
-    <section id="cultura" style={{ padding: '70px 0', background: 'var(--bg-sand)', borderTop: '1px solid var(--border-light)' }}>
+    <section id="cultura" className="story-section" ref={sectionRef}>
       <div className="page-container">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center' }}>
+        <div className={`story-layout scroll-reveal ${isVisible ? 'revealed' : ''}`}>
           
           {/* Columna de Texto Cultura & Filosofía Nalú */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="story-text-col">
             <span className="badge-tag green">
               <Waves size={14} /> FILOSOFÍA NALÚ
             </span>
 
-            <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.8rem)', lineHeight: 1.15 }}>
+            <h2 className="story-heading">
               Comida Real que te Hace <br />
               <span style={{ color: 'var(--secondary)' }}>Sentir Bien.</span>
             </h2>
 
-            <p style={{ color: 'var(--text-body)', fontSize: '1rem', lineHeight: 1.6 }}>
+            <p className="story-description">
               Nacimos con la convicción de que alimentarse de forma saludable debe ser un momento placentero, colorido y lleno de sabor. En Nalú combinamos la tradición hawaiana del poke con una mirada moderna de nutrición equilibrada.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '8px' }}>
-              <div style={{ background: 'var(--bg-card)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-                <Sun size={24} color="#F59E0B" style={{ marginBottom: '8px' }} />
-                <h4 style={{ fontSize: '0.98rem', fontWeight: 800 }}>Energía Limpia</h4>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                  Sin procesados pesados. Solo carbohidratos complejos, proteínas limpias y grasas buenas.
-                </p>
-              </div>
-
-              <div style={{ background: 'var(--bg-card)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-                <Heart size={24} color="var(--primary)" style={{ marginBottom: '8px' }} />
-                <h4 style={{ fontSize: '0.98rem', fontWeight: 800 }}>Amor por el Detalle</h4>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                  Cada bowl se arma a mano cuidando la estética, el equilibrio de texturas y el crunch.
-                </p>
-              </div>
+            <div className="story-values-grid">
+              {valores.map((val, idx) => (
+                <div
+                  key={idx}
+                  className={`story-value-card scroll-reveal ${isVisible ? 'revealed' : ''}`}
+                  style={{ transitionDelay: isVisible ? `${200 + idx * 100}ms` : '0ms' }}
+                >
+                  <div className="story-value-icon">{val.icon}</div>
+                  <h4>{val.title}</h4>
+                  <p>{val.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Columna Visual con Slider Sutil de Fotos */}
-          <div style={{ position: 'relative' }}>
-            <div style={{
-              borderRadius: 'var(--radius-xl)',
-              overflow: 'hidden',
-              boxShadow: 'var(--shadow-lg)',
-              border: '4px solid white',
-              background: 'white',
-              position: 'relative',
-              height: '380px'
-            }}>
+          <div className={`story-visual-col scroll-reveal ${isVisible ? 'revealed' : ''}`} style={{ transitionDelay: '150ms' }}>
+            <div className="story-photo-frame">
               <img
                 src={photos[currentIndex].url}
                 alt="Cultura Nalú Poke"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  transition: 'opacity 0.8s ease-in-out',
-                }}
+                className={`story-photo-img ${isTransitioning ? 'fading' : ''}`}
               />
-              <div style={{
-                position: 'absolute',
-                bottom: '16px',
-                left: '16px',
-                right: '16px',
-                background: 'rgba(255, 255, 255, 0.92)',
-                backdropFilter: 'blur(8px)',
-                padding: '12px 18px',
-                borderRadius: 'var(--radius-md)',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                color: 'var(--text-main)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px'
-              }}>
+              <div className="story-photo-caption">
                 <Sparkles size={16} color="var(--primary)" />
                 <span>{photos[currentIndex].caption}</span>
+              </div>
+
+              {/* Dots de navegación */}
+              <div className="story-photo-dots">
+                {photos.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`story-dot ${currentIndex === i ? 'active' : ''}`}
+                    onClick={() => {
+                      setIsTransitioning(true);
+                      setTimeout(() => {
+                        setCurrentIndex(i);
+                        setIsTransitioning(false);
+                      }, 300);
+                    }}
+                    aria-label={`Foto ${i + 1}`}
+                  />
+                ))}
               </div>
             </div>
           </div>
