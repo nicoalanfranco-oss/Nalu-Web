@@ -234,8 +234,8 @@ button {
   top: 0;
   z-index: 100;
   background: rgba(250, 248, 245, 0.92);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-light);
   transition: background var(--transition-normal);
 }
@@ -611,6 +611,7 @@ button {
   left: 20px;
   right: 20px;
   background: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: var(--radius-md);
   padding: 12px 18px;
@@ -639,6 +640,7 @@ button {
   top: 16px;
   right: 16px;
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   padding: 6px 12px;
   border-radius: var(--radius-full);
@@ -748,6 +750,7 @@ button {
   top: 12px;
   left: 12px;
   background: rgba(255, 255, 255, 0.96);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   padding: 5px 12px;
   border-radius: var(--radius-full);
@@ -850,6 +853,7 @@ button {
   top: 74px;
   z-index: 80;
   background: rgba(250, 248, 245, 0.95);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   padding: 16px 0;
   margin-bottom: 30px;
@@ -970,6 +974,7 @@ button {
   top: 12px;
   left: 12px;
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   color: var(--primary);
   font-size: 0.72rem;
@@ -1009,6 +1014,7 @@ button {
   flex: 1;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1189,6 +1195,7 @@ button {
   left: 16px;
   right: 16px;
   background: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   padding: 12px 18px;
   border-radius: var(--radius-md);
@@ -1213,6 +1220,7 @@ button {
   height: 10px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   border: 1.5px solid rgba(255, 255, 255, 0.7);
   cursor: pointer;
@@ -1238,8 +1246,8 @@ button {
   position: fixed;
   inset: 0;
   background: var(--bg-overlay);
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -1363,6 +1371,12 @@ button {
   gap: 12px;
   overflow-x: auto;
   scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.live-bowl-bar::-webkit-scrollbar,
+.live-bowl-chips::-webkit-scrollbar {
+  display: none;
 }
 
 .live-bowl-chips {
@@ -1372,6 +1386,7 @@ button {
   overflow-x: auto;
   flex: 1;
   scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .live-bowl-chip {
@@ -1492,6 +1507,7 @@ button {
   border: 1.5px solid var(--border-light);
   text-align: left;
   transition: all var(--transition-fast);
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -1609,6 +1625,7 @@ button {
   position: fixed;
   inset: 0;
   background: var(--bg-overlay);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   z-index: 250;
   display: flex;
@@ -1758,8 +1775,8 @@ button {
     right: 0;
     height: 68px;
     background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
     border-top: 1px solid var(--border-light);
     box-shadow: var(--shadow-bottom-nav);
     z-index: 150;
@@ -1978,8 +1995,6 @@ button {
   margin-bottom: 40px;
 }
 
-.footer-brand-col {}
-
 .footer-logo {
   height: 46px;
   margin-bottom: 16px;
@@ -2009,8 +2024,6 @@ button {
   color: #CBD5E1;
   font-weight: 600;
 }
-
-.footer-col {}
 
 .footer-col-title {
   color: white;
@@ -2392,8 +2405,8 @@ button {
   transform: translateX(-50%);
   z-index: 1000;
   background: rgba(30, 37, 43, 0.95);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-full);
   padding: 8px 16px 8px 12px;
