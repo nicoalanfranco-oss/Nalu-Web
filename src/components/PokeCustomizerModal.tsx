@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { X, Check, Sparkles, Plus, AlertCircle } from 'lucide-react';
+import { X, Check, Plus } from 'lucide-react';
 import { ProductoElaborado, GrupoOpciones, OpcionPersonalizacion, CartItem } from '../types/food';
 
 interface PokeCustomizerModalProps {
@@ -17,12 +17,14 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
 }) => {
   if (!plato) return null;
 
-  // Filtrar grupos pertenecientes a este plato o grupos generales de pokes
+  // Filtrar grupos pertenecientes a este plato o grupos generales de pokes de la base de datos
   const gruposAplicables = useMemo(() => {
     const directos = grupos.filter(g => g.producto_elaborado_id === plato.producto_elaborado_id);
     if (directos.length > 0) return directos;
-    // Si no tiene grupos asignados directamente, usar los grupos de poke genéricos (e.g. Base, Proteína, Verduras, Salsas, Toppings)
-    return grupos;
+
+    // Si el plato no tiene grupos directos, usar los grupos de POKE 3 PROTEINAS (id 16) o POKE 2 PROTEINAS (id 10)
+    const gruposTemplate = grupos.filter(g => g.producto_elaborado_id === 16 || g.producto_elaborado_id === 10);
+    return gruposTemplate.length > 0 ? gruposTemplate : grupos;
   }, [grupos, plato]);
 
   // Estado de opciones elegidas: array de { grupo_id, opcion }
@@ -92,32 +94,10 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
     onClose();
   };
 
-  // Helpers de iconografía por grupo
-  const getIngredientIcon = (nombre: string) => {
-    const n = nombre.toLowerCase();
-    if (n.includes('arroz')) return '🍚';
-    if (n.includes('quinoa')) return '🌾';
-    if (n.includes('fideo')) return '🍜';
-    if (n.includes('lechuga')) return '🥬';
-    if (n.includes('salmón') || n.includes('atún') || n.includes('pescado')) return '🐟';
-    if (n.includes('pollo')) return '🍗';
-    if (n.includes('camarón') || n.includes('camarones')) return '🍤';
-    if (n.includes('carne') || n.includes('cerdo')) return '🥩';
-    if (n.includes('huevo')) return '🍳';
-    if (n.includes('palta') || n.includes('aguacate')) return '🥑';
-    if (n.includes('edamame') || n.includes('pepino')) return '🥒';
-    if (n.includes('tomate')) return '🍅';
-    if (n.includes('zanahoria')) return '🥕';
-    if (n.includes('cebolla')) return '🧅';
-    if (n.includes('soja') || n.includes('salsa') || n.includes('teriyaki') || n.includes('mayo')) return '🥣';
-    if (n.includes('sésamo') || n.includes('crunch') || n.includes('chips')) return '✨';
-    return '🥗';
-  };
-
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container" onClick={e => e.stopPropagation()}>
-        {/* Cabecera con Imagen de Presentación (Fusión EatPokeBros + POS Food) */}
+        {/* Cabecera con Imagen de Presentación */}
         <div className="modal-header-hero">
           <img
             src={plato.imagen_url || '/hero_bandejas_nalu.jpg'}
@@ -127,7 +107,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
           <div className="modal-header-overlay">
             <h3 style={{ fontSize: '1.4rem', fontWeight: 900 }}>{plato.nombre}</h3>
             <p style={{ fontSize: '0.84rem', opacity: 0.9 }}>
-              {plato.descripcion || 'Selecciona tus ingredientes favoritos para preparar tu bowl'}
+              {plato.descripcion || 'Selecciona tus ingredientes favoritos para preparar tu bowl en Tacuarembó'}
             </p>
           </div>
           <button onClick={onClose} className="modal-close-btn" aria-label="Cerrar modal">
@@ -135,7 +115,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
           </button>
         </div>
 
-        {/* Cuerpo con grupos de ingredientes con fotos del POS */}
+        {/* Cuerpo con grupos de ingredientes con fotos REALES de la base de datos */}
         <div className="modal-scroll-body">
           {gruposAplicables.map(grupo => {
             const seleccionadas = opcionesElegidas.filter(i => i.grupo_id === grupo.grupo_id);
@@ -161,7 +141,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
                   </span>
                 </div>
 
-                {/* Cuadrícula de opciones con miniaturas estilo Caja Registradora Food */}
+                {/* Cuadrícula de opciones con fotos de insumos reales del POS de Food */}
                 <div className="ingredients-selector-grid">
                   {grupo.opciones.map(opc => {
                     const isSelected = opcionesElegidas.some(
@@ -183,8 +163,8 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
                               className="ingredient-thumb"
                             />
                           ) : (
-                            <div className="ingredient-icon-placeholder">
-                              {getIngredientIcon(opc.nombre)}
+                            <div className="ingredient-icon-placeholder" style={{ background: '#788c50', color: 'white', fontWeight: 800, fontSize: '0.75rem' }}>
+                              {opc.nombre.substring(0, 2).toUpperCase()}
                             </div>
                           )}
                           <span className="ingredient-name" title={opc.nombre}>
@@ -213,13 +193,13 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
           {/* Notas para Cocina */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <label style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-muted)' }}>
-              ✏️ Notas especiales para preparación (opcional)
+              ✏️ Notas especiales para preparación en cocina (opcional)
             </label>
             <input
               type="text"
               value={notasCocina}
               onChange={e => setNotasCocina(e.target.value)}
-              placeholder="Ej: salsa aparte, sin cebolla, palta en láminas..."
+              placeholder="Ej: salsa aparte, carne bien cocida, sin cebolla..."
               style={{
                 width: '100%',
                 padding: '12px 16px',

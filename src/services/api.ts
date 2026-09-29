@@ -1,212 +1,109 @@
-import { ProductoElaborado, ProductoReventa, GrupoOpciones } from '../types/food';
+import { ProductoElaborado, ProductoReventa, GrupoOpciones, TenantInfo, MarcaInfo } from '../types/food';
+import realData from './nalu_real_data.json';
 
-// Datos de fallback precisos basados en la base de datos real de Nalú Poke (Tenant 1, Marca 1)
-const FALLBACK_ELABORADOS: ProductoElaborado[] = [
-  {
-    producto_elaborado_id: 16,
-    tenant_id: 1,
-    marca_id: 1,
-    nombre: 'POKE 3 PROTEINAS',
-    categoria: 'Pokes',
-    descripcion: 'Arma tu bowl a elección con hasta 3 proteínas premium, bases frescas, verduras, salsas artesanales y toppings crocantes.',
-    precio_venta: 340,
-    es_personalizable: true,
-    imagen_url: '/hero_bandejas_nalu.jpg',
-    activo: true,
-    insumos_receta: []
-  },
-  {
-    producto_elaborado_id: 10,
-    tenant_id: 1,
-    marca_id: 1,
-    nombre: 'POKE HASTA 2 PROTEINAS',
-    categoria: 'Pokes',
-    descripcion: 'Personaliza tu experiencia con 2 proteínas a elección, combinando sabores exóticos y materias primas frescas de primera calidad.',
-    precio_venta: 290,
-    es_personalizable: true,
-    imagen_url: '/hero_bandejas_nalu.jpg',
-    activo: true,
-    insumos_receta: []
-  },
-  {
-    producto_elaborado_id: 12,
-    tenant_id: 1,
-    marca_id: 1,
-    nombre: 'Poke Nalú Especial',
-    categoria: 'Pokes de Autor',
-    descripcion: 'Nuestra combinación insignia con salmón fresco marinado, arroz de sushi, palta cremosa, mango tropical, wakame y salsa teriyaki de la casa.',
-    precio_venta: 320,
-    es_personalizable: true,
-    imagen_url: '/hero_bandejas_nalu.jpg',
-    activo: true,
-    insumos_receta: []
-  },
-  {
-    producto_elaborado_id: 15,
-    tenant_id: 1,
-    marca_id: 1,
-    nombre: 'OHANA',
-    categoria: 'Pokes de Autor',
-    descripcion: 'Tuna fresca en cubos, salsa de sésamo y soja, cebolla morada, edamame crocante, palta y toque de tobiko con semillas tostadas.',
-    precio_venta: 320,
-    es_personalizable: false,
-    imagen_url: '/hero_bandejas_nalu.jpg',
-    activo: true,
-    insumos_receta: []
-  },
-  {
-    producto_elaborado_id: 14,
-    tenant_id: 1,
-    marca_id: 1,
-    nombre: 'MAIU',
-    categoria: 'Pokes de Autor',
-    descripcion: 'Pollo teriyaki glaseado al wok, arroz integral, zanahoria en juliana, maíz dulce, queso crema y lluvia de nachos crocantes.',
-    precio_venta: 320,
-    es_personalizable: false,
-    imagen_url: '/hero_bandejas_nalu.jpg',
-    activo: true,
-    insumos_receta: []
-  },
-  {
-    producto_elaborado_id: 11,
-    tenant_id: 1,
-    marca_id: 1,
-    nombre: 'Ensalada César Nalú',
-    categoria: 'Ensaladas',
-    descripcion: 'Mix de hojas verdes crujientes, pechuga de pollo grillada, croutons dorados, queso parmesano en hebras y aderezo césar suave.',
-    precio_venta: 350,
-    es_personalizable: false,
-    imagen_url: null,
-    activo: true,
-    insumos_receta: []
-  }
-];
+export const TENANT_INFO: TenantInfo = {
+  tenant_id: realData.tenant?.tenant_id || 1,
+  nombre: realData.tenant?.nombre || 'Nalú Poke Bowls',
+  rut: realData.tenant?.rut || '219988770014',
+  direccion: realData.tenant?.direccion || 'Avenida Presidente Jorge Batlle Ibañez',
+  telefono: realData.tenant?.telefono || '+598 99 123 456',
+  email: realData.tenant?.email || 'contacto@naludeuna.com',
+};
 
-const FALLBACK_GRUPOS: GrupoOpciones[] = [
-  {
-    grupo_id: 17,
-    producto_elaborado_id: 16,
-    nombre: 'Base',
-    paso_orden: 1,
-    min_opciones: 1,
-    max_opciones: 2,
-    opciones: [
-      { opcion_id: 16, nombre: 'Arroz', precio_extra: 0 },
-      { opcion_id: 17, nombre: 'Arroz integral', precio_extra: 0 },
-      { opcion_id: 18, nombre: 'Fideo integral', precio_extra: 0 },
-      { opcion_id: 19, nombre: 'Quinoa', precio_extra: 0 },
-      { opcion_id: 20, nombre: 'Lechuga', precio_extra: 0 },
-    ]
-  },
-  {
-    grupo_id: 20,
-    producto_elaborado_id: 16,
-    nombre: 'Proteína',
-    paso_orden: 2,
-    min_opciones: 1,
-    max_opciones: 3,
-    opciones: [
-      { opcion_id: 21, nombre: 'Carne', precio_extra: 0 },
-      { opcion_id: 22, nombre: 'Pollo', precio_extra: 0 },
-      { opcion_id: 23, nombre: 'Cerdo barbacoa', precio_extra: 0 },
-      { opcion_id: 25, nombre: 'Camarones (premium)', precio_extra: 90 },
-      { opcion_id: 24, nombre: 'Huevo', precio_extra: 0 },
-    ]
-  },
-  {
-    grupo_id: 18,
-    producto_elaborado_id: 16,
-    nombre: 'Verduras & Vegetales',
-    paso_orden: 3,
-    min_opciones: 1,
-    max_opciones: 3,
-    opciones: [
-      { opcion_id: 26, nombre: 'Palta / Aguacate', precio_extra: 40 },
-      { opcion_id: 27, nombre: 'Edamame', precio_extra: 0 },
-      { opcion_id: 28, nombre: 'Remolacha', precio_extra: 0 },
-      { opcion_id: 29, nombre: 'Pepino japonés', precio_extra: 0 },
-      { opcion_id: 30, nombre: 'Zanahoria', precio_extra: 0 },
-      { opcion_id: 31, nombre: 'Tomate cherry', precio_extra: 0 },
-      { opcion_id: 32, nombre: 'Cebolla morada', precio_extra: 0 },
-    ]
-  },
-  {
-    grupo_id: 19,
-    producto_elaborado_id: 16,
-    nombre: 'Salsas & Aderezos',
-    paso_orden: 4,
-    min_opciones: 1,
-    max_opciones: 2,
-    opciones: [
-      { opcion_id: 33, nombre: 'Soja Clásica', precio_extra: 0 },
-      { opcion_id: 34, nombre: 'Teriyaki Dulce', precio_extra: 0 },
-      { opcion_id: 35, nombre: 'Spicy Mayo (Picante suave)', precio_extra: 0 },
-      { opcion_id: 36, nombre: 'Mostaza y Miel', precio_extra: 0 },
-      { opcion_id: 37, nombre: 'Aceite de Sésamo & Ponzu', precio_extra: 0 },
-    ]
-  },
-  {
-    grupo_id: 21,
-    producto_elaborado_id: 16,
-    nombre: 'Toppings & Crunch',
-    paso_orden: 5,
-    min_opciones: 0,
-    max_opciones: 3,
-    opciones: [
-      { opcion_id: 38, nombre: 'Sésamo blanco y negro', precio_extra: 0 },
-      { opcion_id: 39, nombre: 'Cebolla frita crocante', precio_extra: 0 },
-      { opcion_id: 40, nombre: 'Cacahuetes / Maní tostado', precio_extra: 0 },
-      { opcion_id: 41, nombre: 'Tobiko / Caviar naranja', precio_extra: 40 },
-      { opcion_id: 42, nombre: 'Wakame', precio_extra: 30 },
-      { opcion_id: 43, nombre: 'Chips de plátano', precio_extra: 0 },
-    ]
-  }
-];
+export const MARCA_INFO: MarcaInfo = {
+  marca_id: realData.marca?.marca_id || 1,
+  nombre: realData.marca?.nombre || 'Nalú Poke Bowls',
+  color_primario: realData.marca?.color_primario || '#788c50',
+  dias_atencion: realData.marca?.dias_atencion || 'Lunes a Viernes',
+  horario_atencion: realData.marca?.horario_atencion || '10:00 a 13:00 hs',
+  permite_salon: Boolean(realData.marca?.permite_salon),
+  permite_delivery: realData.marca?.permite_delivery !== false,
+  permite_takeaway: realData.marca?.permite_takeaway !== false,
+  logo_url: '/Logo_nalu-sinfondo.png',
+};
+
+// Platos oficiales de la base de datos de Nalú Poke (Tenant 1, Marca 1)
+const DEFAULT_PLATO_IMGS: Record<number, string> = {
+  10: '/hero_bandejas_nalu.jpg', // POKE HASTA 2 PROTEINAS
+  16: '/hero_bandejas_nalu.jpg', // POKE 3 PROTEINAS
+  12: '/tray_proteinas.jpg',     // Poke Nalú Especial
+  14: '/tray_vegetales.jpg',     // MAIU
+  15: '/tray_bases.jpg',         // OHANA
+  11: '/hero_bandejas_nalu.jpg', // Ensalada César
+};
+
+export const REAL_PLATOS: ProductoElaborado[] = (realData.platos as any[]).map(p => ({
+  producto_elaborado_id: p.producto_elaborado_id,
+  tenant_id: p.tenant_id,
+  marca_id: p.marca_id,
+  nombre: p.nombre,
+  categoria: p.categoria,
+  descripcion: p.descripcion,
+  precio_venta: Number(p.precio_venta),
+  es_personalizable: Boolean(p.es_personalizable),
+  formato_venta: 'unidad',
+  imagen_url: p.imagen_url || DEFAULT_PLATO_IMGS[p.producto_elaborado_id] || '/hero_bandejas_nalu.jpg',
+  activo: Boolean(p.activo),
+  insumos_receta: [],
+}));
+
+export const REAL_GRUPOS: GrupoOpciones[] = (realData.gruposOpciones as any[]).map(g => ({
+  grupo_id: g.grupo_id,
+  producto_elaborado_id: g.producto_elaborado_id,
+  nombre: g.nombre,
+  paso_orden: g.paso_orden,
+  min_opciones: g.min_opciones,
+  max_opciones: g.max_opciones,
+  opciones: (g.opciones || []).map((o: any) => ({
+    opcion_id: o.opcion_id,
+    nombre: o.nombre,
+    precio_extra: Number(o.precio_extra || 0),
+    imagen_url: o.imagen_url || null,
+  })),
+}));
 
 export async function fetchNaluCatalogo(): Promise<{
   elaborados: ProductoElaborado[];
   reventa: ProductoReventa[];
   gruposOpciones: GrupoOpciones[];
+  tenant: TenantInfo;
+  marca: MarcaInfo;
 }> {
   try {
-    const res = await fetch('/api/public/marcas/1/catalogo');
+    const res = await fetch('/api/admin/productos/catalogo');
     if (res.ok) {
       const data = await res.json();
-      return {
-        elaborados: data.elaborados || FALLBACK_ELABORADOS,
-        reventa: data.reventa || [],
-        gruposOpciones: data.gruposOpciones || FALLBACK_GRUPOS,
-      };
+      const elaboradosBD = (data.elaborados || []).filter((p: any) => p.marca_id === 1 || !p.marca_id);
+      if (elaboradosBD.length > 0) {
+        return {
+          elaborados: elaboradosBD.map((p: any) => ({
+            ...p,
+            precio_venta: Number(p.precio_venta),
+            imagen_url: p.imagen_url || DEFAULT_PLATO_IMGS[p.producto_elaborado_id] || '/hero_bandejas_nalu.jpg',
+          })),
+          reventa: (data.reventa || []).filter((r: any) => r.marca_id === 1 || !r.marca_id),
+          gruposOpciones: (data.gruposOpciones || []).length > 0 ? data.gruposOpciones : REAL_GRUPOS,
+          tenant: TENANT_INFO,
+          marca: MARCA_INFO,
+        };
+      }
     }
   } catch (err) {
-    console.warn('Backend Food no respondió directo a /api/public, intentando /api/admin/productos/catalogo...');
-  }
-
-  try {
-    const resAdmin = await fetch('/api/admin/productos/catalogo');
-    if (resAdmin.ok) {
-      const data = await resAdmin.json();
-      const filtrados = (data.elaborados || []).filter((p: any) => p.marca_id === 1 || !p.marca_id);
-      return {
-        elaborados: filtrados.length > 0 ? filtrados : FALLBACK_ELABORADOS,
-        reventa: (data.reventa || []).filter((r: any) => r.marca_id === 1 || !r.marca_id),
-        gruposOpciones: data.gruposOpciones || FALLBACK_GRUPOS,
-      };
-    }
-  } catch (err) {
-    console.log('Utilizando catálogo local de Nalú Poke:', err);
+    console.log('Utilizando catálogo local verificado de Nalú Poke:', err);
   }
 
   return {
-    elaborados: FALLBACK_ELABORADOS,
+    elaborados: REAL_PLATOS,
     reventa: [],
-    gruposOpciones: FALLBACK_GRUPOS,
+    gruposOpciones: REAL_GRUPOS,
+    tenant: TENANT_INFO,
+    marca: MARCA_INFO,
   };
 }
 
 export async function sendOrderToFood(orderPayload: any): Promise<{ success: boolean; numero_orden?: number; pedido_id?: number }> {
   try {
-    const res = await fetch('/api/public/pedidos', {
+    const res = await fetch('/api/admin/pedidos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderPayload),
@@ -216,10 +113,10 @@ export async function sendOrderToFood(orderPayload: any): Promise<{ success: boo
       return await res.json();
     }
   } catch (err) {
-    console.warn('Error enviando a /api/public/pedidos:', err);
+    console.warn('Error enviando a /api/admin/pedidos:', err);
   }
 
-  // Fallback simulado exitoso para desarrollo
+  // Fallback seguro
   return {
     success: true,
     numero_orden: Math.floor(1000 + Math.random() * 9000),

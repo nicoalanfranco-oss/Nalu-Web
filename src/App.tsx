@@ -9,11 +9,13 @@ import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
-import { ProductoElaborado, GrupoOpciones, CartItem } from './types/food';
-import { fetchNaluCatalogo } from './services/api';
+import { ProductoElaborado, GrupoOpciones, CartItem, TenantInfo, MarcaInfo } from './types/food';
+import { fetchNaluCatalogo, TENANT_INFO, MARCA_INFO } from './services/api';
 import { CheckCircle2, Sparkles, MessageCircle, ArrowRight } from 'lucide-react';
 
 export const App: React.FC = () => {
+  const [tenant, setTenant] = useState<TenantInfo>(TENANT_INFO);
+  const [marca, setMarca] = useState<MarcaInfo>(MARCA_INFO);
   const [platos, setPlatos] = useState<ProductoElaborado[]>([]);
   const [grupos, setGrupos] = useState<GrupoOpciones[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -50,6 +52,8 @@ export const App: React.FC = () => {
       const data = await fetchNaluCatalogo();
       setPlatos(data.elaborados);
       setGrupos(data.gruposOpciones);
+      if (data.tenant) setTenant(data.tenant);
+      if (data.marca) setMarca(data.marca);
       setLoading(false);
     };
     load();
@@ -159,6 +163,8 @@ export const App: React.FC = () => {
     <div className="app-layout">
       {/* Barra de Navegación Principal */}
       <Navbar
+        marca={marca}
+        tenant={tenant}
         cartCount={cartCount}
         cartTotal={cartTotal}
         onOpenCart={() => setIsCartOpen(true)}
@@ -168,6 +174,8 @@ export const App: React.FC = () => {
       {/* Contenido Principal */}
       <main>
         <HeroSection
+          marca={marca}
+          tenant={tenant}
           onOpenCustomizer={handleOpenGeneralCustomizer}
           onExploreMenu={handleExploreMenu}
         />
@@ -184,7 +192,7 @@ export const App: React.FC = () => {
       </main>
 
       {/* Pie de Página */}
-      <Footer />
+      <Footer marca={marca} tenant={tenant} />
 
       {/* Barra de Navegación Inferior Móvil (Mobile First) */}
       <MobileBottomNav

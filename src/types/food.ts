@@ -1,3 +1,24 @@
+export interface TenantInfo {
+  tenant_id: number;
+  nombre: string;
+  rut?: string;
+  direccion: string;
+  telefono: string;
+  email?: string;
+}
+
+export interface MarcaInfo {
+  marca_id: number;
+  nombre: string;
+  color_primario: string;
+  dias_atencion: string;
+  horario_atencion: string;
+  permite_salon: boolean;
+  permite_delivery: boolean;
+  permite_takeaway: boolean;
+  logo_url?: string;
+}
+
 export interface InsumoReceta {
   insumo_id: number;
   nombre: string;

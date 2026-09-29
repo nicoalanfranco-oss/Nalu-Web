@@ -1,7 +1,10 @@
 import React from 'react';
-import { ShoppingBag, Sparkles, PhoneCall } from 'lucide-react';
+import { ShoppingBag, Sparkles, MapPin } from 'lucide-react';
+import { TenantInfo, MarcaInfo } from '../types/food';
 
 interface NavbarProps {
+  marca: MarcaInfo;
+  tenant: TenantInfo;
   cartCount: number;
   cartTotal: number;
   onOpenCart: () => void;
@@ -9,6 +12,8 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
+  marca,
+  tenant,
   cartCount,
   cartTotal,
   onOpenCart,
@@ -19,21 +24,29 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="page-container">
         <nav className="navbar">
           {/* Logo Oficial de Nalú */}
-          <a href="#" className="navbar-brand">
-            <img
-              src="/Logo_nalu-sinfondo.png"
-              alt="Nalú Poke Bowls"
-              className="navbar-logo"
-            />
-          </a>
-
-          {/* Links de Navegación Desktop */}
-          <ul className="navbar-links" style={{ display: 'none' }}>
-            <li><a href="#inicio" className="navbar-link active">Inicio</a></li>
-            <li><a href="#bandejas" className="navbar-link">Ingredientes</a></li>
-            <li><a href="#menu" className="navbar-link">La Carta</a></li>
-            <li><a href="#cultura" className="navbar-link">Nuestra Filosofía</a></li>
-          </ul>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <a href="#" className="navbar-brand">
+              <img
+                src="/Logo_nalu-sinfondo.png"
+                alt="Nalú Poke Bowls"
+                className="navbar-logo"
+              />
+            </a>
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontSize: '0.74rem',
+              fontWeight: 700,
+              background: 'var(--secondary-light)',
+              color: 'var(--secondary)',
+              padding: '3px 10px',
+              borderRadius: 'var(--radius-full)',
+              border: '1px solid rgba(120, 140, 80, 0.25)'
+            }}>
+              <MapPin size={12} /> Tacuarembó
+            </span>
+          </div>
 
           {/* Acciones y Carrito */}
           <div className="navbar-actions">
