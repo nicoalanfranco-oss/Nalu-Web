@@ -1,0 +1,1259 @@
+/* ==========================================================================
+   NALU POKE BOWLS - DESIGN SYSTEM (VANILLA CSS)
+   Inspirado en Eat Poke Bros, Poke House y Cultura Hawaiana Moderna
+   ========================================================================== */
+
+:root {
+  /* Paleta Cromática Fresca */
+  --primary: #FF5A36;
+  --primary-hover: #E64522;
+  --primary-rgb: 255, 90, 54;
+  --primary-light: rgba(255, 90, 54, 0.09);
+  --primary-glow: rgba(255, 90, 54, 0.28);
+
+  --secondary: #1F9D55;
+  --secondary-hover: #188045;
+  --secondary-light: rgba(31, 157, 85, 0.1);
+
+  --accent-gold: #F59E0B;
+  --accent-gold-light: rgba(245, 158, 11, 0.12);
+
+  --sea-blue: #0284C7;
+  --sea-blue-light: rgba(2, 132, 199, 0.1);
+
+  /* Fondos y Superficies */
+  --bg-page: #FAF8F5;
+  --bg-sand: #F4EFEA;
+  --bg-card: #FFFFFF;
+  --bg-card-subtle: #F9F7F4;
+  --bg-overlay: rgba(18, 23, 26, 0.65);
+
+  /* Tipografías y Contrastes */
+  --text-main: #13191D;
+  --text-body: #334155;
+  --text-muted: #64748B;
+  --text-subtle: #94A3B8;
+  --text-white: #FFFFFF;
+
+  /* Bordes y Sombras */
+  --border-light: rgba(19, 25, 29, 0.08);
+  --border-medium: rgba(19, 25, 29, 0.14);
+  --border-focus: #FF5A36;
+
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 14px 34px rgba(0, 0, 0, 0.09);
+  --shadow-primary: 0 8px 24px rgba(255, 90, 54, 0.32);
+  --shadow-bottom-nav: 0 -4px 20px rgba(0, 0, 0, 0.07);
+
+  /* Radios */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* Fuentes */
+  --font-brand: 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  /* Transiciones */
+  --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Reset y Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.5;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Tipografía */
+h1, h2, h3, h4, .brand-font {
+  font-family: var(--font-brand);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+/* Botones Base */
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  background: none;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--primary) 0%, #FF3D17 100%);
+  color: var(--text-white);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-primary);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(255, 90, 54, 0.42);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1.5px solid var(--border-medium);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 12px 22px;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-sand);
+  border-color: var(--text-main);
+}
+
+/* Badges */
+.badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid rgba(255, 90, 54, 0.2);
+}
+
+.badge-tag.green {
+  background: var(--secondary-light);
+  color: var(--secondary);
+  border-color: rgba(31, 157, 85, 0.2);
+}
+
+.badge-tag.gold {
+  background: var(--accent-gold-light);
+  color: var(--accent-gold);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+/* ==========================================================================
+   ESTRUCTURA DE CONTENEDOR Y LAYOUT
+   ========================================================================== */
+
+.page-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Barra de Navegación */
+.navbar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(250, 248, 245, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-light);
+  transition: background var(--transition-normal);
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 74px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.navbar-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  transition: transform var(--transition-fast);
+}
+
+.navbar-logo:hover {
+  transform: scale(1.04);
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+}
+
+.navbar-link {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-body);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  position: relative;
+  padding: 6px 0;
+}
+
+.navbar-link:hover, .navbar-link.active {
+  color: var(--primary);
+}
+
+.navbar-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: var(--radius-full);
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cart-button-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-light);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.cart-button-header:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.cart-badge-count {
+  background: var(--primary);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 800;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   HERO SECTION (EAT POKE BROS + GET POKE BOWL INSPIRATION)
+   ========================================================================== */
+
+.hero-section {
+  padding: 36px 0 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 40px;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  z-index: 2;
+}
+
+.hero-title {
+  font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+  line-height: 1.08;
+  color: var(--text-main);
+}
+
+.hero-title .highlight {
+  color: var(--primary);
+  position: relative;
+  display: inline-block;
+}
+
+.hero-subtitle {
+  font-size: 1.12rem;
+  color: var(--text-body);
+  max-width: 520px;
+  line-height: 1.6;
+}
+
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.hero-features-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+  width: 100%;
+}
+
+.hero-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+.hero-feature-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Imagen Hero de Bandejas de Ingredientes */
+.hero-visual-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-visual-card {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12);
+  border: 4px solid var(--bg-card);
+  background: var(--bg-card);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.hero-visual-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 56px rgba(255, 90, 54, 0.16);
+}
+
+.hero-image-main {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.hero-visual-card:hover .hero-image-main {
+  transform: scale(1.03);
+}
+
+.hero-floating-pill {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: var(--shadow-md);
+}
+
+.hero-floating-info h4 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.hero-floating-info p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   BANDEJAS DE INGREDIENTES FRESCOS (EAT POKE BROS STYLE)
+   ========================================================================== */
+
+.ingredients-showcase-section {
+  padding: 50px 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.section-header {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 36px;
+}
+
+.section-header .section-tag {
+  margin-bottom: 10px;
+}
+
+.section-header h2 {
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  margin-bottom: 12px;
+}
+
+.section-header p {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.trays-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.tray-card {
+  background: var(--bg-page);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: center;
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tray-card:hover {
+  background: var(--bg-card);
+  border-color: var(--primary);
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.tray-icon-box {
+  width: 68px;
+  height: 68px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 2px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-bounce);
+}
+
+.tray-card:hover .tray-icon-box {
+  transform: scale(1.12) rotate(6deg);
+  border-color: var(--primary);
+}
+
+.tray-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 6px;
+}
+
+.tray-card p {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* ==========================================================================
+   CATEGORÍAS Y MENÚ (POKE HOUSE STYLE)
+   ========================================================================== */
+
+.menu-section {
+  padding: 60px 0 80px;
+}
+
+.menu-sticky-categories {
+  position: sticky;
+  top: 74px;
+  z-index: 80;
+  background: rgba(250, 248, 245, 0.95);
+  backdrop-filter: blur(12px);
+  padding: 16px 0;
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.categories-scroll {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 4px;
+}
+
+.categories-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.category-tab-btn {
+  white-space: nowrap;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  color: var(--text-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: 1.5px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.category-tab-btn:hover {
+  border-color: var(--text-main);
+}
+
+.category-tab-btn.active {
+  background: var(--text-main);
+  color: var(--text-white);
+  border-color: var(--text-main);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Grid de Platos */
+.dishes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+  gap: 24px;
+}
+
+.dish-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border-light);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+.dish-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 90, 54, 0.35);
+  box-shadow: var(--shadow-md);
+}
+
+.dish-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 210px;
+  background: var(--bg-sand);
+  overflow: hidden;
+}
+
+.dish-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.dish-card:hover .dish-image {
+  transform: scale(1.05);
+}
+
+.dish-placeholder-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FFF1EE 0%, #FFE3DC 100%);
+  color: var(--primary);
+  font-size: 3rem;
+}
+
+.dish-custom-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+}
+
+.dish-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.dish-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.dish-title {
+  font-size: 1.12rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.dish-description {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 16px;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Insumos preview pills */
+.dish-ingredients-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.dish-ing-chip {
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--text-body);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.dish-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+.dish-price {
+  font-family: var(--font-brand);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.dish-add-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 0.86rem;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 90, 54, 0.2);
+}
+
+.dish-add-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(255, 90, 54, 0.3);
+}
+
+/* ==========================================================================
+   MODAL DE PERSONALIZACIÓN ("ARMA TU POKE" CON FOTOS DE INGREDIENTES DEL POS)
+   ========================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-container {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  animation: slideUp 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Header del modal con foto del plato */
+.modal-header-hero {
+  position: relative;
+  width: 100%;
+  height: 170px;
+  background: var(--bg-sand);
+  flex-shrink: 0;
+}
+
+.modal-header-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-header-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+  color: white;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.45);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  z-index: 10;
+}
+
+.modal-close-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.08);
+}
+
+.modal-scroll-body {
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Grupos de opciones */
+.custom-group-card {
+  background: var(--bg-page);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.custom-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.custom-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-group-title h4 {
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+
+.custom-group-limit {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Cuadrícula de ingredientes (ESTILO POS FOOD CON FOTOS) */
+.ingredients-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.ingredient-option-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-light);
+  text-align: left;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.ingredient-option-btn:hover {
+  border-color: var(--text-subtle);
+}
+
+.ingredient-option-btn.selected {
+  background: #FFF7ED;
+  border-color: #F59E0B;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.18);
+}
+
+.ingredient-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ingredient-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--border-light);
+  flex-shrink: 0;
+  background: var(--bg-sand);
+}
+
+.ingredient-icon-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-sand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.ingredient-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ingredient-extra {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #D97706;
+  white-space: nowrap;
+  margin-left: 6px;
+}
+
+.ingredient-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: white;
+  transition: all var(--transition-fast);
+}
+
+.ingredient-option-btn.selected .ingredient-check {
+  background: #F59E0B;
+  border-color: #F59E0B;
+  color: white;
+}
+
+/* Footer del modal */
+.modal-footer {
+  padding: 16px 20px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.modal-price-summary {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-price-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.modal-price-value {
+  font-family: var(--font-brand);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--text-main);
+}
+
+/* ==========================================================================
+   CARRITO LATERAL (DRAWER)
+   ========================================================================== */
+
+.cart-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(6px);
+  z-index: 250;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.cart-drawer-content {
+  background: var(--bg-card);
+  width: 100%;
+  max-width: 440px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+  animation: slideLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cart-drawer-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cart-items-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cart-item-card {
+  background: var(--bg-page);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cart-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cart-item-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.cart-item-price {
+  font-family: var(--font-brand);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.cart-item-modifiers {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  padding-left: 8px;
+  border-left: 2px solid #F59E0B;
+}
+
+.cart-item-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 6px;
+}
+
+.qty-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+}
+
+.qty-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.qty-btn:hover {
+  background: var(--bg-sand);
+}
+
+.cart-drawer-footer {
+  padding: 20px;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cart-subtotal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   MOBILE BOTTOM NAVIGATION (APP-LIKE EXPERIENCE)
+   ========================================================================== */
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 84px; /* Espacio para que el bottom bar no tape contenido */
+  }
+
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 68px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-light);
+    box-shadow: var(--shadow-bottom-nav);
+    z-index: 150;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 10px;
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-decoration: none;
+    position: relative;
+    padding: 6px 12px;
+  }
+
+  .mobile-nav-item.active {
+    color: var(--primary);
+  }
+
+  .mobile-nav-badge {
+    position: absolute;
+    top: 2px;
+    right: 6px;
+    background: var(--primary);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 800;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Ajustes Móvil para Hero */
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .hero-content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-cta-group {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .hero-features-row {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .hero-image-main {
+    height: 280px;
+  }
+
+  /* Modal a pantalla completa o bottom sheet en celular */
+  .modal-container {
+    max-height: 95vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .ingredients-selector-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   ANIMACIONES
+   ========================================================================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
