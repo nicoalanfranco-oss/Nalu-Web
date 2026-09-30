@@ -205,23 +205,6 @@ export const FreshIngredientsShowcase: React.FC<FreshIngredientsShowcaseProps> =
                     loading="lazy"
                   />
                   <div className="tray-image-overlay" />
-                  
-                  <div
-                    className="tray-step-badge"
-                    style={{
-                      borderColor: tray.accent,
-                      boxShadow: isActive ? `0 0 12px ${tray.auraColor}` : undefined,
-                    }}
-                  >
-                    <span className="tray-step-dot" style={{ background: tray.accent }} />
-                    {tray.step}
-                  </div>
-
-                  {isActive && (
-                    <div className="tray-active-pill" style={{ background: tray.accent }}>
-                      ✦ Destacado
-                    </div>
-                  )}
                 </div>
 
                 <div className="tray-card-body">

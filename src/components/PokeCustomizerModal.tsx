@@ -120,7 +120,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
         <div className="modal-drag-indicator" />
 
         {/* Cabecera con Imagen de Presentación de Nalú Poke */}
-        <div className="modal-header-hero" style={{ height: '140px' }}>
+        <div className="modal-header-hero">
           <img
             src={plato.imagen_url || '/hero_bandejas_nalu.jpg'}
             alt={plato.nombre}

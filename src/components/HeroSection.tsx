@@ -143,21 +143,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 alt="Presentación de ingredientes frescos y Poke Bowl Nalú"
                 className="hero-image-main"
               />
-              <div className="hero-floating-pill">
-                <div className="hero-floating-info">
-                  <h4>Poke 3 Proteínas ($340)</h4>
-                  <p>Carne vacuna, Pollo, Atún, Palta, Edamame y Mango</p>
-                </div>
-                <button
-                  onClick={onOpenCustomizer}
-                  className="btn-primary"
-                  style={{ padding: '8px 14px', fontSize: '0.82rem' }}
-                >
-                  Personalizar
-                </button>
-              </div>
 
-              {/* Badge flotante superior derecho */}
+              {/* Badge flotante sutil superior derecho */}
               <div className="hero-freshness-badge">
                 <span className="hero-freshness-pulse" />
                 <span>🥬 Ingredientes del Día</span>
