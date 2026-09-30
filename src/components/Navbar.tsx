@@ -91,9 +91,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title="Instalar App Nalú"
                 aria-label="Instalar app Nalú"
               >
-                <span className="navbar-pwa-text">Son app</span>
+                <span className="navbar-pwa-text">App</span>
                 <span className="navbar-pwa-install-icon">
-                  <Download size={11} />
+                  <Download size={12} />
                 </span>
               </button>
             )}
