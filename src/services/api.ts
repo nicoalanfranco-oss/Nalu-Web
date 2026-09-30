@@ -22,15 +22,35 @@ export const MARCA_INFO: MarcaInfo = {
   logo_url: '/Logo_nalu-sinfondo.png',
 };
 
-// Imagen fallback por plato
-const DEFAULT_PLATO_IMGS: Record<number, string> = {
-  10: '/hero_bandejas_nalu.jpg', // POKE HASTA 2 PROTEINAS
-  16: '/hero_bandejas_nalu.jpg', // POKE 3 PROTEINAS
-  12: '/tray_proteinas.jpg',     // Poke Nalú Especial
-  14: '/tray_vegetales.jpg',     // MAIU
-  15: '/tray_bases.jpg',         // OHANA
-  11: '/hero_bandejas_nalu.jpg', // Ensalada César
-};
+// Imagen fallback genérica para platos sin foto
+const FALLBACK_PLATO_IMG = '/hero_bandejas_nalu.jpg';
+
+function parseTenantFromBackend(t: any): TenantInfo {
+  if (!t) return TENANT_INFO;
+  return {
+    tenant_id: Number(t.tenant_id) || TENANT_INFO.tenant_id,
+    nombre: t.nombre || TENANT_INFO.nombre,
+    rut: t.rut || TENANT_INFO.rut,
+    direccion: t.direccion || TENANT_INFO.direccion,
+    telefono: t.telefono || TENANT_INFO.telefono,
+    email: t.email || TENANT_INFO.email,
+  };
+}
+
+function parseMarcaFromBackend(m: any): MarcaInfo {
+  if (!m) return MARCA_INFO;
+  return {
+    marca_id: Number(m.marca_id) || MARCA_INFO.marca_id,
+    nombre: m.nombre || MARCA_INFO.nombre,
+    color_primario: m.color_primario || MARCA_INFO.color_primario,
+    dias_atencion: m.dias_atencion || MARCA_INFO.dias_atencion,
+    horario_atencion: m.horario_atencion || MARCA_INFO.horario_atencion,
+    permite_salon: Boolean(m.permite_salon),
+    permite_delivery: m.permite_delivery !== false,
+    permite_takeaway: m.permite_takeaway !== false,
+    logo_url: m.logo_url || MARCA_INFO.logo_url,
+  };
+}
 
 export const REAL_PLATOS: ProductoElaborado[] = (realData.platos as any[]).map(p => ({
   producto_elaborado_id: p.producto_elaborado_id,
@@ -42,7 +62,7 @@ export const REAL_PLATOS: ProductoElaborado[] = (realData.platos as any[]).map(p
   precio_venta: Number(p.precio_venta),
   es_personalizable: Boolean(p.es_personalizable),
   formato_venta: 'unidad',
-  imagen_url: p.imagen_url || DEFAULT_PLATO_IMGS[p.producto_elaborado_id] || '/hero_bandejas_nalu.jpg',
+  imagen_url: p.imagen_url || FALLBACK_PLATO_IMG,
   activo: Boolean(p.activo),
   insumos_receta: [],
 }));
@@ -85,7 +105,14 @@ export async function fetchNaluCatalogo(): Promise<{
   marca: MarcaInfo;
 }> {
   try {
-    const res = await fetch('/api/admin/productos/catalogo');
+    let res = await fetch('/api/public/catalogo?tenant_id=1&marca_id=1');
+    if (!res.ok) {
+      res = await fetch('/api/admin/public/catalogo?tenant_id=1&marca_id=1');
+    }
+    if (!res.ok) {
+      res = await fetch('/api/admin/productos/catalogo');
+    }
+
     if (res.ok) {
       const data = await res.json();
       const elaboradosBD = (data.elaborados || []).filter((p: any) => p.marca_id === 1 || !p.marca_id);
@@ -94,7 +121,7 @@ export async function fetchNaluCatalogo(): Promise<{
           elaborados: elaboradosBD.map((p: any) => ({
             ...p,
             precio_venta: Number(p.precio_venta),
-            imagen_url: p.imagen_url || DEFAULT_PLATO_IMGS[p.producto_elaborado_id] || '/hero_bandejas_nalu.jpg',
+            imagen_url: p.imagen_url || FALLBACK_PLATO_IMG,
           })),
           reventa: (data.reventa && data.reventa.length > 0)
             ? data.reventa.map((r: any) => ({
@@ -103,22 +130,24 @@ export async function fetchNaluCatalogo(): Promise<{
                 imagen_url: r.imagen_url || `/ingredients/reventa_${r.producto_reventa_id}.jpg`,
               }))
             : REAL_REVENTA,
-          gruposOpciones: (data.gruposOpciones || []).length > 0 ? (data.gruposOpciones as any[]).map(g => ({
-            grupo_id: g.grupo_id,
-            producto_elaborado_id: g.producto_elaborado_id,
-            nombre: g.nombre,
-            paso_orden: g.paso_orden,
-            min_opciones: g.min_opciones,
-            max_opciones: g.max_opciones,
-            opciones: (g.opciones || []).map((o: any) => ({
-              opcion_id: o.opcion_id,
-              nombre: o.nombre,
-              precio_extra: Number(o.precio_extra || 0),
-              imagen_url: o.imagen_url || `/ingredients/opt_${o.opcion_id}.jpg`,
-            })),
-          })) : REAL_GRUPOS,
-          tenant: TENANT_INFO,
-          marca: MARCA_INFO,
+          gruposOpciones: (data.gruposOpciones && data.gruposOpciones.length > 0)
+            ? (data.gruposOpciones as any[]).map(g => ({
+                grupo_id: g.grupo_id,
+                producto_elaborado_id: g.producto_elaborado_id,
+                nombre: g.nombre,
+                paso_orden: g.paso_orden,
+                min_opciones: g.min_opciones,
+                max_opciones: g.max_opciones,
+                opciones: (g.opciones || []).map((o: any) => ({
+                  opcion_id: o.opcion_id,
+                  nombre: o.nombre,
+                  precio_extra: Number(o.precio_extra || 0),
+                  imagen_url: o.imagen_url || `/ingredients/opt_${o.opcion_id}.jpg`,
+                })),
+              }))
+            : REAL_GRUPOS,
+          tenant: parseTenantFromBackend(data.tenant),
+          marca: parseMarcaFromBackend(data.marca),
         };
       }
     }

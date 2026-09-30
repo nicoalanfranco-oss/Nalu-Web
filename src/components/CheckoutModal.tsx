@@ -4,7 +4,7 @@ import {
   MapPin, Navigation, ExternalLink, CreditCard, Banknote, Smartphone,
   Search, Loader2, Check, UserCheck, AlertCircle
 } from 'lucide-react';
-import { CartItem } from '../types/food';
+import { CartItem, MarcaInfo } from '../types/food';
 import { sendOrderToFood } from '../services/api';
 
 const GOOGLE_CLIENT_ID = '155705188950-e0tos26nod90liv2j7p508ai6v9u8c4f.apps.googleusercontent.com';
@@ -14,6 +14,7 @@ interface CheckoutModalProps {
   items: CartItem[];
   onClose: () => void;
   onOrderSuccess: (orderNumber: number, whatsappUrl: string) => void;
+  marca?: MarcaInfo;
 }
 
 interface GoogleUserData {
@@ -50,6 +51,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   items,
   onClose,
   onOrderSuccess,
+  marca,
 }) => {
   // Cargar perfil guardado previamente en este dispositivo
   const savedCustomer = (() => {
@@ -62,6 +64,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   })();
 
   const [tipoEntrega, setTipoEntrega] = useState<'delivery' | 'takeaway'>('delivery');
+  const permiteDelivery = marca?.permite_delivery !== false;
+  const permiteTakeaway = marca?.permite_takeaway !== false;
+
+  useEffect(() => {
+    if (!permiteDelivery && permiteTakeaway) {
+      setTipoEntrega('takeaway');
+    } else if (permiteDelivery && !permiteTakeaway) {
+      setTipoEntrega('delivery');
+    }
+  }, [permiteDelivery, permiteTakeaway]);
+
   const [nombre, setNombre] = useState(savedCustomer?.nombre || '');
   const [email, setEmail] = useState(savedCustomer?.email || '');
   const [telefono, setTelefono] = useState(savedCustomer?.telefono || '');
@@ -465,55 +478,65 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
           )}
 
           {/* ── 2. Tipo de Entrega ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <button
-              type="button"
-              onClick={() => setTipoEntrega('delivery')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '12px',
-                borderRadius: 'var(--radius-md)',
-                border: '1.5px solid',
-                borderColor: tipoEntrega === 'delivery' ? 'var(--primary)' : 'var(--border-light)',
-                background: tipoEntrega === 'delivery' ? 'var(--primary-light)' : 'var(--bg-card)',
-                color: tipoEntrega === 'delivery' ? 'var(--primary)' : 'var(--text-main)',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              <Bike size={18} />
-              <span>Delivery ($50)</span>
-            </button>
+          {(permiteDelivery || permiteTakeaway) && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: (permiteDelivery && permiteTakeaway) ? '1fr 1fr' : '1fr',
+              gap: '12px'
+            }}>
+              {permiteDelivery && (
+                <button
+                  type="button"
+                  onClick={() => setTipoEntrega('delivery')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    padding: '12px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1.5px solid',
+                    borderColor: tipoEntrega === 'delivery' ? 'var(--primary)' : 'var(--border-light)',
+                    background: tipoEntrega === 'delivery' ? 'var(--primary-light)' : 'var(--bg-card)',
+                    color: tipoEntrega === 'delivery' ? 'var(--primary)' : 'var(--text-main)',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <Bike size={18} />
+                  <span>Delivery ($50)</span>
+                </button>
+              )}
 
-            <button
-              type="button"
-              onClick={() => setTipoEntrega('takeaway')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '12px',
-                borderRadius: 'var(--radius-md)',
-                border: '1.5px solid',
-                borderColor: tipoEntrega === 'takeaway' ? 'var(--primary)' : 'var(--border-light)',
-                background: tipoEntrega === 'takeaway' ? 'var(--primary-light)' : 'var(--bg-card)',
-                color: tipoEntrega === 'takeaway' ? 'var(--primary)' : 'var(--text-main)',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              <Store size={18} />
-              <span>Retiro en Local</span>
-            </button>
-          </div>
+              {permiteTakeaway && (
+                <button
+                  type="button"
+                  onClick={() => setTipoEntrega('takeaway')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    padding: '12px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1.5px solid',
+                    borderColor: tipoEntrega === 'takeaway' ? 'var(--primary)' : 'var(--border-light)',
+                    background: tipoEntrega === 'takeaway' ? 'var(--primary-light)' : 'var(--bg-card)',
+                    color: tipoEntrega === 'takeaway' ? 'var(--primary)' : 'var(--text-main)',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <Store size={18} />
+                  <span>Retiro en Local</span>
+                </button>
+              )}
+            </div>
+          )}
 
           {/* ── 3. Datos del Cliente ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>

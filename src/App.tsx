@@ -256,7 +256,7 @@ export const App: React.FC = () => {
           onExploreMenu={handleExploreMenu}
         />
 
-        <FreshIngredientsShowcase />
+        <FreshIngredientsShowcase grupos={grupos} />
 
         <MenuSection
           platos={platos}
@@ -335,6 +335,7 @@ export const App: React.FC = () => {
         <CheckoutModal
           isOpen={isCheckoutOpen}
           items={cart}
+          marca={marca}
           onClose={() => setIsCheckoutOpen(false)}
           onOrderSuccess={handleOrderSuccess}
         />
