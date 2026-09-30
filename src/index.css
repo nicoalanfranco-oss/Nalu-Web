@@ -705,17 +705,35 @@ button {
   border-radius: var(--radius-lg);
   padding: 24px;
   text-align: center;
-  transition: all var(--transition-normal);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s ease,
+              background-color 0.4s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 
 .tray-card:hover {
   background: var(--bg-card);
-  border-color: rgba(255, 90, 54, 0.25);
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
+  border-color: var(--current-accent, var(--primary));
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 42px -10px var(--current-aura, rgba(255, 90, 54, 0.35)),
+              0 0 0 2.5px var(--current-accent, var(--primary)),
+              0 0 28px var(--current-aura, rgba(255, 90, 54, 0.28));
+  z-index: 5;
+}
+
+/* Estado activo secuencial que va rotando automáticamente */
+.tray-card.is-active-tray {
+  background: var(--bg-card);
+  border-color: var(--current-accent, var(--primary));
+  transform: translateY(-8px) scale(1.025);
+  box-shadow: 0 22px 46px -10px var(--current-aura, rgba(255, 90, 54, 0.4)),
+              0 0 0 2.5px var(--current-accent, var(--primary)),
+              0 0 32px var(--current-aura, rgba(255, 90, 54, 0.3));
+  z-index: 6;
 }
 
 /* Imagen de la bandeja */
@@ -731,11 +749,34 @@ button {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.tray-card:hover .tray-photo {
-  transform: scale(1.06);
+.tray-card:hover .tray-photo,
+.tray-card.is-active-tray .tray-photo,
+.tray-photo.is-zoomed {
+  transform: scale(1.14);
+}
+
+.tray-active-pill {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.22);
+  animation: pulsePill 2s infinite ease-in-out;
+  z-index: 4;
+}
+
+@keyframes pulsePill {
+  0%, 100% { transform: scale(1); opacity: 0.95; }
+  50% { transform: scale(1.06); opacity: 1; }
 }
 
 .tray-image-overlay {
@@ -807,6 +848,65 @@ button {
 
 .tray-card:hover .tray-ingredient-chip {
   border-color: rgba(255, 90, 54, 0.2);
+}
+
+.tray-ingredient-chip.chip-active {
+  border-color: var(--current-accent, var(--primary));
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Indicadores de rotación de bandejas */
+.trays-dots-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 26px;
+  flex-wrap: wrap;
+}
+
+.tray-dot-btn {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.tray-dot-btn .dot-inner {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--border-medium);
+  transition: all 0.3s ease;
+}
+
+.tray-dot-btn:hover {
+  color: var(--text-main);
+  background: var(--bg-card);
+  border-color: var(--border-medium);
+}
+
+.tray-dot-btn.active {
+  color: var(--text-main);
+  background: var(--bg-card);
+  border-color: var(--dot-accent, var(--primary));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.tray-dot-btn.active .dot-inner {
+  background: var(--dot-accent, var(--primary));
+  transform: scale(1.3);
+  box-shadow: 0 0 10px var(--dot-accent, var(--primary));
 }
 
 .tray-icon-box {
@@ -916,14 +1016,50 @@ button {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: all var(--transition-normal);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease;
   position: relative;
 }
 
 .dish-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 90, 54, 0.35);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  transform: translateY(-5px);
+  border-color: rgba(255, 90, 54, 0.38);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.09), 0 0 0 1px rgba(255, 90, 54, 0.15);
+}
+
+/* Animación de Entrada Progresiva 3D al Escrolear (Efecto Innovador y Sorprendente) */
+.dish-card.scroll-reveal-dish {
+  opacity: 0;
+  transform: perspective(1000px) translateY(42px) rotateX(7deg) scale(0.96);
+  filter: blur(4px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.5s ease;
+  will-change: transform, opacity, filter;
+}
+
+.dish-card.scroll-reveal-dish.revealed {
+  opacity: 1;
+  transform: perspective(1000px) translateY(0) rotateX(0deg) scale(1);
+  filter: blur(0px);
+}
+
+/* Efecto de destello diagonal al entrar en pantalla */
+.dish-card.scroll-reveal-dish.revealed::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: dishArrivalShine 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.1s 1 forwards;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes dishArrivalShine {
+  0% { transform: translateX(-100%); opacity: 0.8; }
+  100% { transform: translateX(120%); opacity: 0; }
 }
 
 .dish-image-wrapper {
@@ -932,31 +1068,57 @@ button {
   height: 210px;
   background: var(--bg-sand);
   overflow: hidden;
+  cursor: pointer;
 }
 
 .dish-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dish-card:hover .dish-image {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 /* Overlay en hover */
 .dish-image-hover-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.15) 100%);
+  background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.3) 100%);
   opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: opacity var(--transition-normal);
   pointer-events: none;
 }
 
 .dish-card:hover .dish-image-hover-overlay {
   opacity: 1;
+}
+
+/* Píldora de pista para clickear y ver detalle */
+.dish-preview-hint-pill {
+  background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transform: scale(0.9);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dish-card:hover .dish-preview-hint-pill {
+  transform: scale(1);
 }
 
 .dish-placeholder-image {
@@ -984,6 +1146,11 @@ button {
   padding: 4px 10px;
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);
+  z-index: 2;
+}
+
+.dish-badge-chef {
+  color: var(--sea-blue);
 }
 
 .dish-body {
@@ -1002,22 +1169,349 @@ button {
 }
 
 .dish-title {
-  font-size: 1.12rem;
+  font-size: 1.15rem;
   font-weight: 800;
   line-height: 1.3;
+  color: var(--text-main);
+  transition: color var(--transition-fast);
 }
 
+.dish-title:hover {
+  color: var(--primary);
+}
+
+/* Descripción del plato: tamaño aumentado para lectura óptima (Requerimiento 2.2) */
 .dish-description {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  line-height: 1.5;
+  font-size: 0.94rem;
+  color: #374151;
+  line-height: 1.55;
   margin-bottom: 16px;
   flex: 1;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ==========================================================================
+   MODAL DE DETALLES DEL PLATO (DishDetailModal) - ENTRADA ULTRA RÁPIDA
+   ========================================================================== */
+
+.dish-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(15, 23, 42, 0.65);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: dishModalFadeIn 0.18s ease-out forwards;
+}
+
+@keyframes dishModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dish-modal-container {
+  background: var(--bg-card);
+  width: 100%;
+  max-width: 840px;
+  max-height: 90vh;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  animation: dishModalScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dishModalScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.dish-modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-main);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.dish-modal-close-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+  transform: rotate(90deg);
+}
+
+.dish-modal-content-grid {
+  display: grid;
+  grid-template-columns: 42% 58%;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.dish-modal-media-col {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 340px;
+  background: var(--bg-sand);
+}
+
+.dish-modal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dish-modal-image-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%);
+  pointer-events: none;
+}
+
+.dish-modal-badges {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dish-modal-info-col {
+  padding: 28px 30px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.dish-modal-header {
+  margin-bottom: 14px;
+}
+
+.dish-modal-cat-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.dish-modal-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.dish-modal-price {
+  font-family: var(--font-brand);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.dish-modal-body-scroll {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding-right: 4px;
+}
+
+.dish-modal-desc-box {
+  margin-bottom: 16px;
+}
+
+.dish-modal-description {
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.dish-modal-steps-section {
+  margin-top: 14px;
+  padding: 16px;
+  background: var(--bg-page);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.dish-modal-steps-heading {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.dish-modal-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dish-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border-light);
+}
+
+.dish-step-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.dish-step-badge-number {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.dish-step-info {
+  flex: 1;
+}
+
+.dish-step-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.dish-step-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+.dish-modal-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dish-modal-ing-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.dish-modal-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.dish-feature-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.86rem;
+  color: var(--text-body);
+}
+
+.dish-modal-actions {
+  padding-top: 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+.dish-modal-cta-btn {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 16px rgba(255, 90, 54, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.dish-modal-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 90, 54, 0.4);
+}
+
+/* Adaptación responsive para móvil */
+@media (max-width: 768px) {
+  .dish-modal-container {
+    max-height: 94vh;
+  }
+
+  .dish-modal-content-grid {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+
+  .dish-modal-media-col {
+    height: 220px;
+    min-height: 220px;
+  }
+
+  .dish-modal-info-col {
+    padding: 20px;
+  }
+
+  .dish-modal-title {
+    font-size: 1.35rem;
+  }
 }
 
 /* Insumos preview pills */

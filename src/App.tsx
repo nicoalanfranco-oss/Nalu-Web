@@ -261,6 +261,7 @@ export const App: React.FC = () => {
         <MenuSection
           platos={platos}
           reventa={reventa}
+          grupos={grupos}
           loading={loading}
           onSelectPlatoParaPersonalizar={handleSelectPlatoParaPersonalizar}
           onQuickAddToCart={handleQuickAddToCart}
