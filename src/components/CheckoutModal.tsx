@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Sparkles,
   X, CheckCircle, Bike, Store, ArrowRight, ShieldCheck, Send,
   MapPin, Navigation, ExternalLink, CreditCard, Banknote, Smartphone,
@@ -95,7 +95,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [enviando, setEnviando] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Estado de sesión Google
+  // Estado de sesiÃ³n Google
   const [googleUser, setGoogleUser] = useState<GoogleUserData | null>(() => {
     try {
       const g = localStorage.getItem('nalu_google_user');
@@ -105,13 +105,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     }
   });
 
-  // Estado búsqueda de dirección Google Maps
+  // Estado bÃºsqueda de direcciÃ³n Google Maps
   const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
   const [searchingAddress, setSearchingAddress] = useState(false);
   const [buscandoGps, setBuscandoGps] = useState(false);
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
 
-  // Solicitar datos ampliados (teléfono, cumpleaños, dirección) mediante Google People API
+  // Solicitar datos ampliados (telÃ©fono, cumpleaÃ±os, direcciÃ³n) mediante Google People API
   const solicitarDatosCompletosGoogle = () => {
     try {
       const g = (window as any).google;
@@ -144,7 +144,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 const emailGoogle = data.emailAddresses?.[0]?.value || email;
                 const telGoogle = data.phoneNumbers?.[0]?.value || telefono;
 
-                // Formatear cumpleaños YYYY-MM-DD
+                // Formatear cumpleaÃ±os YYYY-MM-DD
                 let bdayGoogle = fechaNacimiento;
                 if (data.birthdays?.[0]?.date) {
                   const b = data.birthdays[0].date;
@@ -156,7 +156,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   }
                 }
 
-                // Dirección de casa o principal
+                // DirecciÃ³n de casa o principal
                 const dirGoogle = data.addresses?.[0]?.formattedValue || direccion;
 
                 if (nombreGoogle) setNombre(nombreGoogle);
@@ -192,7 +192,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     }
   };
 
-  // Inicializar Google One Tap — aparece automáticamente si hay sesión activa
+  // Inicializar Google One Tap â€” aparece automÃ¡ticamente si hay sesiÃ³n activa
   useEffect(() => {
     let timer: any;
     const checkGoogle = () => {
@@ -212,10 +212,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 }
               }
             },
-            auto_select: true,       // selecciona automáticamente si hay 1 sola cuenta
+            auto_select: true,       // selecciona automÃ¡ticamente si hay 1 sola cuenta
             cancel_on_tap_outside: false,
           });
-          // One Tap silencioso — muestra el popup del browser si el usuario está logueado en Google
+          // One Tap silencioso â€” muestra el popup del browser si el usuario estÃ¡ logueado en Google
           g.accounts.id.prompt();
         } catch (e) {
           console.warn('Error inicializando Google One Tap:', e);
@@ -229,7 +229,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     return () => clearTimeout(timer);
   }, []);
 
-  // Si ya había googleUser guardado y email vacío, rellenar
+  // Si ya habÃ­a googleUser guardado y email vacÃ­o, rellenar
   useEffect(() => {
     if (googleUser) {
       if (!email && googleUser.email) setEmail(googleUser.email);
@@ -237,14 +237,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     }
   }, [googleUser]);
 
-  // Si el componente no está abierto, no renderizar nada (pero todos los hooks ya corrieron)
+  // Si el componente no estÃ¡ abierto, no renderizar nada (pero todos los hooks ya corrieron)
   if (!isOpen) return null;
 
   const subtotal = items.reduce((acc, it) => acc + it.precio_unitario * it.cantidad, 0);
   const costoEnvio = tipoEntrega === 'delivery' ? 50 : 0;
   const total = subtotal + costoEnvio;
 
-  // Búsqueda inteligente de direcciones con Nominatim / Coordenadas / Links de Google Maps
+  // BÃºsqueda inteligente de direcciones con Nominatim / Coordenadas / Links de Google Maps
   const handleSearchAddress = async (text: string) => {
     setDireccion(text);
 
@@ -275,7 +275,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
     setSearchingAddress(true);
     try {
-      // 1. Intentar endpoint geocode del backend si está disponible
+      // 1. Intentar endpoint geocode del backend si estÃ¡ disponible
       let results: any[] = [];
       try {
         const res = await fetch(`/api/admin/geocode?q=${encodeURIComponent(text.trim())}`);
@@ -285,9 +285,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         }
       } catch {}
 
-      // 2. Fallback con Nominatim enfocado en Tacuarembó, Uruguay
+      // 2. Fallback con Nominatim enfocado en TacuarembÃ³, Uruguay
       if (results.length === 0) {
-        const qQuery = text.toLowerCase().includes('tacuaremb') ? text : `${text}, Tacuarembó`;
+        const qQuery = text.toLowerCase().includes('tacuaremb') ? text : `${text}, TacuarembÃ³`;
         const nomUrl = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=uy&q=${encodeURIComponent(qQuery)}&limit=4`;
         const nomRes = await fetch(nomUrl, { headers: { 'User-Agent': 'NaluPokeWeb/1.0' } });
         if (nomRes.ok) {
@@ -313,7 +313,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setAddressSuggestions(results);
       setShowAddressDropdown(results.length > 0);
     } catch (err) {
-      console.warn('Error buscando sugerencias de dirección:', err);
+      console.warn('Error buscando sugerencias de direcciÃ³n:', err);
     } finally {
       setSearchingAddress(false);
     }
@@ -327,10 +327,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setShowAddressDropdown(false);
   };
 
-  // Obtener ubicación GPS con 1 clic
+  // Obtener ubicaciÃ³n GPS con 1 clic
   const handleGetGPS = () => {
     if (!navigator.geolocation) {
-      setErrorMsg('Geolocalización no soportada en este navegador');
+      setErrorMsg('GeolocalizaciÃ³n no soportada en este navegador');
       return;
     }
     setBuscandoGps(true);
@@ -352,18 +352,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             const road = addr.road || addr.pedestrian || addr.street || '';
             const houseNumber = addr.house_number || '';
             const dir = [road, houseNumber].filter(Boolean).join(' ') || item.display_name.split(',')[0];
-            setDireccion(dir || `Ubicación GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
+            setDireccion(dir || `UbicaciÃ³n GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
           } else {
-            setDireccion(`Ubicación GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
+            setDireccion(`UbicaciÃ³n GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
           }
         } catch {
-          setDireccion(`Ubicación GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
+          setDireccion(`UbicaciÃ³n GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
         }
         setBuscandoGps(false);
       },
       err => {
         setBuscandoGps(false);
-        setErrorMsg('No pudimos acceder a tu ubicación. Ingresa la calle manualmente.');
+        setErrorMsg('No pudimos acceder a tu ubicaciÃ³n. Ingresa la calle manualmente.');
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
@@ -376,15 +376,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       return;
     }
     if (!email.trim() || !email.includes('@')) {
-      setErrorMsg('Por favor ingresa un email válido');
+      setErrorMsg('Por favor ingresa un email vÃ¡lido');
       return;
     }
     if (!telefono.trim()) {
-      setErrorMsg('Por favor ingresa tu número de teléfono / WhatsApp');
+      setErrorMsg('Por favor ingresa tu nÃºmero de telÃ©fono / WhatsApp');
       return;
     }
     if (tipoEntrega === 'delivery' && !direccion.trim()) {
-      setErrorMsg('Por favor ingresa tu dirección de entrega');
+      setErrorMsg('Por favor ingresa tu direcciÃ³n de entrega');
       return;
     }
 
@@ -401,7 +401,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           telefono: telefono.trim(),
           direccion: direccion.trim(),
           apartamento: apartamento.trim(),
-          google_maps_url: googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', Tacuarembó')}`,
+          google_maps_url: googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', TacuarembÃ³')}`,
           latitud,
           longitud,
         })
@@ -410,7 +410,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
     const resolvedGmapsUrl =
       googleMapsUrl ||
-      (direccion.trim() ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', Tacuarembó')}` : '');
+      (direccion.trim() ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', TacuarembÃ³')}` : '');
 
     try {
       // Estructura completa adaptada al POS de Food (tenant_id: 1, marca_id: 1)
@@ -421,6 +421,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         canal: tipoEntrega === 'delivery' ? 'delivery' : 'take_away',
         nombre_cliente_rapido: nombre.trim(),
         email: email.trim(),
+        fecha_nacimiento: fechaNacimiento.trim() || null,
         comensales: 1,
         datos_delivery: {
           telefono: telefono.trim(),
@@ -460,38 +461,38 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       const lineasItems = items.map(it => {
         let mods = '';
         if (it.modificadores && it.modificadores.length > 0) {
-          mods = '\n' + it.modificadores.map(m => `   • ${m.nombre}${m.precio_extra > 0 ? ` (+$${m.precio_extra})` : ''}`).join('\n');
+          mods = '\n' + it.modificadores.map(m => `   â€¢ ${m.nombre}${m.precio_extra > 0 ? ` (+$${m.precio_extra})` : ''}`).join('\n');
         }
-        const notasItem = it.notas ? `\n   📝 Nota: ${it.notas}` : '';
+        const notasItem = it.notas ? `\n   ðŸ“ Nota: ${it.notas}` : '';
         return `*${it.cantidad}x ${it.nombre}* ($${it.precio_unitario * it.cantidad})${mods}${notasItem}`;
       }).join('\n\n');
 
-      const canalTxt = tipoEntrega === 'delivery' ? `🛵 Delivery ($${costoEnvio})` : '🏪 Retiro en Mostrador (Take Away)';
+      const canalTxt = tipoEntrega === 'delivery' ? `ðŸ›µ Delivery ($${costoEnvio})` : 'ðŸª Retiro en Mostrador (Take Away)';
       const dirTxt = tipoEntrega === 'delivery'
-        ? `\n📍 *Dirección:* ${direccion.trim()}${apartamento.trim() ? ` (${apartamento.trim()})` : ''}${resolvedGmapsUrl ? `\n🗺️ *Ubicación Maps:* ${resolvedGmapsUrl}` : ''}`
+        ? `\nðŸ“ *DirecciÃ³n:* ${direccion.trim()}${apartamento.trim() ? ` (${apartamento.trim()})` : ''}${resolvedGmapsUrl ? `\nðŸ—ºï¸ *UbicaciÃ³n Maps:* ${resolvedGmapsUrl}` : ''}`
         : '';
 
       const pagoTxt =
         metodoPago === 'efectivo'
           ? `Efectivo${pagaCon.trim() ? ` (Paga con $${pagaCon.trim()})` : ''}`
           : metodoPago === 'tarjeta'
-          ? 'POS Tarjeta (Débito/Crédito)'
+          ? 'POS Tarjeta (DÃ©bito/CrÃ©dito)'
           : 'Transferencia Bancaria';
 
-      const textoWhatsApp = `*¡Hola Nalú Poke Bowls Tacuarembó!* 🥗🌊
+      const textoWhatsApp = `*Â¡Hola NalÃº Poke Bowls TacuarembÃ³!* ðŸ¥—ðŸŒŠ
 Acabo de realizar el *Pedido #${numOrden}* desde la web oficial:
 
-👤 *Cliente:* ${nombre.trim()}
-📧 *Email:* ${email.trim()}
-📱 *Teléfono:* ${telefono.trim()}
-🛵 *Entrega:* ${canalTxt}${dirTxt}
-💳 *Método de Pago:* ${pagoTxt}
+ðŸ‘¤ *Cliente:* ${nombre.trim()}
+ðŸ“§ *Email:* ${email.trim()}
+ðŸ“± *TelÃ©fono:* ${telefono.trim()}
+ðŸ›µ *Entrega:* ${canalTxt}${dirTxt}
+ðŸ’³ *MÃ©todo de Pago:* ${pagoTxt}
 
 *Detalle del Pedido:*
 ${lineasItems}
 
 *TOTAL A PAGAR: $${total} UYU*
-${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
+${notas.trim() ? `\nðŸ’¬ *Comentarios:* ${notas.trim()}` : ''}`;
 
       const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoWhatsApp)}`;
 
@@ -501,7 +502,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
         setErrorMsg('No se pudo registrar el pedido en el sistema. Intenta de nuevo.');
       }
     } catch (err: any) {
-      setErrorMsg('Error de conexión al enviar el pedido.');
+      setErrorMsg('Error de conexiÃ³n al enviar el pedido.');
     } finally {
       setEnviando(false);
     }
@@ -532,7 +533,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
             </div>
           )}
 
-          {/* ── 1. Datos pre-cargados desde Google (One Tap silencioso) ── */}
+          {/* â”€â”€ 1. Datos pre-cargados desde Google (One Tap silencioso) â”€â”€ */}
           {googleUser && (
             <div style={{ background: 'var(--bg-sand)', padding: '12px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: '10px' }}>
               {googleUser.picture ? (
@@ -547,10 +548,10 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-main)' }}>{googleUser.name}</span>
-                  <span style={{ fontSize: '0.65rem', background: '#DCFCE7', color: '#166534', padding: '2px 6px', borderRadius: 'var(--radius-full)', fontWeight: 700 }}>Google ✓</span>
+                  <span style={{ fontSize: '0.65rem', background: '#DCFCE7', color: '#166534', padding: '2px 6px', borderRadius: 'var(--radius-full)', fontWeight: 700 }}>Google âœ“</span>
                 </div>
                 <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  Datos pre-cargados · {googleUser.email}
+                  Datos pre-cargados Â· {googleUser.email}
                 </div>
               </div>
               <button
@@ -558,12 +559,12 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
                 onClick={() => { setGoogleUser(null); localStorage.removeItem('nalu_google_user'); }}
                 style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '4px', flexShrink: 0 }}
               >
-                ×
+                Ã—
               </button>
             </div>
           )}
 
-          {/* ── 2. Tipo de Entrega ── */}
+          {/* â”€â”€ 2. Tipo de Entrega â”€â”€ */}
           {(permiteDelivery || permiteTakeaway) && (
             <div style={{
               display: 'grid',
@@ -624,7 +625,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
             </div>
           )}
 
-          {/* ── 3. Datos del Cliente ── */}
+          {/* â”€â”€ 3. Datos del Cliente â”€â”€ */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
@@ -636,7 +637,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
                 required
                 value={nombre}
                 onChange={e => setNombre(e.target.value)}
-                name="name" autoComplete="name" placeholder="Ej: Nicolás Franco"
+                name="name" autoComplete="name" placeholder="Ej: NicolÃ¡s Franco"
                 style={{
                   width: '100%',
                   padding: '10px 14px',
@@ -672,7 +673,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
 
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '4px', display: 'block' }}>
-                Teléfono / WhatsApp *
+                TelÃ©fono / WhatsApp *
               </label>
               <input
                 type="tel"
@@ -691,13 +692,13 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
               />
             </div>
 
-            {/* ── 4. Dirección Tipo Google Maps (Solo Delivery) ── */}
+            {/* â”€â”€ 4. DirecciÃ³n Tipo Google Maps (Solo Delivery) â”€â”€ */}
             {tipoEntrega === 'delivery' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
                     <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>
-                      Dirección en Tacuarembó / Google Maps *
+                      DirecciÃ³n en TacuarembÃ³ / Google Maps *
                     </label>
                     <button
                       type="button"
@@ -716,7 +717,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
                       }}
                     >
                       {buscandoGps ? <Loader2 size={12} className="spin" /> : <Navigation size={12} />}
-                      <span>{buscandoGps ? 'Obteniendo GPS...' : '📍 Mi Ubicación'}</span>
+                      <span>{buscandoGps ? 'Obteniendo GPS...' : 'ðŸ“ Mi UbicaciÃ³n'}</span>
                     </button>
                   </div>
 
@@ -726,7 +727,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
                       required
                       value={direccion}
                       onChange={e => handleSearchAddress(e.target.value)}
-                      placeholder="Calle y número, o pegá enlace de Google Maps..."
+                      placeholder="Calle y nÃºmero, o pegÃ¡ enlace de Google Maps..."
                       style={{
                         width: '100%',
                         padding: '10px 14px',
@@ -741,7 +742,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
                       {searchingAddress ? <Loader2 size={16} className="spin" /> : <MapPin size={16} />}
                     </div>
 
-                    {/* Desplegable de sugerencias de dirección */}
+                    {/* Desplegable de sugerencias de direcciÃ³n */}
                     {showAddressDropdown && addressSuggestions.length > 0 && (
                       <div
                         style={{
@@ -792,7 +793,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
                   {googleMapsUrl && (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '6px', fontSize: '0.75rem', background: '#DCFCE7', color: '#166534', padding: '6px 10px', borderRadius: 'var(--radius-sm)' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 600 }}>
-                        <Check size={14} /> Ubicación Google Maps verificada
+                        <Check size={14} /> UbicaciÃ³n Google Maps verificada
                       </span>
                       <a
                         href={googleMapsUrl}
@@ -815,7 +816,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
                     type="text"
                     value={apartamento}
                     onChange={e => setApartamento(e.target.value)}
-                    placeholder="Ej: Apto 204, portón negro, timbre 2"
+                    placeholder="Ej: Apto 204, portÃ³n negro, timbre 2"
                     style={{
                       width: '100%',
                       padding: '10px 14px',
@@ -829,10 +830,10 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
               </div>
             )}
 
-            {/* ── 5. Método de Pago (Efectivo, Tarjeta, Transferencia) ── */}
+            {/* â”€â”€ 5. MÃ©todo de Pago (Efectivo, Tarjeta, Transferencia) â”€â”€ */}
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', display: 'block' }}>
-                Método de Pago *
+                MÃ©todo de Pago *
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                 {[
@@ -873,7 +874,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
                     type="text"
                     value={pagaCon}
                     onChange={e => setPagaCon(e.target.value)}
-                    placeholder="¿Con cuánto abonás? (para llevarte cambio)"
+                    placeholder="Â¿Con cuÃ¡nto abonÃ¡s? (para llevarte cambio)"
                     style={{
                       width: '100%',
                       padding: '10px 14px',
@@ -888,13 +889,13 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
 
               {metodoPago === 'tarjeta' && (
                 <div style={{ marginTop: '8px', fontSize: '0.75rem', color: 'var(--text-muted)', background: 'var(--bg-sand)', padding: '8px 12px', borderRadius: 'var(--radius-sm)' }}>
-                  💳 Llevamos el POS inalámbrico a tu puerta (Débito, Crédito, Master, Visa).
+                  ðŸ’³ Llevamos el POS inalÃ¡mbrico a tu puerta (DÃ©bito, CrÃ©dito, Master, Visa).
                 </div>
               )}
 
               {metodoPago === 'transferencia' && (
                 <div style={{ marginTop: '8px', fontSize: '0.75rem', color: 'var(--text-muted)', background: 'var(--bg-sand)', padding: '8px 12px', borderRadius: 'var(--radius-sm)' }}>
-                  📲 Te enviaremos los datos de cuenta (BROU / Prex / Santander) al WhatsApp para transferir.
+                  ðŸ“² Te enviaremos los datos de cuenta (BROU / Prex / Santander) al WhatsApp para transferir.
                 </div>
               )}
             </div>
@@ -923,7 +924,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
             </div>
           </div>
 
-          {/* ── 6. Resumen de Totales ── */}
+          {/* â”€â”€ 6. Resumen de Totales â”€â”€ */}
           <div style={{ background: 'var(--bg-page)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '6px' }}>
               <span style={{ color: 'var(--text-muted)' }}>Subtotal ({items.length} items):</span>
@@ -931,7 +932,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
             </div>
             {tipoEntrega === 'delivery' && (
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '6px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Costo de Envío:</span>
+                <span style={{ color: 'var(--text-muted)' }}>Costo de EnvÃ­o:</span>
                 <span style={{ fontWeight: 700 }}>${costoEnvio.toLocaleString()}</span>
               </div>
             )}
@@ -941,7 +942,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
             </div>
           </div>
 
-          {/* ── 7. Botón de Confirmación ── */}
+          {/* â”€â”€ 7. BotÃ³n de ConfirmaciÃ³n â”€â”€ */}
           <button
             type="submit"
             disabled={enviando}
@@ -965,3 +966,4 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
     </div>
   );
 };
+
