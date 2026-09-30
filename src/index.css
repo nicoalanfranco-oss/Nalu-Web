@@ -3623,6 +3623,27 @@ button {
   font-weight: 500;
 }
 
+.pos-header-delivery {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.pos-header-delivery svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.pos-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .pos-close-btn {
   display: flex;
   align-items: center;
@@ -4205,12 +4226,45 @@ button {
 }
 
 @media (max-width: 768px) {
-  /* Hide desktop header, tabs, body and cart bar on mobile */
-  .pos-header,
+  /* Hide desktop tabs, body and cart bar on mobile */
   .pos-mobile-tabs,
   .pos-body,
   .pos-mobile-cart-bar {
     display: none !important;
+  }
+
+  /* Header único unificado y ultra-comprimido en móvil */
+  .pos-header {
+    display: flex !important;
+    padding: 8px 14px;
+    background: white;
+    border-bottom: 1px solid #edf0f3;
+  }
+
+  .pos-header-brand {
+    gap: 8px;
+  }
+
+  .pos-header-logo {
+    height: 40px;
+  }
+
+  .pos-header-title {
+    font-size: 1.05rem;
+    line-height: 1.1;
+  }
+
+  .pos-header-delivery {
+    font-size: 0.68rem;
+  }
+
+  .pos-header-actions {
+    gap: 8px;
+  }
+
+  .pos-close-btn {
+    width: 32px;
+    height: 32px;
   }
 
   .pos-backdrop {

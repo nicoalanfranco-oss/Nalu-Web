@@ -98,18 +98,32 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
             DESKTOP LAYOUT (≥769px): unchanged POS experience
             ═══════════════════════════════════════════════════ */}
 
-        {/* Header — shared on both */}
+        {/* Header único unificado — Tu Pedido y Aviso de Entrega */}
         <div className="pos-header">
           <div className="pos-header-brand">
             <img src="./Logo_nalu-sinfondo.png" alt="Nalú" className="pos-header-logo" />
             <div>
-              <span className="pos-header-title">Nuevo Pedido</span>
-              <span className="pos-header-subtitle">Nalú Poke Bowls · Tacuarembó</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="pos-header-title">Tu Pedido</span>
+                {cartCount > 0 && (
+                  <span className="mcart-count-badge">{cartCount}</span>
+                )}
+              </div>
+              <div className="pos-header-delivery">
+                <Clock size={12} />
+                <span>Entrega en Tacuarembó · 30–45 min</span>
+              </div>
             </div>
           </div>
-          <button onClick={onClose} className="pos-close-btn" aria-label="Cerrar">
-            <X size={20} />
-          </button>
+          <div className="pos-header-actions">
+            <div className="mcart-status-badge">
+              <span className="mcart-status-dot" />
+              Abierto ahora
+            </div>
+            <button onClick={onClose} className="pos-close-btn" aria-label="Cerrar">
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Mobile tab switcher — DESKTOP ONLY (hidden on mobile) */}
@@ -330,38 +344,6 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
             Full-screen, single-view cart with upsell scroller
             ═══════════════════════════════════════════════════ */}
         <div className="mobile-cart-fullview">
-          {/* Mobile Header */}
-          <div className="mcart-header">
-            <div className="mcart-header-brand">
-              <div>
-                <span className="mcart-brand-name">NALÚ</span>
-                <span className="mcart-brand-sub">Nalú Poke Bowls · Tacuarembó</span>
-              </div>
-            </div>
-            <div className="mcart-header-right">
-              <div className="mcart-status-badge">
-                <span className="mcart-status-dot" />
-                Abierto ahora
-              </div>
-              <button onClick={onClose} className="mcart-close-btn" aria-label="Cerrar">
-                <X size={18} />
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile subheader: "Tu Pedido" + count */}
-          <div className="mcart-subheader">
-            <div className="mcart-title-row">
-              <h1 className="mcart-title">Tu Pedido</h1>
-              {cartCount > 0 && (
-                <span className="mcart-count-badge">{cartCount}</span>
-              )}
-            </div>
-            <div className="mcart-delivery-row">
-              <span className="mcart-delivery-icon"><Clock size={14} /></span>
-              <span className="mcart-delivery-text">Entrega en Tacuarembó · 30–45 min</span>
-            </div>
-          </div>
 
           {/* Mobile scrollable content */}
           <div className="mcart-scroll-body">

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nalu-poke-v1';
+const CACHE_NAME = 'nalu-poke-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
