@@ -350,117 +350,76 @@ button {
 }
 
 /* ==========================================================================
-   HERO — FONDO MONOGRAMA NALU (PATRÓN DIAGONAL + OLA DINÁMICA)
-   Técnica: CSS background-image con logo PNG sin fondo, animado con
-   @keyframes para simular el vaivén suave y continuo del mar.
-   Optimizado: will-change + translateZ(0) para GPU compositing.
+   HERO — FONDO OLA DINÁMICA POR FILAS (WAVE STRIPS)
+   Técnica: 9 divs independientes (strips) apilados verticalmente.
+   Cada strip tiene el logo como background-repeat-x y anima
+   background-position-x linealmente con delay escalonado negativo →
+   crea la ilusión de una ola diagonal que "corre" continuamente.
+   waveSwell añade ondulado vertical por fila para realismo marino.
+   Opacidad: 0.12 (3x más visible que la versión anterior).
    ========================================================================== */
 
+/* Contenedor: solo recorta el overflow, sin transform propio */
 .hero-logo-wave-bg {
   position: absolute;
-  inset: -10% -5%;         /* Desborde intencional para ocultar bordes del movimiento */
-  width: 110%;
-  height: 120%;
+  inset: 0;
   pointer-events: none;
   z-index: 0;
-
-  /* Patrón repetido diagonal con el logo Nalu sin fondo */
-  background-image: url('/Logo_nalu-sinfondo.png');
-  background-repeat: repeat;
-  background-size: 110px 110px;          /* Tamaño del tile del monograma */
-
-  /* Inclinación diagonal 45° del patrón — efecto monograma clásico */
-  transform: rotate(-18deg) translateZ(0);
-  transform-origin: center center;
-
-  /* Opacidad muy sutil para no competir con el contenido */
-  opacity: 0.048;
-
-  /* Animación de Ola Dinámica — vaivén marino lento y relajante */
-  animation: naluWave 18s ease-in-out infinite;
-  will-change: transform;              /* Hint al navegador para GPU compositing */
-
-  /* Suavizado de píxeles para el logo al reducir escala */
-  image-rendering: -webkit-optimize-contrast; /* Edge 79+ / Chrome */
-  image-rendering: pixelated;                 /* Chrome 41+, Firefox 93+, Safari 15.4+ */
-  image-rendering: crisp-edges;
+  overflow: hidden;
 }
 
-/* Segunda capa desplazada en fase — crea profundidad de ola */
-.hero-logo-wave-bg::after {
-  content: '';
+/* ── Strip individual ────────────────────────────────────────────────────── */
+.hero-wave-strip {
   position: absolute;
-  inset: 0;
+  left: -60px;   /* bleed lateral para ocultar el borde del scroll */
+  right: -60px;
   background-image: url('/Logo_nalu-sinfondo.png');
-  background-repeat: repeat;
-  background-size: 80px 80px;          /* Tile más pequeño para segunda capa */
-  opacity: 0.55;                       /* Relativa al padre (0.048 × 0.55 ≈ 0.026) */
-  animation: naluWaveReverse 24s ease-in-out infinite;
-  will-change: transform;
+  background-repeat: repeat-x;
+  background-size: 100px 48px;   /* tile horizontal; ~48px de alto por fila */
+  background-position-y: center;
+  opacity: 0.12;
+
+  will-change: background-position-x, transform;
+
+  /* Dos animaciones simultáneas:
+     1. waveRoll  → scroll horizontal continuo (la ola "corre")
+     2. waveSwell → oscilación vertical suave (el "vaivén" del mar)   */
+  animation:
+    waveRoll  7s linear      infinite,
+    waveSwell 5s ease-in-out infinite;
+
+  /* Delays escalonados negativos: cada strip ya está I*0.78s dentro del ciclo
+     → crea el frente de ola diagonal sin necesidad de JS ni offsets manuales */
+  animation-delay:
+    calc(var(--i, 0) * -0.78s),
+    calc(var(--i, 0) * -0.55s);
 }
 
-/* ── Keyframe principal: movimiento ondulatorio en X e Y ──────────────────── */
-@keyframes naluWave {
-  0% {
-    transform: rotate(-18deg) translate3d(0px, 0px, 0);
-  }
-  15% {
-    transform: rotate(-18deg) translate3d(18px, -8px, 0);
-  }
-  30% {
-    transform: rotate(-18deg) translate3d(10px, 14px, 0);
-  }
-  45% {
-    transform: rotate(-18deg) translate3d(-12px, 6px, 0);
-  }
-  60% {
-    transform: rotate(-18deg) translate3d(-20px, -10px, 0);
-  }
-  75% {
-    transform: rotate(-18deg) translate3d(-6px, 16px, 0);
-  }
-  90% {
-    transform: rotate(-18deg) translate3d(14px, 4px, 0);
-  }
-  100% {
-    transform: rotate(-18deg) translate3d(0px, 0px, 0);
-  }
+/* ── Keyframe 1: scroll horizontal lineal y sin fin ─────────────────────── */
+@keyframes waveRoll {
+  from { background-position-x: 0px;    }
+  to   { background-position-x: -100px; } /* exactamente 1 tile → loop perfecto */
 }
 
-/* ── Keyframe capa 2: fase opuesta para profundidad de ola ───────────────── */
-@keyframes naluWaveReverse {
-  0% {
-    transform: translate3d(0px, 0px, 0);
-  }
-  20% {
-    transform: translate3d(-14px, 10px, 0);
-  }
-  40% {
-    transform: translate3d(8px, -16px, 0);
-  }
-  60% {
-    transform: translate3d(16px, 8px, 0);
-  }
-  80% {
-    transform: translate3d(-10px, -6px, 0);
-  }
-  100% {
-    transform: translate3d(0px, 0px, 0);
-  }
+/* ── Keyframe 2: oscilación vertical suave por fila ─────────────────────── */
+@keyframes waveSwell {
+  0%, 100% { transform: translateY(0px);  }
+  50%       { transform: translateY(-7px); }
 }
 
-/* ── Optimización móvil: reducir complejidad en pantallas pequeñas ────────── */
+/* ── Optimización móvil ──────────────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .hero-logo-wave-bg {
-    animation-duration: 24s;         /* Más lento = menos fotogramas necesarios */
-    opacity: 0.038;
+  .hero-wave-strip {
+    opacity: 0.085;
+    background-size: 80px 38px;
+    /* Más lento en móvil = menos trabajo para la GPU */
+    animation-duration: 11s, 7s;
   }
 }
 
-/* ── Accesibilidad: respetar preferencia de movimiento reducido ───────────── */
+/* ── Accesibilidad: sin movimiento si el usuario lo prefiere ─────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .hero-logo-wave-bg,
-  .hero-logo-wave-bg::after {
+  .hero-wave-strip {
     animation: none !important;
   }
 }
