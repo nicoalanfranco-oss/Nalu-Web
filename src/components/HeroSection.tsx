@@ -40,7 +40,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <section id="inicio" className="hero-section">
-      {/* Decoración de fondo animada */}
+      {/* Fondo monograma Nalu — patrón diagonal con animación "Ola Dinámica" */}
+      <div className="hero-logo-wave-bg" aria-hidden="true" />
+
+      {/* Decoración de fondo animada (blobs de color) */}
       <div className="hero-bg-decoration">
         <div className="hero-blob hero-blob-1" />
         <div className="hero-blob hero-blob-2" />
