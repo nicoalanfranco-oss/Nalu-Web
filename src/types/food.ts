@@ -4,6 +4,7 @@ export interface TenantInfo {
   rut?: string;
   direccion: string;
   telefono: string;
+  fecha_nacimiento?: string;
   email?: string;
 }
 

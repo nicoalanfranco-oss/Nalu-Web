@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
+import { Sparkles,
   X, CheckCircle, Bike, Store, ArrowRight, ShieldCheck, Send,
   MapPin, Navigation, ExternalLink, CreditCard, Banknote, Smartphone,
   Search, Loader2, Check, UserCheck, AlertCircle
@@ -21,6 +21,9 @@ interface GoogleUserData {
   email: string;
   name: string;
   picture?: string;
+  phone?: string;
+  birthday?: string;
+  address?: string;
 }
 
 function decodeGoogleJwt(token: string): GoogleUserData | null {
@@ -78,6 +81,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [nombre, setNombre] = useState(savedCustomer?.nombre || '');
   const [email, setEmail] = useState(savedCustomer?.email || '');
   const [telefono, setTelefono] = useState(savedCustomer?.telefono || '');
+  const [fechaNacimiento, setFechaNacimiento] = useState(savedCustomer?.fecha_nacimiento || '');
+  const [cargandoGooglePeople, setCargandoGooglePeople] = useState(false);
   const [direccion, setDireccion] = useState(savedCustomer?.direccion || '');
   const [apartamento, setApartamento] = useState(savedCustomer?.apartamento || '');
   const [googleMapsUrl, setGoogleMapsUrl] = useState(savedCustomer?.google_maps_url || '');
@@ -105,6 +110,87 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [searchingAddress, setSearchingAddress] = useState(false);
   const [buscandoGps, setBuscandoGps] = useState(false);
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+
+  // Solicitar datos ampliados (teléfono, cumpleaños, dirección) mediante Google People API
+  const solicitarDatosCompletosGoogle = () => {
+    try {
+      const g = (window as any).google;
+      if (!g?.accounts?.oauth2) {
+        setErrorMsg('Servicio de Google OAuth no disponible en el navegador');
+        return;
+      }
+
+      setCargandoGooglePeople(true);
+      const client = g.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/user.phonenumbers.read https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.addresses.read',
+        callback: async (tokenResponse: any) => {
+          if (tokenResponse?.error) {
+            console.warn('Error OAuth Google:', tokenResponse);
+            setCargandoGooglePeople(false);
+            return;
+          }
+          if (tokenResponse?.access_token) {
+            try {
+              const res = await fetch(
+                'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,phoneNumbers,birthdays,addresses,photos',
+                {
+                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+                }
+              );
+              if (res.ok) {
+                const data = await res.json();
+                const nombreGoogle = data.names?.[0]?.displayName || nombre;
+                const emailGoogle = data.emailAddresses?.[0]?.value || email;
+                const telGoogle = data.phoneNumbers?.[0]?.value || telefono;
+
+                // Formatear cumpleaños YYYY-MM-DD
+                let bdayGoogle = fechaNacimiento;
+                if (data.birthdays?.[0]?.date) {
+                  const b = data.birthdays[0].date;
+                  if (b.month && b.day) {
+                    const y = b.year ? String(b.year).padStart(4, '0') : '2000';
+                    const m = String(b.month).padStart(2, '0');
+                    const d = String(b.day).padStart(2, '0');
+                    bdayGoogle = `${y}-${m}-${d}`;
+                  }
+                }
+
+                // Dirección de casa o principal
+                const dirGoogle = data.addresses?.[0]?.formattedValue || direccion;
+
+                if (nombreGoogle) setNombre(nombreGoogle);
+                if (emailGoogle) setEmail(emailGoogle);
+                if (telGoogle) setTelefono(telGoogle);
+                if (bdayGoogle) setFechaNacimiento(bdayGoogle);
+                if (dirGoogle) setDireccion(dirGoogle);
+
+                const updatedUser: GoogleUserData = {
+                  name: nombreGoogle,
+                  email: emailGoogle,
+                  picture: data.photos?.[0]?.url || googleUser?.picture,
+                  phone: telGoogle,
+                  birthday: bdayGoogle,
+                  address: dirGoogle,
+                };
+                setGoogleUser(updatedUser);
+                localStorage.setItem('nalu_google_user', JSON.stringify(updatedUser));
+              }
+            } catch (err) {
+              console.warn('Error al consultar People API:', err);
+            } finally {
+              setCargandoGooglePeople(false);
+            }
+          }
+        },
+      });
+
+      client.requestAccessToken();
+    } catch (err) {
+      console.warn('Error al iniciar Token Client:', err);
+      setCargandoGooglePeople(false);
+    }
+  };
 
   // Inicializar Google One Tap — aparece automáticamente si hay sesión activa
   useEffect(() => {
@@ -550,7 +636,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
                 required
                 value={nombre}
                 onChange={e => setNombre(e.target.value)}
-                placeholder="Ej: Nicolás Franco"
+                name="name" autoComplete="name" placeholder="Ej: Nicolás Franco"
                 style={{
                   width: '100%',
                   padding: '10px 14px',
@@ -572,7 +658,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
                 required
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="ejemplo@gmail.com"
+                name="email" autoComplete="email" placeholder="ejemplo@gmail.com"
                 style={{
                   width: '100%',
                   padding: '10px 14px',
@@ -593,7 +679,7 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
                 required
                 value={telefono}
                 onChange={e => setTelefono(e.target.value)}
-                placeholder="Ej: 099 123 456"
+                name="tel" autoComplete="tel" placeholder="Ej: 099 123 456"
                 style={{
                   width: '100%',
                   padding: '10px 14px',
