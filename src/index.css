@@ -2334,49 +2334,74 @@ button {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 68px;
-    background: rgba(255, 255, 255, 0.96);
+    height: 64px;
+    background: rgba(255, 255, 255, 0.98);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
     border-top: 1px solid var(--border-light);
-    box-shadow: var(--shadow-bottom-nav);
-    z-index: 150;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
     align-items: center;
     justify-content: space-around;
-    padding: 0 10px;
+    padding: 0 16px env(safe-area-inset-bottom, 0px) 16px;
   }
 
   .mobile-nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
+    gap: 3px;
     color: var(--text-muted);
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 700;
     text-decoration: none;
     position: relative;
-    padding: 6px 12px;
+    padding: 6px 14px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    flex: 1;
+    max-width: 120px;
+    transition: color var(--transition-fast);
   }
 
   .mobile-nav-item.active {
     color: var(--primary);
   }
 
+  .mobile-nav-cart-item {
+    color: var(--text-main);
+  }
+
+  .mobile-nav-cart-item:hover,
+  .mobile-nav-cart-item:active {
+    color: var(--primary);
+  }
+
+  .mobile-nav-cart-icon-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .mobile-nav-badge {
     position: absolute;
-    top: 2px;
-    right: 6px;
+    top: -6px;
+    right: -10px;
     background: var(--primary);
     color: white;
     font-size: 0.65rem;
     font-weight: 800;
-    width: 18px;
+    min-width: 18px;
     height: 18px;
+    padding: 0 4px;
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 2px solid white;
   }
 
   /* Ajustes Móvil para Hero */
@@ -3359,69 +3384,78 @@ button {
   }
 }
 
-/* PWA install pill inline en navbar */
+/* PWA install pill inline en navbar - Ultracompacta */
 .navbar-pwa-pill {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid var(--border-light);
+  gap: 5px;
+  background: rgba(255, 90, 54, 0.08);
+  border: 1px solid rgba(255, 90, 54, 0.28);
   border-radius: var(--radius-full);
-  padding: 4px 8px 4px 6px;
-  box-shadow: var(--shadow-sm);
-  animation: slideInRight 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  padding: 3px 8px 3px 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
 }
 
-.navbar-pwa-logo {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-  flex-shrink: 0;
+.navbar-pwa-pill:hover {
+  background: rgba(255, 90, 54, 0.15);
+  border-color: var(--primary);
+  transform: translateY(-1px);
 }
 
 .navbar-pwa-text {
   font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--primary);
   white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 
-.navbar-pwa-install-btn {
+.navbar-pwa-install-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 17px;
+  height: 17px;
   background: var(--primary);
   color: white;
   border-radius: var(--radius-full);
-  border: none;
-  cursor: pointer;
   flex-shrink: 0;
-  transition: background var(--transition-fast);
 }
 
-.navbar-pwa-install-btn:hover {
-  background: var(--primary-hover);
-}
+@media (max-width: 640px) {
+  .navbar-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 3px;
+    flex-shrink: 0;
+  }
 
-.navbar-pwa-close-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  background: var(--bg-sand);
-  color: var(--text-muted);
-  border-radius: var(--radius-full);
-  border: none;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background var(--transition-fast);
-}
+  .navbar-pwa-pill {
+    padding: 2px 7px 2px 8px;
+    gap: 4px;
+  }
 
-.navbar-pwa-close-btn:hover {
-  background: var(--border-medium);
+  .navbar-pwa-text {
+    font-size: 0.68rem;
+  }
+
+  .cart-button-header {
+    padding: 4px 10px;
+    gap: 6px;
+    font-size: 0.8rem;
+    height: 32px;
+  }
+
+  .cart-badge-count {
+    width: 18px;
+    height: 18px;
+    font-size: 0.68rem;
+  }
 }
 
 /* ==========================================================================

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, MapPin, Download, X, Clock } from 'lucide-react';
+import { ShoppingCart, MapPin, Download, Clock } from 'lucide-react';
 import { TenantInfo, MarcaInfo } from '../types/food';
 
 interface NavbarProps {
@@ -22,9 +22,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [showInstall, setShowInstall] = useState(false);
 
   useEffect(() => {
-    const dismissed = localStorage.getItem('nalu_pwa_dismissed');
-    if (dismissed && Date.now() - Number(dismissed) < 7 * 24 * 60 * 60 * 1000) return;
-
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true;
@@ -36,7 +33,16 @@ export const Navbar: React.FC<NavbarProps> = ({
       setShowInstall(true);
     };
     window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+
+    // Si ya pasaron 2 segundos y es móvil/desktop sin standalone, mostrar por defecto si no fue rechazado
+    const timer = setTimeout(() => {
+      setShowInstall(true);
+    }, 1500);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleInstall = async () => {
@@ -45,12 +51,10 @@ export const Navbar: React.FC<NavbarProps> = ({
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') setShowInstall(false);
       setDeferredPrompt(null);
+    } else {
+      // Fallback para navegadores donde beforeinstallprompt no esté disponible directamente
+      alert('Para instalar Nalú Poke, toca el menú de tu navegador (⋮ o Compartir) y elige "Instalar aplicación" o "Agregar a la pantalla de inicio".');
     }
-  };
-
-  const handleDismissInstall = () => {
-    setShowInstall(false);
-    localStorage.setItem('nalu_pwa_dismissed', Date.now().toString());
   };
 
   return (
@@ -77,29 +81,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* Right side: PWA install pill (inline) + Cart */}
+          {/* Right side: PWA install button (compact: Son app + icon) + Cart with supermarket icon below */}
           <div className="navbar-actions">
             {showInstall && (
-              <div className="navbar-pwa-pill">
-                <img src="./Logo_nalu-sinfondo.png" alt="" className="navbar-pwa-logo" />
-                <span className="navbar-pwa-text">Instalar app</span>
-                <button
-                  type="button"
-                  onClick={handleInstall}
-                  className="navbar-pwa-install-btn"
-                  title="Instalar Nalú Poke"
-                >
-                  <Download size={12} />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleDismissInstall}
-                  className="navbar-pwa-close-btn"
-                  aria-label="Cerrar"
-                >
-                  <X size={11} />
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleInstall}
+                className="navbar-pwa-pill"
+                title="Instalar App Nalú"
+                aria-label="Instalar app Nalú"
+              >
+                <span className="navbar-pwa-text">Son app</span>
+                <span className="navbar-pwa-install-icon">
+                  <Download size={11} />
+                </span>
+              </button>
             )}
 
             <button
@@ -107,10 +103,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="cart-button-header"
               aria-label="Ver carrito"
             >
-              <ShoppingBag size={20} color="var(--primary)" />
+              <ShoppingCart size={18} color="var(--primary)" />
               <span className="cart-badge-count">{cartCount}</span>
               {cartTotal > 0 && (
-                <span style={{ fontSize: '0.88rem', fontWeight: 800 }}>
+                <span className="cart-total-text">
                   ${cartTotal.toLocaleString()}
                 </span>
               )}
