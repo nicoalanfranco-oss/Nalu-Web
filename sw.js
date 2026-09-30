@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nalu-poke-v4';
+const CACHE_NAME = 'nalu-poke-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -42,6 +42,11 @@ self.addEventListener('fetch', (event) => {
 
   // Skip non-GET requests and chrome extensions
   if (event.request.method !== 'GET' || !url.protocol.startsWith('http')) {
+    return;
+  }
+
+  // Nunca interceptar endpoints de la API (siempre frescos desde el backend)
+  if (url.pathname.startsWith('/api/')) {
     return;
   }
 
