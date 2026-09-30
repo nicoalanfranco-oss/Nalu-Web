@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
-  X, Plus, Minus, Trash2, Sparkles, ShoppingBag,
+  X, Plus, Minus, Trash2, Sparkles,
   ArrowRight, ChevronRight
 } from 'lucide-react';
 import { ProductoElaborado, ProductoReventa, CartItem } from '../types/food';
@@ -102,8 +102,7 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
             className={`pos-mobile-tab ${mobileTab === 'pedido' ? 'active' : ''}`}
             onClick={() => setMobileTab('pedido')}
           >
-            <ShoppingBag size={14} />
-            <span>Pedido{cartCount > 0 ? ` (${cartCount})` : ''}</span>
+            <span>🛒 Pedido{cartCount > 0 ? ` (${cartCount})` : ''}</span>
           </button>
         </div>
 
@@ -131,7 +130,19 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
               <div className="pos-products-grid">
                 {/* Platos elaborados */}
                 {platosFiltrados.map(plato => (
-                  <div key={plato.producto_elaborado_id} className="pos-product-card">
+                  <div
+                    key={plato.producto_elaborado_id}
+                    className={`pos-product-card pos-product-card--clickable ${plato.es_personalizable ? 'pos-product-card--armar' : ''}`}
+                    onClick={() => {
+                      triggerHaptic('light');
+                      if (plato.es_personalizable) {
+                        onSelectPlatoParaPersonalizar(plato);
+                      } else {
+                        onQuickAdd(plato);
+                      }
+                    }}
+                    title={plato.es_personalizable ? 'Personalizar bowl' : 'Agregar al pedido'}
+                  >
                     <div className="pos-product-img-wrapper">
                       <img
                         src={plato.imagen_url || './hero_bandejas_nalu.jpg'}
@@ -144,7 +155,7 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
                       </span>
                       {plato.es_personalizable && (
                         <span className="pos-product-armar-badge">
-                          <Sparkles size={10} /> Armar
+                          <Sparkles size={10} /> Personalizar
                         </span>
                       )}
                     </div>
@@ -154,29 +165,9 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
                         <span className="pos-product-price">
                           ${Number(plato.precio_venta).toLocaleString()}
                         </span>
-                        {plato.es_personalizable ? (
-                          <button
-                            className="pos-btn-armar"
-                            onClick={() => {
-                              triggerHaptic('light');
-                              onSelectPlatoParaPersonalizar(plato);
-                            }}
-                            title="Personalizar bowl"
-                          >
-                            <Sparkles size={13} /> Armar
-                          </button>
-                        ) : (
-                          <button
-                            className="pos-btn-add"
-                            onClick={() => {
-                              triggerHaptic('light');
-                              onQuickAdd(plato);
-                            }}
-                            title="Agregar al pedido"
-                          >
-                            <Plus size={16} />
-                          </button>
-                        )}
+                        <span className={plato.es_personalizable ? 'pos-tap-hint pos-tap-hint--armar' : 'pos-tap-hint'}>
+                          {plato.es_personalizable ? <><Sparkles size={11} /> Armar</> : <><Plus size={11} /> Agregar</>}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -184,7 +175,15 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
 
                 {/* Bebidas de reventa */}
                 {reventaFiltrada.map(r => (
-                  <div key={`rev_${r.producto_reventa_id}`} className="pos-product-card">
+                  <div
+                    key={`rev_${r.producto_reventa_id}`}
+                    className="pos-product-card pos-product-card--clickable"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      onQuickAddReventa(r);
+                    }}
+                    title="Agregar bebida"
+                  >
                     <div className="pos-product-img-wrapper">
                       <img
                         src={r.imagen_url || './hero_bandejas_nalu.jpg'}
@@ -202,16 +201,9 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
                         <span className="pos-product-price">
                           ${Number(r.precio_venta).toLocaleString()}
                         </span>
-                        <button
-                          className="pos-btn-add bebida"
-                          onClick={() => {
-                            triggerHaptic('light');
-                            onQuickAddReventa(r);
-                          }}
-                          title="Agregar bebida"
-                        >
-                          <Plus size={16} />
-                        </button>
+                        <span className="pos-tap-hint">
+                          <Plus size={11} /> Agregar
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -224,7 +216,7 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
           <div className={`pos-cart-wrapper ${mobileTab !== 'pedido' ? 'pos-hidden-mobile' : ''}`}>
             <div className="pos-cart-panel">
               <div className="pos-cart-header">
-                <ShoppingBag size={18} color="var(--primary)" />
+                <img src="./Logo_nalu-sinfondo.png" alt="Nalú" className="pos-cart-header-logo" />
                 <span>Tu Pedido</span>
                 {cartCount > 0 && (
                   <span className="pos-cart-badge">{cartCount}</span>

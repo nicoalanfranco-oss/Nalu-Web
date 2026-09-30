@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X, CheckCircle, Bike, Store, ArrowRight, ShieldCheck, Send,
   MapPin, Navigation, ExternalLink, CreditCard, Banknote, Smartphone,
@@ -93,14 +93,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [buscandoGps, setBuscandoGps] = useState(false);
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
 
-  const googleBtnRef = useRef<HTMLDivElement>(null);
-
-  // Inicializar Google Identity Services
+  // Inicializar Google One Tap — aparece automáticamente si hay sesión activa
   useEffect(() => {
     let timer: any;
     const checkGoogle = () => {
       const g = (window as any).google;
-      if (g?.accounts?.id && googleBtnRef.current) {
+      if (g?.accounts?.id) {
         try {
           g.accounts.id.initialize({
             client_id: GOOGLE_CLIENT_ID,
@@ -115,17 +113,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 }
               }
             },
+            auto_select: true,       // selecciona automáticamente si hay 1 sola cuenta
+            cancel_on_tap_outside: false,
           });
-
-          g.accounts.id.renderButton(googleBtnRef.current, {
-            theme: 'filled_blue',
-            size: 'medium',
-            text: 'continue_with',
-            shape: 'pill',
-            locale: 'es',
-          });
+          // One Tap silencioso — muestra el popup del browser si el usuario está logueado en Google
+          g.accounts.id.prompt();
         } catch (e) {
-          console.warn('Error inicializando Google Identity:', e);
+          console.warn('Error inicializando Google One Tap:', e);
         }
       } else {
         timer = setTimeout(checkGoogle, 300);
@@ -439,50 +433,36 @@ ${notas.trim() ? `\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
             </div>
           )}
 
-          {/* ── 1. Google Account Hook / Autocompletar ── */}
-          <div style={{ background: 'var(--bg-sand)', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
-            {googleUser ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {googleUser.picture ? (
-                  <img
-                    src={googleUser.picture}
-                    alt=""
-                    style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid var(--primary)' }}
-                  />
-                ) : (
-                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
-                    G
-                  </div>
-                )}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--text-main)' }}>{googleUser.name}</span>
-                    <span style={{ fontSize: '0.68rem', background: '#DCFCE7', color: '#166534', padding: '2px 6px', borderRadius: 'var(--radius-full)', fontWeight: 700 }}>Google</span>
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {googleUser.email}
-                  </div>
+          {/* ── 1. Datos pre-cargados desde Google (One Tap silencioso) ── */}
+          {googleUser && (
+            <div style={{ background: 'var(--bg-sand)', padding: '12px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {googleUser.picture ? (
+                <img
+                  src={googleUser.picture}
+                  alt=""
+                  style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid var(--primary)', flexShrink: 0 }}
+                />
+              ) : (
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0 }}>G</div>
+              )}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-main)' }}>{googleUser.name}</span>
+                  <span style={{ fontSize: '0.65rem', background: '#DCFCE7', color: '#166534', padding: '2px 6px', borderRadius: 'var(--radius-full)', fontWeight: 700 }}>Google ✓</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setGoogleUser(null);
-                    localStorage.removeItem('nalu_google_user');
-                  }}
-                  style={{ fontSize: '0.72rem', color: 'var(--primary)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
-                >
-                  Cambiar
-                </button>
-              </div>
-            ) : (
-              <div>
-                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>⚡ Autocompletar datos con tu cuenta de Google:</span>
+                <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  Datos pre-cargados · {googleUser.email}
                 </div>
-                <div ref={googleBtnRef} style={{ minHeight: '38px', display: 'flex', justifyContent: 'center' }} />
               </div>
-            )}
-          </div>
+              <button
+                type="button"
+                onClick={() => { setGoogleUser(null); localStorage.removeItem('nalu_google_user'); }}
+                style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '4px', flexShrink: 0 }}
+              >
+                ×
+              </button>
+            </div>
+          )}
 
           {/* ── 2. Tipo de Entrega ── */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
