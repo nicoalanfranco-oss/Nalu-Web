@@ -865,13 +865,14 @@ button {
   align-items: center;
   gap: 10px;
   overflow-x: auto;
-  scrollbar-width: none;
   -ms-overflow-style: none;
   padding-bottom: 4px;
 }
 
 .categories-scroll::-webkit-scrollbar {
   display: none;
+  width: 0;
+  height: 0;
 }
 
 .category-tab-btn {
@@ -1302,11 +1303,13 @@ button {
   border-bottom: 1px solid var(--border-light);
   padding: 10px 16px;
   overflow-x: auto;
-  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .customizer-stepper-wrapper::-webkit-scrollbar {
   display: none;
+  width: 0;
+  height: 0;
 }
 
 .customizer-stepper {
@@ -1370,13 +1373,14 @@ button {
   justify-content: space-between;
   gap: 12px;
   overflow-x: auto;
-  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
 .live-bowl-bar::-webkit-scrollbar,
 .live-bowl-chips::-webkit-scrollbar {
   display: none;
+  width: 0;
+  height: 0;
 }
 
 .live-bowl-chips {
@@ -1385,8 +1389,17 @@ button {
   gap: 6px;
   overflow-x: auto;
   flex: 1;
-  scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+/* Soporte moderno condicional para navegadores compatibles (Firefox/Chromium 121+) */
+@supports (scrollbar-width: none) {
+  .categories-scroll,
+  .customizer-stepper-wrapper,
+  .live-bowl-bar,
+  .live-bowl-chips {
+    scrollbar-width: none;
+  }
 }
 
 .live-bowl-chip {
