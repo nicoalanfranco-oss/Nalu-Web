@@ -1,10 +1,12 @@
-const CACHE_NAME = 'nalu-poke-v5';
+const CACHE_NAME = 'nalu-poke-v6';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/pwa-192x192.png',
   '/pwa-512x512.png',
+  '/pwa-maskable-192x192.png',
+  '/pwa-maskable-512x512.png',
   '/Logo_nalu.PNG',
   '/Logo_nalu-sinfondo.png',
   '/hero_bandejas_nalu.jpg',
