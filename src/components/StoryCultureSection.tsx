@@ -67,12 +67,8 @@ export const StoryCultureSection: React.FC = () => {
       <div className="page-container">
         <div className={`story-layout scroll-reveal ${isVisible ? 'revealed' : ''}`}>
           
-          {/* Columna de Texto Cultura & Filosofía Nalú */}
-          <div className="story-text-col" style={{ position: 'relative' }}>
-            {/* Marca de agua: logo grande transparente al fondo izquierdo */}
-            <div className="story-watermark-logo">
-              <img src="./Logo_nalu-sinfondo.png" alt="" aria-hidden="true" />
-            </div>
+          {/* Fila 1 - Columna Izquierda: Encabezado Filosofía Nalú */}
+          <div className="story-header-block">
             <span className="badge-tag green">
               <Waves size={14} /> FILOSOFÍA NALÚ
             </span>
@@ -85,52 +81,56 @@ export const StoryCultureSection: React.FC = () => {
             <p className="story-description">
               Nacimos con la convicción de que alimentarse de forma saludable debe ser un momento placentero, colorido y lleno de sabor. En Nalú combinamos la tradición hawaiana del poke con una mirada moderna de nutrición equilibrada.
             </p>
-
-            <div className="story-values-grid">
-              {valores.map((val, idx) => (
-                <div
-                  key={idx}
-                  className={`story-value-card scroll-reveal ${isVisible ? 'revealed' : ''}`}
-                  style={{ transitionDelay: isVisible ? `${200 + idx * 100}ms` : '0ms' }}
-                >
-                  <div className="story-value-icon">{val.icon}</div>
-                  <h4>{val.title}</h4>
-                  <p>{val.desc}</p>
-                </div>
-              ))}
-            </div>
           </div>
 
-          {/* Columna Visual con Slider Sutil de Fotos */}
-          <div className={`story-visual-col scroll-reveal ${isVisible ? 'revealed' : ''}`} style={{ transitionDelay: '150ms' }}>
-            <div className="story-photo-frame">
-              <img
-                src={photos[currentIndex].url}
-                alt="Cultura Nalú Poke"
-                className={`story-photo-img ${isTransitioning ? 'fading' : ''}`}
-              />
-              <div className="story-photo-caption">
-                <Sparkles size={16} color="var(--primary)" />
-                <span>{photos[currentIndex].caption}</span>
-              </div>
+          {/* Fila 1 - Columna Derecha: Marca de Agua Nalú elevada */}
+          <div className="story-watermark-block">
+            <img src="./Logo_nalu-sinfondo.png" alt="Nalú Poke" aria-hidden="true" />
+          </div>
 
-              {/* Dots de navegación */}
-              <div className="story-photo-dots">
-                {photos.map((_, i) => (
-                  <button
-                    key={i}
-                    className={`story-dot ${currentIndex === i ? 'active' : ''}`}
-                    onClick={() => {
-                      setIsTransitioning(true);
-                      setTimeout(() => {
-                        setCurrentIndex(i);
-                        setIsTransitioning(false);
-                      }, 300);
-                    }}
-                    aria-label={`Foto ${i + 1}`}
-                  />
-                ))}
+          {/* Fila 2 - Columna Izquierda: Cuadros de Valores */}
+          <div className="story-values-grid">
+            {valores.map((val, idx) => (
+              <div
+                key={idx}
+                className={`story-value-card scroll-reveal ${isVisible ? 'revealed' : ''}`}
+                style={{ transitionDelay: isVisible ? `${200 + idx * 100}ms` : '0ms' }}
+              >
+                <div className="story-value-icon">{val.icon}</div>
+                <h4>{val.title}</h4>
+                <p>{val.desc}</p>
               </div>
+            ))}
+          </div>
+
+          {/* Fila 2 - Columna Derecha: Foto alineada exactamente con los cuadros */}
+          <div className="story-photo-frame">
+            <img
+              src={photos[currentIndex].url}
+              alt="Cultura Nalú Poke"
+              className={`story-photo-img ${isTransitioning ? 'fading' : ''}`}
+            />
+            <div className="story-photo-caption">
+              <Sparkles size={16} color="var(--primary)" />
+              <span>{photos[currentIndex].caption}</span>
+            </div>
+
+            {/* Dots de navegación */}
+            <div className="story-photo-dots">
+              {photos.map((_, i) => (
+                <button
+                  key={i}
+                  className={`story-dot ${currentIndex === i ? 'active' : ''}`}
+                  onClick={() => {
+                    setIsTransitioning(true);
+                    setTimeout(() => {
+                      setCurrentIndex(i);
+                      setIsTransitioning(false);
+                    }, 300);
+                  }}
+                  aria-label={`Foto ${i + 1}`}
+                />
+              ))}
             </div>
           </div>
 

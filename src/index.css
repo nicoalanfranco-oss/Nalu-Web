@@ -1101,15 +1101,40 @@ button {
 
 .story-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 48px;
-  align-items: center;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  column-gap: 48px;
+  row-gap: 20px;
+  align-items: stretch;
 }
 
-.story-text-col {
+.story-header-block {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
+  grid-column: 1;
+  grid-row: 1;
+  justify-content: flex-end;
+}
+
+.story-watermark-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  user-select: none;
+  grid-column: 2;
+  grid-row: 1;
+  padding-bottom: 8px;
+}
+
+.story-watermark-block img {
+  max-width: 340px;
+  width: 80%;
+  height: auto;
+  opacity: 0.28;
+  filter: none;
+  transition: opacity var(--transition-normal);
 }
 
 .story-heading {
@@ -1127,7 +1152,9 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
-  margin-top: 8px;
+  grid-column: 1;
+  grid-row: 2;
+  margin-top: 0;
 }
 
 .story-value-card {
@@ -1160,11 +1187,7 @@ button {
   line-height: 1.45;
 }
 
-/* Columna visual con foto y slider */
-.story-visual-col {
-  position: relative;
-}
-
+/* Marco de foto alineado exactamente con la fila de cuadros */
 .story-photo-frame {
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -1172,7 +1195,10 @@ button {
   border: 4px solid white;
   background: white;
   position: relative;
-  height: 420px;
+  grid-column: 2;
+  grid-row: 2;
+  height: 100%;
+  min-height: 320px;
 }
 
 .story-photo-img {
@@ -1903,21 +1929,37 @@ button {
 
   /* Ajustes Story sección móvil */
   .story-layout {
-    grid-template-columns: 1fr;
-    gap: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
-  .story-text-col {
+  .story-header-block {
+    order: 1;
     align-items: center;
     text-align: center;
   }
 
   .story-values-grid {
+    order: 2;
     grid-template-columns: 1fr;
   }
 
+  .story-watermark-block {
+    order: 3;
+    padding: 10px 0 0 0;
+  }
+
+  .story-watermark-block img {
+    max-width: 220px;
+    width: 60%;
+    opacity: 0.25;
+  }
+
   .story-photo-frame {
+    order: 4;
     height: 300px;
+    min-height: 300px;
   }
 
   /* Ajustes tarjetas del menú en móvil */
@@ -2666,7 +2708,20 @@ button {
   height: 88px !important;
 }
 
-/* Badge de ubicación en navbar */
+/* Badges de cabecera: ubicación y horario */
+.navbar-left-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.navbar-badges-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .navbar-location-badge {
   display: inline-flex;
   align-items: center;
@@ -2677,10 +2732,31 @@ button {
   letter-spacing: 0.04em;
   background: var(--primary-light);
   color: var(--primary);
-  padding: 3px 9px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
   border: 1px solid rgba(255, 90, 54, 0.2);
   white-space: nowrap;
+}
+
+.navbar-schedule-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: var(--secondary-light);
+  color: var(--secondary);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(46, 125, 50, 0.2);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .schedule-days-text {
+    display: none;
+  }
 }
 
 /* PWA install pill inline en navbar */
@@ -2830,31 +2906,8 @@ button {
 }
 
 /* ==========================================================================
-   STORY SECTION – WATERMARK LOGO
+   STORY SECTION – WATERMARK LOGO (Moved above photo in visual column)
    ========================================================================== */
-
-.story-watermark-logo {
-  position: absolute;
-  left: -120px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 0;
-  pointer-events: none;
-  user-select: none;
-}
-
-.story-watermark-logo img {
-  width: 420px;
-  height: auto;
-  opacity: 0.08;
-  filter: grayscale(100%);
-}
-
-/* Asegurar que el contenido de story quede sobre la marca de agua */
-.story-text-col > *:not(.story-watermark-logo) {
-  position: relative;
-  z-index: 1;
-}
 
 /* ==========================================================================
    PWA IOS MODAL (LEGACY)

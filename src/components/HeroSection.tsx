@@ -55,13 +55,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <span className="badge-tag badge-pulse">
                 <Zap size={13} /> 100% SALUDABLE &amp; HIGH-PROTEIN
               </span>
-              <span className="badge-tag green">
-                <Clock size={13} /> {marca.dias_atencion}: {marca.horario_atencion}
-              </span>
             </div>
 
             <h1 className="hero-title">
-              El Auténtico Sabor Hawaiano <br />
+              Un Sabor Diferente <br />
               <span className="highlight">
                 Ahora en Tacuarembó.
                 <svg className="highlight-underline" viewBox="0 0 300 12" preserveAspectRatio="none">
@@ -71,7 +68,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </h1>
 
             <p className="hero-subtitle">
-              Comer rico, sano y con toda la proteína nunca fue tan fácil. Diseñá tu bowl ideal con cortes premium —carne vacuna, pollo teriyaki, atún fresco o camarones— bases nutritivas y aderezos brutales: <strong>máxima nutrición, bajas calorías, una explosión de sabor</strong> que cuida tu cuerpo y tu energía.
+              Comer sano y rico nunca fue tan fácil. Diseñá tu bowl ideal con cortes premium —carne vacuna, pollo teriyaki, atún fresco o camarones— bases nutritivas y aderezos brutales: <strong>máxima nutrición, bajas calorías, una explosión de sabor</strong> que cuida tu cuerpo y tu energía.
             </p>
 
             <div className="hero-cta-group">

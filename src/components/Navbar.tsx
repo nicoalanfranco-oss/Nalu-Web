@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, MapPin, Download, X } from 'lucide-react';
+import { ShoppingBag, MapPin, Download, X, Clock } from 'lucide-react';
 import { TenantInfo, MarcaInfo } from '../types/food';
 
 interface NavbarProps {
@@ -57,8 +57,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="navbar-wrapper">
       <div className="page-container">
         <nav className="navbar">
-          {/* Logo + Location badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Logo + Location badge + Horario */}
+          <div className="navbar-left-group">
             <a href="#" className="navbar-brand">
               <img
                 src="./Logo_nalu-sinfondo.png"
@@ -66,9 +66,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="navbar-logo"
               />
             </a>
-            <span className="navbar-location-badge">
-              <MapPin size={11} /> Tacuarembó
-            </span>
+            <div className="navbar-badges-group">
+              <span className="navbar-location-badge">
+                <MapPin size={11} /> Tacuarembó
+              </span>
+              <span className="navbar-schedule-badge">
+                <Clock size={11} />
+                <span className="schedule-days-text">{marca.dias_atencion}: </span>{marca.horario_atencion}
+              </span>
+            </div>
           </div>
 
           {/* Right side: PWA install pill (inline) + Cart */}

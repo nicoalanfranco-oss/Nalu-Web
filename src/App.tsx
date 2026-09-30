@@ -307,33 +307,37 @@ export const App: React.FC = () => {
       )}
 
       {/* Vista POS completa (reemplaza CartDrawer) */}
-      <NaluPOSView
-        isOpen={isCartOpen}
-        platos={platos}
-        reventa={reventa}
-        cart={cart}
-        onClose={() => setIsCartOpen(false)}
-        onUpdateQty={handleUpdateQty}
-        onRemoveItem={handleRemoveItem}
-        onQuickAdd={handleQuickAddToCart}
-        onQuickAddReventa={handleQuickAddReventa}
-        onSelectPlatoParaPersonalizar={(plato) => {
-          setIsCartOpen(false);
-          handleSelectPlatoParaPersonalizar(plato);
-        }}
-        onOpenCheckout={() => {
-          setIsCartOpen(false);
-          setIsCheckoutOpen(true);
-        }}
-      />
+      {isCartOpen && (
+        <NaluPOSView
+          isOpen={isCartOpen}
+          platos={platos}
+          reventa={reventa}
+          cart={cart}
+          onClose={() => setIsCartOpen(false)}
+          onUpdateQty={handleUpdateQty}
+          onRemoveItem={handleRemoveItem}
+          onQuickAdd={handleQuickAddToCart}
+          onQuickAddReventa={handleQuickAddReventa}
+          onSelectPlatoParaPersonalizar={(plato) => {
+            setIsCartOpen(false);
+            handleSelectPlatoParaPersonalizar(plato);
+          }}
+          onOpenCheckout={() => {
+            setIsCartOpen(false);
+            setIsCheckoutOpen(true);
+          }}
+        />
+      )}
 
       {/* Modal de Checkout / Envío a Cocina */}
-      <CheckoutModal
-        isOpen={isCheckoutOpen}
-        items={cart}
-        onClose={() => setIsCheckoutOpen(false)}
-        onOrderSuccess={handleOrderSuccess}
-      />
+      {isCheckoutOpen && (
+        <CheckoutModal
+          isOpen={isCheckoutOpen}
+          items={cart}
+          onClose={() => setIsCheckoutOpen(false)}
+          onOrderSuccess={handleOrderSuccess}
+        />
+      )}
 
       {/* Pantalla Modal de Pedido Confirmado */}
       {orderSuccessNumber && (

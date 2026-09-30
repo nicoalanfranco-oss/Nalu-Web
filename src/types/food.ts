@@ -104,12 +104,16 @@ export interface CartItem {
 
 export interface OrderCustomerInfo {
   nombre: string;
+  email?: string;
   telefono: string;
   tipo_entrega: 'delivery' | 'takeaway';
   direccion?: string;
   apartamento?: string;
+  google_maps_url?: string;
+  latitud?: number;
+  longitud?: number;
   referencia?: string;
-  metodo_pago: 'efectivo' | 'transferencia' | 'pos_tarjeta';
+  metodo_pago: 'efectivo' | 'transferencia' | 'tarjeta' | 'pos_tarjeta';
   paga_con?: string;
   notas_generales?: string;
 }
