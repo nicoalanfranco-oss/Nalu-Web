@@ -1,10 +1,13 @@
-const CACHE_NAME = 'nalu-poke-v2';
+const CACHE_NAME = 'nalu-poke-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/Logo_nalu-sinfondo.png',
-  '/Logo_nalu.PNG',
+  '/pwa-192x192.png',
+  '/pwa-512x512.png',
+  '/pwa-maskable-192x192.png',
+  '/pwa-maskable-512x512.png',
   '/hero_bandejas_nalu.jpg',
   '/tray_proteinas.jpg',
   '/tray_vegetales.jpg',
@@ -12,13 +15,12 @@ const STATIC_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('SW pre-cache warning:', err);
-      });
-    })
+      return Promise.allSettled(
+        STATIC_ASSETS.map((url) => cache.add(url).catch((err) => console.warn('SW cache miss for', url, err)))
+      );
+    }).then(() => self.skipWaiting())
   );
 });
 
