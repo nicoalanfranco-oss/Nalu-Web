@@ -1,24 +1,38 @@
 {
+  "id": "/",
   "name": "Nalú Poke Bowls",
   "short_name": "Nalú Poke",
   "description": "Bowls saludables y ricos con proteínas premium en Tacuarembó",
-  "start_url": "./",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0f1b0d",
   "theme_color": "#788c50",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "./Logo_nalu-sinfondo.png",
+      "src": "/Logo_nalu-sinfondo.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "./Logo_nalu-sinfondo.png",
+      "src": "/Logo_nalu-sinfondo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/Logo_nalu-sinfondo.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/Logo_nalu-sinfondo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
