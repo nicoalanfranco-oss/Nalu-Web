@@ -4088,3 +4088,678 @@ button {
   }
 }
 
+/* ==========================================================================
+   MOBILE CART FULL-VIEW (mcart-*)
+   Replaces tab-based approach on ≤768px with a single scrollable cart
+   ========================================================================== */
+
+/* The mobile-cart-fullview is hidden on desktop and shown only on mobile */
+.mobile-cart-fullview {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Hide the desktop POS body on mobile */
+  .pos-mobile-tabs,
+  .pos-body,
+  .pos-mobile-cart-bar {
+    display: none !important;
+  }
+
+  /* Show mobile cart full view */
+  .mobile-cart-fullview {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    background: #f4f5f7;
+  }
+}
+
+/* ── Mobile Header ─────────────────────────── */
+.mcart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid #edf0f3;
+  flex-shrink: 0;
+}
+
+.mcart-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mcart-brand-name {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #305342;
+  font-family: var(--font-brand);
+  line-height: 1;
+}
+
+.mcart-brand-sub {
+  display: block;
+  font-size: 0.65rem;
+  color: #9aa0ab;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.mcart-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mcart-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #22a06b;
+  background: #e8f8f0;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+.mcart-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22a06b;
+  display: inline-block;
+  animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.mcart-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f0f2f5;
+  border: none;
+  cursor: pointer;
+  color: #4b5563;
+  transition: background var(--transition-fast);
+}
+
+.mcart-close-btn:hover {
+  background: #e5e7eb;
+}
+
+/* ── Subheader ─────────────────────────────── */
+.mcart-subheader {
+  padding: 10px 16px 8px;
+  background: white;
+  border-bottom: 1px solid #edf0f3;
+  flex-shrink: 0;
+}
+
+.mcart-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.mcart-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1e2329;
+  font-family: var(--font-brand);
+}
+
+.mcart-count-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.mcart-delivery-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #6b7280;
+}
+
+.mcart-delivery-icon {
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+}
+
+.mcart-delivery-text {
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+/* ── Scroll Body ───────────────────────────── */
+.mcart-scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mcart-scroll-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Empty State ───────────────────────────── */
+.mcart-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.mcart-empty-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-body);
+}
+
+.mcart-empty-sub {
+  font-size: 0.82rem;
+}
+
+/* ── Items Section ─────────────────────────── */
+.mcart-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.mcart-section-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #9aa0ab;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mcart-clear-btn {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #9aa0ab;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.mcart-clear-btn:hover {
+  color: #ef4444;
+}
+
+.mcart-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Item Card ─────────────────────────────── */
+.mcart-item-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #edf0f3;
+  box-shadow: 0 2px 8px -2px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.mcart-item-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+}
+
+.mcart-item-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.mcart-item-thumb--placeholder {
+  background: #fff3ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.mcart-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mcart-item-badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.mcart-item-badge--custom {
+  background: rgba(255, 90, 54, 0.1);
+  color: var(--primary);
+}
+
+.mcart-item-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1e2329;
+  margin-bottom: 2px;
+  font-family: var(--font-brand);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mcart-item-mods {
+  font-size: 0.7rem;
+  color: #6b7280;
+  line-height: 1.4;
+  margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mcart-item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 6px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.mcart-item-price {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #1e2329;
+  font-family: var(--font-brand);
+}
+
+.mcart-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mcart-qty-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: var(--radius-full);
+  padding: 4px 8px;
+}
+
+.mcart-qty-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #4b5563;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.mcart-qty-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.mcart-qty-num {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #1e2329;
+  min-width: 14px;
+  text-align: center;
+}
+
+.mcart-remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.mcart-remove-btn:hover {
+  color: #ef4444;
+}
+
+/* ── Upsell Horizontal Scroller ────────────── */
+.mcart-upsell-section {
+  /* no extra background — cards carry the white */
+}
+
+.mcart-upsell-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mcart-upsell-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #1e2329;
+}
+
+.mcart-upsell-sub {
+  font-size: 0.68rem;
+  color: #9aa0ab;
+}
+
+.mcart-upsell-scroller {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+  /* negative margin to allow full bleed scroll feel */
+  margin: 0 -16px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.mcart-upsell-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.mcart-upsell-card {
+  width: 148px;
+  flex-shrink: 0;
+  background: white;
+  border-radius: 14px;
+  border: 1px solid #edf0f3;
+  box-shadow: 0 2px 8px -2px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 10px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.mcart-upsell-card:active {
+  transform: scale(0.97);
+}
+
+.mcart-upsell-card--armar {
+  border-color: rgba(255, 90, 54, 0.2);
+}
+
+.mcart-upsell-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.mcart-upsell-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.mcart-upsell-card:hover .mcart-upsell-img {
+  transform: scale(1.07);
+}
+
+.mcart-upsell-spark {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(255, 90, 54, 0.15);
+  color: var(--primary);
+  border-radius: var(--radius-full);
+  padding: 3px 5px;
+  display: flex;
+  align-items: center;
+}
+
+.mcart-upsell-body {
+  padding: 7px 10px 4px;
+  flex: 1;
+}
+
+.mcart-upsell-cat {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.mcart-upsell-cat--drink {
+  color: var(--sea-blue, #0284c7);
+}
+
+.mcart-upsell-name {
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: #1e2329;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-brand);
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+
+.mcart-upsell-price {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #305342;
+  font-family: var(--font-brand);
+}
+
+.mcart-upsell-add-row {
+  padding: 0 10px;
+}
+
+.mcart-upsell-add-btn {
+  display: block;
+  width: 100%;
+  padding: 5px 0;
+  border-radius: 8px;
+  background: #e8f8f0;
+  color: #22a06b;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-align: center;
+  transition: background var(--transition-fast);
+}
+
+.mcart-upsell-card:hover .mcart-upsell-add-btn {
+  background: #d1f2e2;
+}
+
+.mcart-upsell-add-btn--drink {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.mcart-upsell-card:hover .mcart-upsell-add-btn--drink {
+  background: #dbeafe;
+}
+
+/* ── Summary Card ──────────────────────────── */
+.mcart-summary-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #edf0f3;
+  box-shadow: 0 2px 8px -2px rgba(0,0,0,0.05);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mcart-summary-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9aa0ab;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 8px;
+  margin-bottom: 2px;
+}
+
+.mcart-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: #4b5563;
+}
+
+.mcart-summary-row--note span:last-child {
+  color: #9aa0ab;
+  font-size: 0.72rem;
+}
+
+.mcart-summary-divider {
+  height: 1px;
+  background: #f3f4f6;
+}
+
+.mcart-summary-total {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e2329;
+}
+
+.mcart-summary-total strong {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #1e2329;
+  font-family: var(--font-brand);
+}
+
+/* ── Note text ─────────────────────────────── */
+.mcart-note {
+  font-size: 0.7rem;
+  text-align: center;
+  color: #9aa0ab;
+  padding: 0 8px;
+}
+
+/* ── Sticky Footer Checkout ────────────────── */
+.mcart-sticky-footer {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid #edf0f3;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  padding: 12px 16px 20px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.mcart-footer-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mcart-footer-total-label {
+  font-size: 0.88rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.mcart-footer-total-amount {
+  font-size: 1.65rem;
+  font-weight: 900;
+  color: #1e2329;
+  font-family: var(--font-brand);
+  letter-spacing: -0.01em;
+}
+
+.mcart-checkout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, var(--primary) 0%, #FF3D17 100%);
+  color: white;
+  border: none;
+  border-radius: 18px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(249, 81, 51, 0.3);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mcart-checkout-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(249, 81, 51, 0.25);
+}
+
