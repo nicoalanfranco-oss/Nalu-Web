@@ -359,61 +359,71 @@ button {
    Opacidad: 0.12 (3x más visible que la versión anterior).
    ========================================================================== */
 
-/* Contenedor: solo recorta el overflow, sin transform propio */
+/* Contenedor rotado: el grid de logos queda inclinado diagonal.
+   Las strips animarán horizontalmente en su espacio local →
+   el usuario ve el movimiento como DIAGONAL (flechas arriba-izquierda). */
 .hero-logo-wave-bg {
   position: absolute;
-  inset: 0;
+  inset: -25% -15%;          /* Bleed amplio para que la rotación no corte bordes */
   pointer-events: none;
   z-index: 0;
-  overflow: hidden;
+  overflow: visible;          /* Visible: el clip lo hace el .hero-section padre */
+
+  /* Rotación diagonal del grid completo — efecto monograma clásico */
+  transform: rotate(-18deg) translateZ(0);
+  transform-origin: center center;
 }
 
 /* ── Strip individual ────────────────────────────────────────────────────── */
 .hero-wave-strip {
   position: absolute;
-  left: -60px;   /* bleed lateral para ocultar el borde del scroll */
-  right: -60px;
+  left: 0;
+  right: 0;
   background-image: url('/Logo_nalu-sinfondo.png');
   background-repeat: repeat-x;
-  background-size: 100px 48px;   /* tile horizontal; ~48px de alto por fila */
+  background-size: 100px 48px;
   background-position-y: center;
-  opacity: 0.12;
+  opacity: 0.13;
 
   will-change: background-position-x, transform;
 
   /* Dos animaciones simultáneas:
-     1. waveRoll  → scroll horizontal continuo (la ola "corre")
-     2. waveSwell → oscilación vertical suave (el "vaivén" del mar)   */
+     1. waveRoll  → scroll en el espacio local del contenedor rotado
+                    → el usuario percibe movimiento DIAGONAL ↗ 
+     2. waveSwell → oscilación vertical que simula el sube/baja de las olas
+                    (amplitud aumentada a ±14px para hacerse visible) */
   animation:
-    waveRoll  7s linear      infinite,
-    waveSwell 5s ease-in-out infinite;
+    waveRoll  6s linear      infinite,
+    waveSwell 4.5s ease-in-out infinite;
 
-  /* Delays escalonados negativos: cada strip ya está I*0.78s dentro del ciclo
-     → crea el frente de ola diagonal sin necesidad de JS ni offsets manuales */
+  /* Delays negativos escalonados → cada fila ya lleva I*0.67s de ventaja
+     → crea el frente de ola que "corre" de abajo hacia arriba por el grid */
   animation-delay:
-    calc(var(--i, 0) * -0.78s),
-    calc(var(--i, 0) * -0.55s);
+    calc(var(--i, 0) * -0.67s),
+    calc(var(--i, 0) * -0.5s);
 }
 
-/* ── Keyframe 1: scroll horizontal lineal y sin fin ─────────────────────── */
+/* ── Keyframe 1: scroll horizontal → diagonal por la rotación del padre ──── */
 @keyframes waveRoll {
   from { background-position-x: 0px;    }
-  to   { background-position-x: -100px; } /* exactamente 1 tile → loop perfecto */
+  to   { background-position-x: -100px; }  /* = 1 tile → loop perfecto */
 }
 
-/* ── Keyframe 2: oscilación vertical suave por fila ─────────────────────── */
+/* ── Keyframe 2: ondulación vertical por fila (amplitud bien visible) ─────── */
 @keyframes waveSwell {
-  0%, 100% { transform: translateY(0px);  }
-  50%       { transform: translateY(-7px); }
+  0%   { transform: translateY(0px);   }
+  25%  { transform: translateY(-14px); }  /* Sube — cresta de ola */
+  50%  { transform: translateY(0px);   }
+  75%  { transform: translateY(6px);   }  /* Baja leve — valle de ola */
+  100% { transform: translateY(0px);   }
 }
 
 /* ── Optimización móvil ──────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .hero-wave-strip {
-    opacity: 0.085;
+    opacity: 0.09;
     background-size: 80px 38px;
-    /* Más lento en móvil = menos trabajo para la GPU */
-    animation-duration: 11s, 7s;
+    animation-duration: 9s, 6.5s;
   }
 }
 
