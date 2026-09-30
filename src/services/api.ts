@@ -98,7 +98,7 @@ export const REAL_GRUPOS: GrupoOpciones[] = (realData.gruposOpciones as any[]).m
 }));
 
 const MEMORY_CACHE_KEY = 'nalu_catalogo_cache_v1';
-const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutos en el navegador del cliente
+const CACHE_TTL_MS = 0; // 3 minutos en el navegador del cliente
 
 export async function fetchNaluCatalogo(): Promise<{
   elaborados: ProductoElaborado[];

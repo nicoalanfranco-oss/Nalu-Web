@@ -7,7 +7,7 @@ import {
 import { CartItem, MarcaInfo } from '../types/food';
 import { sendOrderToFood } from '../services/api';
 
-const GOOGLE_CLIENT_ID = '155705188950-e0tos26nod90liv2j7p508ai6v9u8c4f.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '713780303554-41bctfqdhvu5nc81sctj1qci2mvekviu.apps.googleusercontent.com';
 
 interface CheckoutModalProps {
   isOpen: boolean;
