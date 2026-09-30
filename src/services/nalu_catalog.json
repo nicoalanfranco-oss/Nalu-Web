@@ -783,5 +783,79 @@
         }
       ]
     }
+  ],
+  "reventa": [
+    {
+      "producto_reventa_id": 4,
+      "tenant_id": 1,
+      "marca_id": null,
+      "nombre": "Agua Con Gas Salus 600ml",
+      "categoria": "Bebidas",
+      "precio_venta": 95,
+      "stock_actual": 0,
+      "unidad": "unidad",
+      "imagen_url": "/ingredients/reventa_4.webp",
+      "activo": true
+    },
+    {
+      "producto_reventa_id": 3,
+      "tenant_id": 1,
+      "marca_id": null,
+      "nombre": "Agua Sin Gas Salus 600ml",
+      "categoria": "Bebidas",
+      "precio_venta": 95,
+      "stock_actual": 0,
+      "unidad": "unidad",
+      "imagen_url": "/ingredients/reventa_3.webp",
+      "activo": true
+    },
+    {
+      "producto_reventa_id": 6,
+      "tenant_id": 1,
+      "marca_id": 2,
+      "nombre": "Cerveza Corona 330ml",
+      "categoria": "Bebidas",
+      "precio_venta": 170,
+      "stock_actual": 0,
+      "unidad": "unidad",
+      "imagen_url": "/ingredients/reventa_6.webp",
+      "activo": true
+    },
+    {
+      "producto_reventa_id": 5,
+      "tenant_id": 1,
+      "marca_id": null,
+      "nombre": "Paso de los Toros Pomelo 600ml",
+      "categoria": "Bebidas",
+      "precio_venta": 110,
+      "stock_actual": 0,
+      "unidad": "unidad",
+      "imagen_url": "/ingredients/reventa_5.webp",
+      "activo": true
+    },
+    {
+      "producto_reventa_id": 2,
+      "tenant_id": 1,
+      "marca_id": null,
+      "nombre": "Pepsi Black 600ml",
+      "categoria": "Bebidas",
+      "precio_venta": 110,
+      "stock_actual": 0,
+      "unidad": "unidad",
+      "imagen_url": "/ingredients/reventa_2.webp",
+      "activo": true
+    },
+    {
+      "producto_reventa_id": 1,
+      "tenant_id": 1,
+      "marca_id": null,
+      "nombre": "Pepsi Común 600ml",
+      "categoria": "Bebidas",
+      "precio_venta": 110,
+      "stock_actual": 0,
+      "unidad": "unidad",
+      "imagen_url": "/ingredients/reventa_1.webp",
+      "activo": true
+    }
   ]
 }

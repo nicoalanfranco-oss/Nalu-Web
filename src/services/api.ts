@@ -47,6 +47,21 @@ export const REAL_PLATOS: ProductoElaborado[] = (realData.platos as any[]).map(p
   insumos_receta: [],
 }));
 
+export const REAL_REVENTA: ProductoReventa[] = ((realData as any).reventa as any[] || []).map(r => ({
+  producto_reventa_id: r.producto_reventa_id,
+  tenant_id: r.tenant_id,
+  marca_id: r.marca_id,
+  nombre: r.nombre,
+  categoria: r.categoria || 'Bebidas',
+  precio_venta: Number(r.precio_venta),
+  costo_unitario: 0,
+  stock_actual: r.stock_actual || 10,
+  stock_minimo: 5,
+  unidad: r.unidad || 'unidad',
+  imagen_url: r.imagen_url || `/ingredients/reventa_${r.producto_reventa_id}.jpg`,
+  activo: Boolean(r.activo),
+}));
+
 export const REAL_GRUPOS: GrupoOpciones[] = (realData.gruposOpciones as any[]).map(g => ({
   grupo_id: g.grupo_id,
   producto_elaborado_id: g.producto_elaborado_id,
@@ -81,7 +96,13 @@ export async function fetchNaluCatalogo(): Promise<{
             precio_venta: Number(p.precio_venta),
             imagen_url: p.imagen_url || DEFAULT_PLATO_IMGS[p.producto_elaborado_id] || '/hero_bandejas_nalu.jpg',
           })),
-          reventa: (data.reventa || []).filter((r: any) => r.marca_id === 1 || !r.marca_id),
+          reventa: (data.reventa && data.reventa.length > 0)
+            ? data.reventa.map((r: any) => ({
+                ...r,
+                precio_venta: Number(r.precio_venta),
+                imagen_url: r.imagen_url || `/ingredients/reventa_${r.producto_reventa_id}.jpg`,
+              }))
+            : REAL_REVENTA,
           gruposOpciones: (data.gruposOpciones || []).length > 0 ? (data.gruposOpciones as any[]).map(g => ({
             grupo_id: g.grupo_id,
             producto_elaborado_id: g.producto_elaborado_id,
@@ -107,7 +128,7 @@ export async function fetchNaluCatalogo(): Promise<{
 
   return {
     elaborados: REAL_PLATOS,
-    reventa: [],
+    reventa: REAL_REVENTA,
     gruposOpciones: REAL_GRUPOS,
     tenant: TENANT_INFO,
     marca: MARCA_INFO,

@@ -1,21 +1,21 @@
 {
   "name": "Nalú Poke Bowls",
   "short_name": "Nalú Poke",
-  "description": "El auténtico sabor hawaiano en Tacuarembó. Pokes de autor y arma tu bowl a medida con materias primas frescas.",
-  "start_url": "/",
+  "description": "Bowls saludables y ricos con proteínas premium en Tacuarembó",
+  "start_url": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#FAF8F5",
+  "background_color": "#0f1b0d",
   "theme_color": "#788c50",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "/Logo_nalu-sinfondo.png",
+      "src": "./Logo_nalu-sinfondo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/Logo_nalu-sinfondo.png",
+      "src": "./Logo_nalu-sinfondo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

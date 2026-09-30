@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Utensils, MapPin, Clock, ArrowRight, Bike, Store, Star, Users } from 'lucide-react';
+import { Sparkles, Utensils, Clock, ArrowRight, Bike, Store, Star, Zap } from 'lucide-react';
 import { MarcaInfo, TenantInfo } from '../types/food';
 
 interface HeroSectionProps {
@@ -53,7 +53,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <div className={`hero-content ${isLoaded ? 'hero-animate-in' : ''}`}>
             <div className="hero-badges-row">
               <span className="badge-tag badge-pulse">
-                <MapPin size={13} /> TACUAREMBÓ • AV. JORGE BATLLE IBÁÑEZ
+                <Zap size={13} /> 100% SALUDABLE &amp; HIGH-PROTEIN
               </span>
               <span className="badge-tag green">
                 <Clock size={13} /> {marca.dias_atencion}: {marca.horario_atencion}
@@ -71,7 +71,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </h1>
 
             <p className="hero-subtitle">
-              Descubre en <strong>{tenant.direccion}</strong> la experiencia de armar tu Poke Bowl a medida. Disfruta tierna carne vacuna seleccionada, pollo teriyaki, atún fresco marinado, cerdo barbacoa o camarones premium combinados con vegetales de la huerta y aderezos de autor.
+              Comer rico, sano y con toda la proteína nunca fue tan fácil. Diseñá tu bowl ideal con cortes premium —carne vacuna, pollo teriyaki, atún fresco o camarones— bases nutritivas y aderezos brutales: <strong>máxima nutrición, bajas calorías, una explosión de sabor</strong> que cuida tu cuerpo y tu energía.
             </p>
 
             <div className="hero-cta-group">
@@ -142,7 +142,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <div className={`hero-visual-wrapper ${isLoaded ? 'hero-visual-animate' : ''}`}>
             <div className="hero-visual-card">
               <img
-                src="/hero_bandejas_nalu.jpg"
+                src="./hero_bandejas_nalu.jpg"
                 alt="Presentación de ingredientes frescos y Poke Bowl Nalú"
                 className="hero-image-main"
               />

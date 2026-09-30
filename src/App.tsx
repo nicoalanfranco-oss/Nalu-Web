@@ -7,11 +7,11 @@ import { StoryCultureSection } from './components/StoryCultureSection';
 import { PokeCustomizerModal } from './components/PokeCustomizerModal';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
+import { NaluPOSView } from './components/NaluPOSView';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
 import { ToastNotification, ToastData } from './components/ToastNotification';
-import { PWAInstallBanner } from './components/PWAInstallBanner';
-import { ProductoElaborado, GrupoOpciones, CartItem, TenantInfo, MarcaInfo } from './types/food';
+import { ProductoElaborado, ProductoReventa, GrupoOpciones, CartItem, TenantInfo, MarcaInfo } from './types/food';
 import { fetchNaluCatalogo, TENANT_INFO, MARCA_INFO } from './services/api';
 import { CheckCircle2, Sparkles, MessageCircle, ArrowRight, WifiOff } from 'lucide-react';
 
@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const [tenant, setTenant] = useState<TenantInfo>(TENANT_INFO);
   const [marca, setMarca] = useState<MarcaInfo>(MARCA_INFO);
   const [platos, setPlatos] = useState<ProductoElaborado[]>([]);
+  const [reventa, setReventa] = useState<ProductoReventa[]>([]);
   const [grupos, setGrupos] = useState<GrupoOpciones[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
@@ -70,6 +71,7 @@ export const App: React.FC = () => {
       setLoading(true);
       const data = await fetchNaluCatalogo();
       setPlatos(data.elaborados);
+      setReventa(data.reventa || []);
       setGrupos(data.gruposOpciones);
       if (data.tenant) setTenant(data.tenant);
       if (data.marca) setMarca(data.marca);
@@ -146,7 +148,24 @@ export const App: React.FC = () => {
       precio_base: Number(plato.precio_venta),
       precio_unitario: Number(plato.precio_venta),
       cantidad: 1,
-      imagen_url: plato.imagen_url || '/hero_bandejas_nalu.jpg',
+      imagen_url: plato.imagen_url || './hero_bandejas_nalu.jpg',
+      modificadores: [],
+    };
+    handleAddToCart(cartItem, false);
+  };
+
+  // Quick add para productos de reventa (bebidas)
+  const handleQuickAddReventa = (r: ProductoReventa) => {
+    const cartItem: CartItem = {
+      id: `rev_${r.producto_reventa_id}_${Date.now()}`,
+      producto_id: r.producto_reventa_id,
+      tipo: 'reventa',
+      nombre: r.nombre,
+      categoria: r.categoria || 'Bebidas',
+      precio_base: Number(r.precio_venta),
+      precio_unitario: Number(r.precio_venta),
+      cantidad: 1,
+      imagen_url: r.imagen_url || './hero_bandejas_nalu.jpg',
       modificadores: [],
     };
     handleAddToCart(cartItem, false);
@@ -216,8 +235,7 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {/* Banner de instalación PWA para móvil y desktop */}
-      <PWAInstallBanner />
+      {/* Banner de instalación PWA: ahora integrado dentro de Navbar */}
 
       {/* Barra de Navegación Principal */}
       <Navbar
@@ -242,9 +260,11 @@ export const App: React.FC = () => {
 
         <MenuSection
           platos={platos}
+          reventa={reventa}
           loading={loading}
           onSelectPlatoParaPersonalizar={handleSelectPlatoParaPersonalizar}
           onQuickAddToCart={handleQuickAddToCart}
+          onQuickAddReventa={handleQuickAddReventa}
         />
 
         <StoryCultureSection />
@@ -286,13 +306,21 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* Carrito Lateral Deslizante */}
-      <CartDrawer
+      {/* Vista POS completa (reemplaza CartDrawer) */}
+      <NaluPOSView
         isOpen={isCartOpen}
-        items={cart}
+        platos={platos}
+        reventa={reventa}
+        cart={cart}
         onClose={() => setIsCartOpen(false)}
         onUpdateQty={handleUpdateQty}
         onRemoveItem={handleRemoveItem}
+        onQuickAdd={handleQuickAddToCart}
+        onQuickAddReventa={handleQuickAddReventa}
+        onSelectPlatoParaPersonalizar={(plato) => {
+          setIsCartOpen(false);
+          handleSelectPlatoParaPersonalizar(plato);
+        }}
         onOpenCheckout={() => {
           setIsCartOpen(false);
           setIsCheckoutOpen(true);

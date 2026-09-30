@@ -1,5 +1,5 @@
-import React from 'react';
-import { ShoppingBag, Sparkles, MapPin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ShoppingBag, MapPin, Download, X } from 'lucide-react';
 import { TenantInfo, MarcaInfo } from '../types/food';
 
 interface NavbarProps {
@@ -17,48 +17,84 @@ export const Navbar: React.FC<NavbarProps> = ({
   cartCount,
   cartTotal,
   onOpenCart,
-  onOpenCustomizer,
 }) => {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstall, setShowInstall] = useState(false);
+
+  useEffect(() => {
+    const dismissed = localStorage.getItem('nalu_pwa_dismissed');
+    if (dismissed && Date.now() - Number(dismissed) < 7 * 24 * 60 * 60 * 1000) return;
+
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true;
+    if (isStandalone) return;
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstall(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') setShowInstall(false);
+      setDeferredPrompt(null);
+    }
+  };
+
+  const handleDismissInstall = () => {
+    setShowInstall(false);
+    localStorage.setItem('nalu_pwa_dismissed', Date.now().toString());
+  };
+
   return (
     <header className="navbar-wrapper">
       <div className="page-container">
         <nav className="navbar">
-          {/* Logo Oficial de Nalú */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          {/* Logo + Location badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <a href="#" className="navbar-brand">
               <img
-                src="/Logo_nalu-sinfondo.png"
+                src="./Logo_nalu-sinfondo.png"
                 alt="Nalú Poke Bowls"
                 className="navbar-logo"
               />
             </a>
-            <span style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              fontSize: '0.74rem',
-              fontWeight: 700,
-              background: 'var(--secondary-light)',
-              color: 'var(--secondary)',
-              padding: '3px 10px',
-              borderRadius: 'var(--radius-full)',
-              border: '1px solid rgba(120, 140, 80, 0.25)'
-            }}>
-              <MapPin size={12} /> Tacuarembó
+            <span className="navbar-location-badge">
+              <MapPin size={11} /> Tacuarembó
             </span>
           </div>
 
-          {/* Acciones y Carrito */}
+          {/* Right side: PWA install pill (inline) + Cart */}
           <div className="navbar-actions">
-            <button
-              onClick={onOpenCustomizer}
-              className="btn-primary"
-              style={{ padding: '8px 18px', fontSize: '0.85rem' }}
-              title="Arma tu Poke personalizado"
-            >
-              <Sparkles size={16} />
-              <span>Armar Poke</span>
-            </button>
+            {showInstall && (
+              <div className="navbar-pwa-pill">
+                <img src="./Logo_nalu-sinfondo.png" alt="" className="navbar-pwa-logo" />
+                <span className="navbar-pwa-text">Instalar app</span>
+                <button
+                  type="button"
+                  onClick={handleInstall}
+                  className="navbar-pwa-install-btn"
+                  title="Instalar Nalú Poke"
+                >
+                  <Download size={12} />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDismissInstall}
+                  className="navbar-pwa-close-btn"
+                  aria-label="Cerrar"
+                >
+                  <X size={11} />
+                </button>
+              </div>
+            )}
 
             <button
               onClick={onOpenCart}

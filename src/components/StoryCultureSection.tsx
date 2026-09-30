@@ -68,7 +68,11 @@ export const StoryCultureSection: React.FC = () => {
         <div className={`story-layout scroll-reveal ${isVisible ? 'revealed' : ''}`}>
           
           {/* Columna de Texto Cultura & Filosofía Nalú */}
-          <div className="story-text-col">
+          <div className="story-text-col" style={{ position: 'relative' }}>
+            {/* Marca de agua: logo grande transparente al fondo izquierdo */}
+            <div className="story-watermark-logo">
+              <img src="./Logo_nalu-sinfondo.png" alt="" aria-hidden="true" />
+            </div>
             <span className="badge-tag green">
               <Waves size={14} /> FILOSOFÍA NALÚ
             </span>

@@ -1,13 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, Sparkles } from 'lucide-react';
-import { ProductoElaborado } from '../types/food';
+import { ProductoElaborado, ProductoReventa } from '../types/food';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 interface MenuSectionProps {
   platos: ProductoElaborado[];
+  reventa?: ProductoReventa[];
   loading?: boolean;
   onSelectPlatoParaPersonalizar: (plato: ProductoElaborado) => void;
   onQuickAddToCart: (plato: ProductoElaborado) => void;
+  onQuickAddReventa?: (item: ProductoReventa) => void;
 }
 
 const CATEGORY_EMOJIS: Record<string, string> = {
@@ -21,24 +23,39 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 
 export const MenuSection: React.FC<MenuSectionProps> = ({
   platos,
+  reventa = [],
   loading = false,
   onSelectPlatoParaPersonalizar,
   onQuickAddToCart,
+  onQuickAddReventa,
 }) => {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('todos');
   const { ref: sectionRef, isVisible } = useScrollAnimation({ threshold: 0.05 });
 
-  // Extraer categorías únicas
+  // Extraer categorías únicas (platos + añadir Bebidas si hay reventa)
   const categorias = useMemo(() => {
     const list = Array.from(new Set(platos.map(p => p.categoria || 'Pokes')));
+    if (reventa.length > 0 && !list.includes('Bebidas')) {
+      list.push('Bebidas');
+    }
     return ['todos', ...list];
-  }, [platos]);
+  }, [platos, reventa]);
 
-  // Filtrar platos
+  // Filtrar platos elaborados
   const platosFiltrados = useMemo(() => {
     if (categoriaSeleccionada === 'todos') return platos;
+    if (categoriaSeleccionada === 'Bebidas') return [];
     return platos.filter(p => p.categoria === categoriaSeleccionada);
   }, [platos, categoriaSeleccionada]);
+
+  // Filtrar bebidas de reventa
+  const reventaFiltrada = useMemo(() => {
+    if (categoriaSeleccionada === 'todos' || categoriaSeleccionada === 'Bebidas') return reventa;
+    return [];
+  }, [reventa, categoriaSeleccionada]);
+
+  const showReventa = reventaFiltrada.length > 0;
+  const showPlatos = platosFiltrados.length > 0;
 
   return (
     <section id="menu" className="menu-section" ref={sectionRef}>
@@ -87,71 +104,115 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                 </div>
               </div>
             ))
-          ) : platosFiltrados.map((plato, idx) => {
-            const isCustom = plato.es_personalizable;
+          ) : (
+            <>
+              {/* Platos elaborados */}
+              {showPlatos && platosFiltrados.map((plato, idx) => {
+                const isCustom = plato.es_personalizable;
+                return (
+                  <div
+                    key={plato.producto_elaborado_id}
+                    className={`dish-card scroll-reveal ${isVisible ? 'revealed' : ''}`}
+                    style={{ transitionDelay: isVisible ? `${Math.min(idx * 80, 400)}ms` : '0ms' }}
+                  >
+                    <div className="dish-image-wrapper">
+                      <img
+                        src={plato.imagen_url || './hero_bandejas_nalu.jpg'}
+                        alt={plato.nombre}
+                        className="dish-image"
+                        loading="lazy"
+                      />
+                      {isCustom && (
+                        <span className="dish-custom-badge">
+                          <Sparkles size={12} style={{ display: 'inline', marginRight: 4 }} />
+                          Personalizable
+                        </span>
+                      )}
+                      <div className="dish-image-hover-overlay" />
+                    </div>
 
-            return (
-              <div
-                key={plato.producto_elaborado_id}
-                className={`dish-card scroll-reveal ${isVisible ? 'revealed' : ''}`}
-                style={{ transitionDelay: isVisible ? `${Math.min(idx * 80, 400)}ms` : '0ms' }}
-              >
-                <div className="dish-image-wrapper">
-                  <img
-                    src={plato.imagen_url || '/hero_bandejas_nalu.jpg'}
-                    alt={plato.nombre}
-                    className="dish-image"
-                    loading="lazy"
-                  />
-                  {isCustom && (
-                    <span className="dish-custom-badge">
-                      <Sparkles size={12} style={{ display: 'inline', marginRight: 4 }} />
-                      Personalizable
+                    <div className="dish-body">
+                      <div className="dish-title-row">
+                        <h3 className="dish-title">{plato.nombre}</h3>
+                      </div>
+                      <p className="dish-description">
+                        {plato.descripcion || 'Elaborado artesanalmente con ingredientes seleccionados y aderezos especiales.'}
+                      </p>
+                      <div className="dish-footer-row">
+                        <span className="dish-price">
+                          ${Number(plato.precio_venta).toLocaleString()}
+                        </span>
+                        {isCustom ? (
+                          <button
+                            onClick={() => onSelectPlatoParaPersonalizar(plato)}
+                            className="dish-add-btn dish-add-btn-custom"
+                            title="Armar bowl a medida"
+                          >
+                            <Sparkles size={15} />
+                            <span>Armar Bowl</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => onQuickAddToCart(plato)}
+                            className="dish-add-btn"
+                            title="Agregar directo al pedido"
+                          >
+                            <Plus size={16} />
+                            <span>Agregar</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Bebidas de reventa */}
+              {showReventa && reventaFiltrada.map((r, idx) => (
+                <div
+                  key={`rev_${r.producto_reventa_id}`}
+                  className={`dish-card scroll-reveal ${isVisible ? 'revealed' : ''}`}
+                  style={{ transitionDelay: isVisible ? `${Math.min((platosFiltrados.length + idx) * 80, 500)}ms` : '0ms' }}
+                >
+                  <div className="dish-image-wrapper">
+                    <img
+                      src={r.imagen_url || './hero_bandejas_nalu.jpg'}
+                      alt={r.nombre}
+                      className="dish-image"
+                      loading="lazy"
+                    />
+                    <span className="dish-custom-badge" style={{ background: 'var(--sea-blue)', color: 'white', borderColor: 'transparent' }}>
+                      🥤 Bebida
                     </span>
-                  )}
-
-                  {/* Overlay gradiente sutil en hover */}
-                  <div className="dish-image-hover-overlay" />
-                </div>
-
-                <div className="dish-body">
-                  <div className="dish-title-row">
-                    <h3 className="dish-title">{plato.nombre}</h3>
+                    <div className="dish-image-hover-overlay" />
                   </div>
 
-                  <p className="dish-description">
-                    {plato.descripcion || 'Elaborado artesanalmente con ingredientes seleccionados y aderezos especiales.'}
-                  </p>
-
-                  <div className="dish-footer-row">
-                    <span className="dish-price">
-                      ${Number(plato.precio_venta).toLocaleString()}
-                    </span>
-
-                    {isCustom ? (
+                  <div className="dish-body">
+                    <div className="dish-title-row">
+                      <h3 className="dish-title">{r.nombre}</h3>
+                    </div>
+                    <p className="dish-description">
+                      Bebida fría para acompañar tu bowl. Perfecta para refrescarte.
+                    </p>
+                    <div className="dish-footer-row">
+                      <span className="dish-price">
+                        ${Number(r.precio_venta).toLocaleString()}
+                      </span>
                       <button
-                        onClick={() => onSelectPlatoParaPersonalizar(plato)}
-                        className="dish-add-btn dish-add-btn-custom"
-                        title="Armar bowl a medida"
-                      >
-                        <Sparkles size={15} />
-                        <span>Armar Bowl</span>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => onQuickAddToCart(plato)}
+                        onClick={() => onQuickAddReventa && onQuickAddReventa(r)}
                         className="dish-add-btn"
-                        title="Agregar directo al pedido"
+                        title="Agregar bebida al pedido"
+                        style={{ background: 'linear-gradient(135deg, var(--sea-blue), #0369a1)' }}
                       >
                         <Plus size={16} />
                         <span>Agregar</span>
                       </button>
-                    )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              ))}
+            </>
+          )}
         </div>
       </div>
     </section>
