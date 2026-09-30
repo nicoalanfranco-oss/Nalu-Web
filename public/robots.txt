@@ -1,0 +1,20 @@
+﻿# robots.txt — Nalú Poke Bowls
+# Sitio: https://naludeuna.com.uy
+# Actualizado: 2026-09-30
+
+User-agent: *
+Allow: /
+
+# No indexar assets internos
+Disallow: /src/
+Disallow: /*.json$
+
+# Permitir imágenes y assets públicos
+Allow: /Logo_nalu*.png
+Allow: /Logo_nalu*.PNG
+Allow: /ingredients/
+Allow: /pwa-*.png
+Allow: /hero_*.jpg
+
+# Sitemap
+Sitemap: https://naludeuna.com.uy/sitemap.xml

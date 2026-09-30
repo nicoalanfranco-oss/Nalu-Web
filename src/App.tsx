@@ -13,6 +13,7 @@ import { Footer } from './components/Footer';
 import { ToastNotification, ToastData } from './components/ToastNotification';
 import { ProductoElaborado, ProductoReventa, GrupoOpciones, CartItem, TenantInfo, MarcaInfo } from './types/food';
 import { fetchNaluCatalogo, TENANT_INFO, MARCA_INFO } from './services/api';
+import { useStructuredData } from './hooks/useStructuredData';
 import { CheckCircle2, Sparkles, MessageCircle, ArrowRight, WifiOff } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -79,6 +80,9 @@ export const App: React.FC = () => {
     };
     load();
   }, []);
+
+  // JSON-LD Schema.org dinámico — se actualiza con los datos de la BD
+  useStructuredData({ tenant, marca, platos, reventa });
 
   // Totales de carrito
   const cartCount = cart.reduce((acc, it) => acc + it.cantidad, 0);
