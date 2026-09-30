@@ -244,7 +244,22 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
 
   return (
     <section id="menu" className="menu-section" ref={sectionRef}>
-      <div className="page-container">
+      {/* Fondo Ola Dinámica — reutiliza las clases del Hero */}
+      <div className="hero-logo-wave-bg" aria-hidden="true">
+        {Array.from({ length: 9 }, (_, i) => (
+          <div
+            key={i}
+            className="hero-wave-strip"
+            style={{
+              top: `${(i / 9) * 110 - 6}%`,
+              height: `${100 / 9 + 4}%`,
+              '--i': i,
+            } as React.CSSProperties}
+          />
+        ))}
+      </div>
+
+      <div className="page-container" style={{ position: 'relative', zIndex: 1 }}>
         <div className={`section-header scroll-reveal ${isVisible ? 'revealed' : ''}`}>
           <span className="badge-tag gold section-tag">
             <Sparkles size={14} /> NUESTRA CARTA

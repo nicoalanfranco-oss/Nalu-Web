@@ -826,6 +826,21 @@ button {
   font-size: 1rem;
 }
 
+/* Fondo acrílico en el párrafo del section-header (menú y otras secciones
+   donde compite con fondos animados) */
+.menu-section .section-header p {
+  display: inline-block;
+  background: rgba(250, 248, 245, 0.80);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  box-shadow:
+    0 2px 16px rgba(19, 25, 29, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
 .trays-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -1079,6 +1094,8 @@ button {
 
 .menu-section {
   padding: 60px 0 80px;
+  position: relative;     /* necesario para el fondo wave absoluto */
+  overflow: hidden;
 }
 
 .menu-sticky-categories {
