@@ -97,6 +97,9 @@ export const REAL_GRUPOS: GrupoOpciones[] = (realData.gruposOpciones as any[]).m
   })),
 }));
 
+const MEMORY_CACHE_KEY = 'nalu_catalogo_cache_v1';
+const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutos en el navegador del cliente
+
 export async function fetchNaluCatalogo(): Promise<{
   elaborados: ProductoElaborado[];
   reventa: ProductoReventa[];
@@ -104,6 +107,19 @@ export async function fetchNaluCatalogo(): Promise<{
   tenant: TenantInfo;
   marca: MarcaInfo;
 }> {
+  // 1. Verificar caché en sessionStorage para respuesta instantánea (0ms)
+  try {
+    const rawCache = sessionStorage.getItem(MEMORY_CACHE_KEY);
+    if (rawCache) {
+      const parsed = JSON.parse(rawCache);
+      if (Date.now() - parsed.timestamp < CACHE_TTL_MS) {
+        return parsed.data;
+      }
+    }
+  } catch {
+    // sessionStorage falló silenciosamente
+  }
+
   try {
     let res = await fetch('/api/public/catalogo?tenant_id=1&marca_id=1');
     if (!res.ok) {
@@ -117,7 +133,7 @@ export async function fetchNaluCatalogo(): Promise<{
       const data = await res.json();
       const elaboradosBD = (data.elaborados || []).filter((p: any) => p.marca_id === 1 || !p.marca_id);
       if (elaboradosBD.length > 0) {
-        return {
+        const finalCatalog = {
           elaborados: elaboradosBD.map((p: any) => ({
             ...p,
             precio_venta: Number(p.precio_venta),
@@ -149,6 +165,10 @@ export async function fetchNaluCatalogo(): Promise<{
           tenant: parseTenantFromBackend(data.tenant),
           marca: parseMarcaFromBackend(data.marca),
         };
+        try {
+          sessionStorage.setItem(MEMORY_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: finalCatalog }));
+        } catch {}
+        return finalCatalog;
       }
     }
   } catch (err) {
