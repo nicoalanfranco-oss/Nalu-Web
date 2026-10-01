@@ -65,7 +65,14 @@ export const REAL_PLATOS: ProductoElaborado[] = (realData.platos as any[]).map(p
   formato_venta: 'unidad',
   imagen_url: p.imagen_url || FALLBACK_PLATO_IMG,
   activo: Boolean(p.activo),
-  insumos_receta: [],
+  insumos_receta: (p.insumos_receta || []).map((i: any) => ({
+    insumo_id: Number(i.insumo_id),
+    nombre: i.nombre,
+    cantidad: Number(i.cantidad ?? i.cantidad_receta ?? 0),
+    unidad: i.unidad || 'kg',
+    costo_unitario: Number(i.costo_unitario || 0),
+    imagen_url: i.imagen_url || null,
+  })),
 }));
 
 export const REAL_REVENTA: ProductoReventa[] = ((realData as any).reventa as any[] || []).map(r => ({
@@ -162,6 +169,14 @@ export async function fetchNaluCatalogo(): Promise<{
               ...p,
               precio_venta: Number(p.precio_venta),
               imagen_url: p.imagen_url || FALLBACK_PLATO_IMG,
+              insumos_receta: (p.insumos_receta || []).map((i: any) => ({
+                insumo_id: Number(i.insumo_id),
+                nombre: i.nombre,
+                cantidad: Number(i.cantidad ?? i.cantidad_receta ?? 0),
+                unidad: i.unidad || 'kg',
+                costo_unitario: Number(i.costo_unitario || 0),
+                imagen_url: i.imagen_url || null,
+              })),
             }))
           : REAL_PLATOS,
         reventa: (data.reventa && data.reventa.length > 0)

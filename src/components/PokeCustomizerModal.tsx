@@ -30,13 +30,30 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
     };
   }, []);
 
+  const tieneBaseFija = Boolean(plato.insumos_receta && plato.insumos_receta.length > 0);
+
   // Filtrar grupos ordenados por paso_orden
   const gruposOrdenados = useMemo(() => {
     const directos = grupos.filter(g => g.producto_elaborado_id === plato.producto_elaborado_id);
-    const baseGrupos = directos.length > 0 ? directos : grupos.filter(g => g.producto_elaborado_id === 16 || g.producto_elaborado_id === 10);
-    const res = baseGrupos.length > 0 ? baseGrupos : grupos;
-    return [...res].sort((a, b) => (a.paso_orden || 1) - (b.paso_orden || 1));
-  }, [grupos, plato]);
+    if (directos.length > 0) {
+      return [...directos].sort((a, b) => (a.paso_orden || 1) - (b.paso_orden || 1));
+    }
+    const fallbackGrupos = grupos.filter(g => g.producto_elaborado_id === 16 || g.producto_elaborado_id === 10);
+    const pool = fallbackGrupos.length > 0 ? fallbackGrupos : grupos;
+
+    if (tieneBaseFija) {
+      // Si el bowl ya tiene base/ingredientes fijos, sólo ofrecer pasos complementarios (Salsas, Toppings, etc.)
+      const complementarios = pool.filter(g => {
+        const nom = (g.nombre || '').toLowerCase();
+        return !nom.includes('base') && !nom.includes('proteína') && !nom.includes('proteina');
+      });
+      if (complementarios.length > 0) {
+        return [...complementarios].sort((a, b) => (a.paso_orden || 1) - (b.paso_orden || 1));
+      }
+    }
+
+    return [...pool].sort((a, b) => (a.paso_orden || 1) - (b.paso_orden || 1));
+  }, [grupos, plato, tieneBaseFija]);
 
   // Paso actual del Wizard (0 a N-1)
   const [pasoActivo, setPasoActivo] = useState<number>(0);
@@ -170,6 +187,31 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
           <h3 className="modal-dish-title">{plato.nombre}</h3>
         </div>
 
+        {/* Sección: Ingredientes Base Incluidos si el plato tiene receta fija */}
+        {tieneBaseFija && plato.insumos_receta && plato.insumos_receta.length > 0 && (
+          <div className="customizer-base-section">
+            <div className="customizer-base-header">
+              <div className="customizer-base-title">
+                <span className="customizer-base-badge">Receta base</span>
+                <span>Ingredientes ya incluidos ({plato.insumos_receta.length}):</span>
+              </div>
+              <span className="customizer-base-hint">Vienen preparados de cocina</span>
+            </div>
+            <div className="customizer-base-chips-scroll">
+              {plato.insumos_receta.map((ins, i) => (
+                <div key={ins.insumo_id || i} className="customizer-base-chip" title={`${ins.nombre} (incluido en la base)`}>
+                  {ins.imagen_url ? (
+                    <img src={ins.imagen_url} alt={ins.nombre} className="customizer-base-chip-img" />
+                  ) : (
+                    <span className="customizer-base-chip-dot">✓</span>
+                  )}
+                  <span className="customizer-base-chip-name">{ins.nombre}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Stepper Horizontal Guiado (Paso 1 a 6) */}
         <div className="customizer-stepper-wrapper">
           <div className="customizer-stepper">
@@ -204,12 +246,17 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
         </div>
 
         {/* Visualizador en Vivo del Bowl ("Tu Bowl Armándose") */}
-        {opcionesElegidas.length > 0 && (
+        {(opcionesElegidas.length > 0 || tieneBaseFija) && (
           <div className="live-bowl-bar">
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)' }}>
               <span>🥗 Bowl:</span>
             </div>
             <div className="live-bowl-chips">
+              {tieneBaseFija && (
+                <span className="live-bowl-chip live-bowl-chip-base" title="Base predefinida incluida">
+                  <span style={{ color: '#788c50' }}>✓</span> Base ({plato.insumos_receta?.length || 0})
+                </span>
+              )}
               {opcionesElegidas.map(item => (
                 <span key={item.opcion.opcion_id} className="live-bowl-chip">
                   {item.opcion.nombre}
@@ -305,7 +352,11 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
                 type="text"
                 value={notasCocina}
                 onChange={e => setNotasCocina(e.target.value)}
-                placeholder="Ej: salsa teriyaki aparte, carne bien cocida, sin sal..."
+                placeholder={
+                  tieneBaseFija
+                    ? "Ej: sin cebolla, salsa aparte, carne bien cocida..."
+                    : "Ej: salsa teriyaki aparte, carne bien cocida, sin sal..."
+                }
                 style={{
                   width: '100%',
                   padding: '12px 16px',

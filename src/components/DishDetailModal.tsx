@@ -114,11 +114,28 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({
                 </p>
               </div>
 
-              {/* Sección de Pasos o Insumos */}
+              {/* Ingredientes base si el plato tiene receta (tanto para personalizables con base como platos directos) */}
+              {isElaborado && plato?.insumos_receta && plato.insumos_receta.length > 0 && (
+                <div className="dish-modal-steps-section">
+                  <h4 className="dish-modal-steps-heading">
+                    🥗 Ingredientes Incluidos en la Receta
+                  </h4>
+                  <div className="dish-modal-chips-grid">
+                    {plato.insumos_receta.map((ins, i) => (
+                      <span key={i} className="dish-modal-ing-chip">
+                        <Check size={12} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                        {ins.nombre}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Sección de Pasos para armar si es personalizable */}
               {isCustomizable ? (
                 <div className="dish-modal-steps-section">
                   <h4 className="dish-modal-steps-heading">
-                    <Sparkles size={16} /> Pasos para armar este Bowl
+                    <Sparkles size={16} /> Pasos para personalizar este Bowl
                   </h4>
                   <div className="dish-modal-steps-list">
                     {grupos && grupos.length > 0 ? (
@@ -148,21 +165,7 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({
                     )}
                   </div>
                 </div>
-              ) : isElaborado && plato?.insumos_receta && plato.insumos_receta.length > 0 ? (
-                <div className="dish-modal-steps-section">
-                  <h4 className="dish-modal-steps-heading">
-                    🥗 Ingredientes Incluidos en la Receta
-                  </h4>
-                  <div className="dish-modal-chips-grid">
-                    {plato.insumos_receta.map((ins, i) => (
-                      <span key={i} className="dish-modal-ing-chip">
-                        <Check size={12} style={{ color: 'var(--primary)', flexShrink: 0 }} />
-                        {ins.nombre}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ) : (
+              ) : (!plato?.insumos_receta || plato.insumos_receta.length === 0) ? (
                 <div className="dish-modal-features-list">
                   <div className="dish-feature-row">
                     <span className="feature-icon">🌿</span>
@@ -173,7 +176,7 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({
                     <span>Listo para disfrutar en el salón o con envío rápido por delivery</span>
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
 
             {/* Acciones del Modal */}

@@ -2070,6 +2070,108 @@ button {
   font-weight: 800;
 }
 
+/* Sección de Ingredientes Base en Customizer Modal */
+.customizer-base-section {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.customizer-base-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.customizer-base-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.customizer-base-badge {
+  background: rgba(120, 140, 80, 0.15);
+  color: #788c50;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.customizer-base-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.customizer-base-chips-scroll {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.customizer-base-chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.customizer-base-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-sand);
+  border: 1px solid var(--border-light);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.customizer-base-chip-img {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.customizer-base-chip-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  background: #788c50;
+  color: white;
+  font-size: 0.62rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.live-bowl-chip-base {
+  background: rgba(120, 140, 80, 0.12);
+  border-color: rgba(120, 140, 80, 0.35);
+  color: #788c50;
+}
+
 /* Visualizador en Vivo del Bowl (Live Assemble Tray) */
 .live-bowl-bar {
   background: var(--bg-card);
