@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { X, Check, ArrowRight, ArrowLeft, Plus, Sparkles, AlertCircle } from 'lucide-react';
 import { ProductoElaborado, GrupoOpciones, OpcionPersonalizacion, CartItem } from '../types/food';
 import { triggerHaptic } from '../utils/haptics';
@@ -17,6 +17,19 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
   onAddToCart,
 }) => {
   if (!plato) return null;
+
+  // Bloquear el scroll del fondo (body) mientras el modal esté abierto
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.touchAction = originalTouchAction;
+    };
+  }, []);
 
   // Filtrar grupos ordenados por paso_orden
   const gruposOrdenados = useMemo(() => {
@@ -126,15 +139,14 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
             alt={plato.nombre}
             className="modal-header-img"
           />
-          <div className="modal-header-overlay">
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 900 }}>{plato.nombre}</h3>
-            <p style={{ fontSize: '0.8rem', opacity: 0.9 }}>
-              Paso a paso en Tacuarembó: arma tu bowl fresco y a tu medida
-            </p>
-          </div>
           <button onClick={onClose} className="modal-close-btn" aria-label="Cerrar modal">
             <X size={18} />
           </button>
+        </div>
+
+        {/* Título del plato por encima de los pasos, claro y sin tapar la foto */}
+        <div className="modal-dish-title-bar">
+          <h3 className="modal-dish-title">{plato.nombre}</h3>
         </div>
 
         {/* Stepper Horizontal Guiado (Paso 1 a 6) */}

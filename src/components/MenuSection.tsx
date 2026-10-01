@@ -227,8 +227,11 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
   }, [platos, categoriaSeleccionada]);
 
   // Filtrar bebidas de reventa:
+  // Aparecen tanto en la página inicial ('todos') después de los platos como al filtrar por 'Bebidas'
   const reventaFiltrada = useMemo(() => {
-    if (categoriaSeleccionada === 'Bebidas') return reventa;
+    if (categoriaSeleccionada === 'todos' || categoriaSeleccionada === 'Bebidas') {
+      return reventa;
+    }
     return [];
   }, [reventa, categoriaSeleccionada]);
 

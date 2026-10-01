@@ -1955,30 +1955,37 @@ button {
   animation: slideUp 0.26s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Header del modal con foto del plato */
+/* Header del modal con foto del plato (Aumentada y destacada) */
 .modal-header-hero {
   position: relative;
   width: 100%;
-  height: 170px;
+  height: 220px;
   background: var(--bg-sand);
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .modal-header-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.modal-header-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 20px;
-  color: white;
+/* Título del plato por fuera de la foto y encima de los pasos */
+.modal-dish-title-bar {
+  padding: 14px 20px 10px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
+
+.modal-dish-title {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.2;
 }
 
 /* Stepper horizontal de pasos (1 a 6) */
@@ -2147,6 +2154,8 @@ button {
 
 .modal-scroll-body {
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -2595,33 +2604,32 @@ button {
     height: 250px;
   }
 
-  /* Modal a pantalla completa o bottom sheet en celular */
+  /* Modal a pantalla completa o bottom sheet en celular con scroll contenido */
   .modal-container {
     max-height: 94dvh;
-    height: auto;
+    height: 94dvh;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overscroll-behavior: contain;
   }
 
   .modal-backdrop {
     align-items: flex-end;
     padding: 0;
     height: 100dvh;
+    touch-action: none;
+    overscroll-behavior: contain;
   }
 
   .modal-header-hero {
-    height: 75px;
+    height: 150px;
   }
 
-  .modal-header-overlay {
-    padding: 10px 14px;
+  .modal-dish-title-bar {
+    padding: 10px 14px 6px;
   }
 
-  .modal-header-overlay h3 {
-    font-size: 1.05rem !important;
-  }
-
-  .modal-header-overlay p {
-    display: none;
+  .modal-dish-title {
+    font-size: 1.15rem;
   }
 
   /* Stepper comprimido en móvil: badges limpios y compactos */
