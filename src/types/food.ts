@@ -17,6 +17,7 @@ export interface MarcaInfo {
   permite_salon: boolean;
   permite_delivery: boolean;
   permite_takeaway: boolean;
+  costo_delivery?: number;
   logo_url?: string;
 }
 

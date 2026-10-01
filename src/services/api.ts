@@ -48,6 +48,7 @@ function parseMarcaFromBackend(m: any): MarcaInfo {
     permite_salon: Boolean(m.permite_salon),
     permite_delivery: m.permite_delivery !== false,
     permite_takeaway: m.permite_takeaway !== false,
+    costo_delivery: m.costo_delivery !== undefined ? Number(m.costo_delivery) : 0,
     logo_url: m.logo_url || MARCA_INFO.logo_url,
   };
 }

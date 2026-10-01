@@ -219,7 +219,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   if (!isOpen) return null;
 
   const subtotal = items.reduce((acc, it) => acc + it.precio_unitario * it.cantidad, 0);
-  const costoEnvio = tipoEntrega === 'delivery' ? 50 : 0;
+  const costoEnvio = (tipoEntrega === 'delivery' && permiteDelivery) ? Number(marca?.costo_delivery || 0) : 0;
   const total = subtotal + costoEnvio;
 
   // Búsqueda inteligente de direcciones con Nominatim / Coordenadas / Links de Google Maps
@@ -419,7 +419,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         return `*${it.cantidad}x ${it.nombre}* ($${it.precio_unitario * it.cantidad})${mods}${notasItem}`;
       }).join('\n\n');
 
-      const canalTxt = tipoEntrega === 'delivery' ? `🛵 Delivery ($${costoEnvio})` : '🏪 Retiro en Mostrador (Take Away)';
+      const canalTxt = tipoEntrega === 'delivery' 
+        ? (costoEnvio > 0 ? `🛵 Delivery ($${costoEnvio})` : '🛵 Delivery (Sin costo)') 
+        : '🏪 Retiro en Mostrador (Take Away)';
       const dirTxt = tipoEntrega === 'delivery'
         ? `\n📍 *Dirección:* ${direccion.trim()}${apartamento.trim() ? ` (${apartamento.trim()})` : ''}${resolvedGmapsUrl ? `\n🗺️ *Ubicación Maps:* ${resolvedGmapsUrl}` : ''}`
         : '';
@@ -595,7 +597,7 @@ ${lineasItems}
                   }}
                 >
                   <Bike size={18} />
-                  <span>Delivery ($50)</span>
+                  <span>Delivery{costoEnvio > 0 ? ` ($${costoEnvio})` : ''}</span>
                 </button>
               )}
 
