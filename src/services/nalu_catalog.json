@@ -439,17 +439,16 @@
       "nombre": "Agua Con Gas Salus 600ml",
       "categoria": "Bebidas",
       "codigo_barras": "",
-      "precio_venta": "115.00",
+      "precio_venta": "95.00",
       "costo_unitario": "38.0000",
       "stock_actual": 0,
       "stock_minimo": 5,
       "unidad": "unidad",
-      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811720/nalu_food/reventa/pqyh7cgjnd1xhkthh5or.jpg",
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790815329/nalu_food/reventa/grk92wbqkm9cehawdadx.png",
       "activo": true,
       "created_at": "2026-09-21T19:46:22.320Z",
       "marca_nombre": null,
-      "marca_color": null,
-      "sin_stock": false
+      "marca_color": null
     },
     {
       "producto_reventa_id": 3,
@@ -459,7 +458,7 @@
       "nombre": "Agua Sin Gas Salus 600ml",
       "categoria": "Bebidas",
       "codigo_barras": "",
-      "precio_venta": "120.00",
+      "precio_venta": "95.00",
       "costo_unitario": "38.0000",
       "stock_actual": 0,
       "stock_minimo": 5,
@@ -468,8 +467,7 @@
       "activo": true,
       "created_at": "2026-09-21T19:46:22.320Z",
       "marca_nombre": null,
-      "marca_color": null,
-      "sin_stock": false
+      "marca_color": null
     },
     {
       "producto_reventa_id": 5,
@@ -488,8 +486,7 @@
       "activo": true,
       "created_at": "2026-09-21T19:46:22.320Z",
       "marca_nombre": null,
-      "marca_color": null,
-      "sin_stock": false
+      "marca_color": null
     },
     {
       "producto_reventa_id": 2,
@@ -508,8 +505,7 @@
       "activo": true,
       "created_at": "2026-09-21T19:46:22.320Z",
       "marca_nombre": null,
-      "marca_color": null,
-      "sin_stock": false
+      "marca_color": null
     },
     {
       "producto_reventa_id": 1,
@@ -528,8 +524,7 @@
       "activo": true,
       "created_at": "2026-09-21T19:46:22.320Z",
       "marca_nombre": null,
-      "marca_color": null,
-      "sin_stock": false
+      "marca_color": null
     }
   ],
   "gruposOpciones": [
