@@ -5,781 +5,427 @@
     "rut": "219988770014",
     "direccion": "Avenida Presidente Jorge Batlle Ibañez",
     "telefono": "+598 99 123 456",
-    "email": "contacto@naludeuna.com"
+    "email": "contacto@naludeuna.com",
+    "moneda_operacional": "UYU",
+    "logo_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811723/nalu_food/logos/ppxl2jkeciue9ampx6bb.jpg",
+    "config_colores": {
+      "accent": "#6366f1",
+      "primary": "#10b981",
+      "secondary": "#f59e0b"
+    },
+    "tema_default": "dark",
+    "estado": "activo",
+    "metadata": {},
+    "created_at": "2026-09-21T19:46:22.320Z",
+    "updated_at": "2026-09-22T17:39:46.438Z",
+    "ciudad": "Tacuarembó",
+    "departamento": "Tacuarembó",
+    "pais": "Uruguay",
+    "latitud": "-31.7222537",
+    "longitud": "-56.0083866",
+    "google_maps_url": "https://www.google.com/maps/search/?api=1&query=-31.722253672072757,-56.008386611938484",
+    "control_stock": false
   },
   "marca": {
     "marca_id": 1,
+    "tenant_id": 1,
     "nombre": "Nalú",
+    "slug": "nalu",
+    "descripcion": "Pokes saludables, ensaladas frescas y opciones personalizadas",
+    "logo_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811727/nalu_food/logos/vjihtci70havcbnv6jxz.jpg",
     "color_primario": "#788c50",
     "dias_atencion": "Lunes a Viernes",
     "horario_atencion": "10:00 a 13:00 hs",
     "permite_salon": false,
     "permite_delivery": true,
-    "permite_takeaway": true
+    "permite_takeaway": true,
+    "activa": true,
+    "created_at": "2026-09-21T19:46:22.320Z"
   },
   "platos": [
     {
       "producto_elaborado_id": 10,
+      "tenant_id": 1,
       "marca_id": 1,
       "nombre": "POKE HASTA 2 PROTEINAS",
       "categoria": "Pokes",
       "descripcion": "Armá tu combinación ideal paso a paso y disfrutá de un bowl totalmente personalizado. Comenzá eligiendo hasta 2 bases a elección (como arroz, fideos o hojas verdes), sumá de 1 a 2 proteínas de tu preferencia y complementá con hasta 3 variedad de verduras frescas. Agregá hasta 2 toppings para darle textura, aderezá con 1 salsa a elección y dale el toque final con hasta 2 opciones de chips crujientes. Un plato completo, fresco y a la medida de tu antojo.",
       "precio_venta": "290.00",
+      "costo_estimado": "0.0000",
+      "margen_estimado_pct": "100.00",
       "es_personalizable": true,
-      "imagen_url": "/ingredients/plato_10.webp",
-      "activo": true
-    },
-    {
-      "producto_elaborado_id": 11,
-      "marca_id": 1,
-      "nombre": "Ensalada César",
-      "categoria": "Ensaladas",
-      "descripcion": "Ensalada César con Pollo Grillado\n\nUn clásico irresistible, fresco y crocante. Base abundante de lechuga fresca seleccionada, acompañada de jugosas tiras de pechuga de pollo grillada a la plancha, crujientes crutones tostados y finas lascas de queso parmesano. Se sirve acompañada de nuestra cremosa salsa César tradicional.",
-      "precio_venta": "350.00",
-      "es_personalizable": false,
-      "imagen_url": "/ingredients/plato_11.webp",
-      "activo": true
-    },
-    {
-      "producto_elaborado_id": 12,
-      "marca_id": 1,
-      "nombre": "Poke Nalú Especial",
-      "categoria": "Pokes",
-      "descripcion": "Poke Bowl de Atún & Fideos Integrales\n\nUna alternativa fresca, nutritiva y proteica. Combina una base doble de fideos integrales y lechuga fresca, acompañada de sabrosos lomitos de atún, huevo duro y garbanzos. Se complementa con tomate fresco en cubos, zanahoria rallada y maíz tierno, coronado con el toque crujiente de nuestros chips de boniato artesanales y la salsa que más te guste.",
-      "precio_venta": "320.00",
-      "es_personalizable": true,
-      "imagen_url": "/ingredients/plato_12.webp",
-      "activo": true
-    },
-    {
-      "producto_elaborado_id": 14,
-      "marca_id": 1,
-      "nombre": "MAIU",
-      "categoria": "Pokes",
-      "descripcion": "Poke Bowl de Pollo Teriyaki & Alioli\nUn bowl fresco, completo y equilibrado. Base de arroz sazonado acompañado de jugosas tiras de pollo, crujientes garbanzos, aguacate (palta) cremoso y cubos de mango fresco. Se complementa con zanahoria, pepino, cebolla morada fina y un toque de semillas de sésamo. Coronado con la combinación perfecta de salsa Teriyaki dulce y Alioli cremoso.",
-      "precio_venta": "320.00",
-      "es_personalizable": false,
-      "imagen_url": "/ingredients/plato_14.webp",
-      "activo": true
-    },
-    {
-      "producto_elaborado_id": 15,
-      "marca_id": 1,
-      "nombre": "OHANA",
-      "categoria": "Pokes",
-      "descripcion": "Poke Bowl de Cerdo Barbacoa & Ananá\n\nUna propuesta ahumada, agridulce y súper crujiente. Base de arroz sazonado acompañado de jugoso cerdo braseado al estilo barbacoa, choclo tierno, tomate fresco en cubos y rodajas de ananá que aportan el toque tropical justo. Se complementa con cebolla morada fina, repollo en finas tiras y el toque 'crunch' de nuestros crutones tostados. Coronado con salsa Barbacoa ahumada y un toque de Alioli cremoso.",
-      "precio_venta": "320.00",
-      "es_personalizable": false,
-      "imagen_url": "/ingredients/plato_15.webp",
-      "activo": true
+      "formato_venta": "unidad",
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811646/nalu_food/elaborados/ihm1mabialqdgfqmb2zi.jpg",
+      "activo": true,
+      "created_at": "2026-09-21T19:46:22.320Z",
+      "updated_at": "2026-09-30T23:40:46.913Z",
+      "orden": 1,
+      "marca_nombre": "Nalú",
+      "marca_color": "#788c50",
+      "insumos_receta": []
     },
     {
       "producto_elaborado_id": 16,
+      "tenant_id": 1,
       "marca_id": 1,
       "nombre": "POKE 3 PROTEINAS",
       "categoria": "Pokes",
       "descripcion": "Llevá tu experiencia al siguiente nivel armando un bowl cargado de sabor y energía. Seleccioná hasta 2 bases para iniciar tu plato, agregá de 1 a 3 proteínas a tu gusto e incorporá hasta 3 opciones de verduras frescas. Personalizalo con de 1 a 3 salsas para lograr la cremosidad perfecta, elegí hasta 3 toppings y dale el cierre crocante ideal con hasta 2 variedades de chips artesanales.",
       "precio_venta": "340.00",
+      "costo_estimado": "0.0000",
+      "margen_estimado_pct": "100.00",
       "es_personalizable": true,
-      "imagen_url": "/ingredients/plato_16.webp",
-      "activo": true
-    }
-  ],
-  "gruposOpciones": [
-    {
-      "grupo_id": 6,
-      "producto_elaborado_id": 7,
-      "nombre": "Gustos Adicionales",
-      "paso_orden": 1,
-      "min_opciones": 0,
-      "max_opciones": 5,
-      "opciones": []
+      "formato_venta": "unidad",
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811654/nalu_food/elaborados/oary0u4wdqmngjyv4gsa.png",
+      "activo": true,
+      "created_at": "2026-09-28T01:54:53.794Z",
+      "updated_at": "2026-09-30T23:40:57.791Z",
+      "orden": 2,
+      "marca_nombre": "Nalú",
+      "marca_color": "#788c50",
+      "insumos_receta": []
     },
     {
-      "grupo_id": 8,
-      "producto_elaborado_id": 8,
-      "nombre": "Extras",
-      "paso_orden": 6,
-      "min_opciones": 0,
-      "max_opciones": 3,
-      "opciones": []
-    },
-    {
-      "grupo_id": 9,
-      "producto_elaborado_id": 9,
-      "nombre": "Extras",
-      "paso_orden": 6,
-      "min_opciones": 0,
-      "max_opciones": 3,
-      "opciones": []
-    },
-    {
-      "grupo_id": 10,
-      "producto_elaborado_id": 10,
-      "nombre": "Base",
-      "paso_orden": 1,
-      "min_opciones": 1,
-      "max_opciones": 2,
-      "opciones": [
-        {
-          "opcion_id": 16,
-          "nombre": "Arroz",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_16.jpg"
-        },
-        {
-          "opcion_id": 17,
-          "nombre": "Arroz integral",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_17.jpg"
-        },
-        {
-          "opcion_id": 18,
-          "nombre": "Fideo integral",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_18.jpg"
-        },
-        {
-          "opcion_id": 19,
-          "nombre": "Quinoa",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_19.jpg"
-        },
-        {
-          "opcion_id": 20,
-          "nombre": "Lechuga",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_20.jpg"
-        }
-      ]
-    },
-    {
-      "grupo_id": 11,
-      "producto_elaborado_id": 10,
-      "nombre": "Proteína",
-      "paso_orden": 2,
-      "min_opciones": 1,
-      "max_opciones": 2,
-      "opciones": [
-        {
-          "opcion_id": 21,
-          "nombre": "Carne",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_21.jpg"
-        },
-        {
-          "opcion_id": 22,
-          "nombre": "Pollo",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_22.jpg"
-        },
-        {
-          "opcion_id": 23,
-          "nombre": "Cerdo barbacoa",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_23.jpg"
-        },
-        {
-          "opcion_id": 24,
-          "nombre": "Huevo",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_24.jpg"
-        },
-        {
-          "opcion_id": 25,
-          "nombre": "Camarones (premium - costo extra)",
-          "precio_extra": 90,
-          "imagen_url": "/ingredients/opt_25.jpg"
-        }
-      ]
-    },
-    {
-      "grupo_id": 12,
-      "producto_elaborado_id": 10,
-      "nombre": "Verduras",
-      "paso_orden": 3,
-      "min_opciones": 1,
-      "max_opciones": 3,
-      "opciones": [
-        {
-          "opcion_id": 26,
-          "nombre": "Remolacha",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_26.jpg"
-        },
-        {
-          "opcion_id": 27,
-          "nombre": "Zanahoria",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_27.jpg"
-        },
-        {
-          "opcion_id": 28,
-          "nombre": "Tomate",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_28.jpg"
-        },
-        {
-          "opcion_id": 29,
-          "nombre": "Repollo",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_29.jpg"
-        },
-        {
-          "opcion_id": 30,
-          "nombre": "Pepino",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_30.jpg"
-        },
-        {
-          "opcion_id": 31,
-          "nombre": "Cebolla morada",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_31.jpg"
-        },
-        {
-          "opcion_id": 32,
-          "nombre": "Brócoli",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_32.jpg"
-        }
-      ]
-    },
-    {
-      "grupo_id": 13,
-      "producto_elaborado_id": 10,
-      "nombre": "Toppings",
-      "paso_orden": 4,
-      "min_opciones": 0,
-      "max_opciones": 2,
-      "opciones": [
-        {
-          "opcion_id": 33,
-          "nombre": "Chaucha",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_33.jpg"
-        },
-        {
-          "opcion_id": 34,
-          "nombre": "Choclo",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_34.jpg"
-        },
-        {
-          "opcion_id": 35,
-          "nombre": "Arvejas",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_35.jpg"
-        },
-        {
-          "opcion_id": 36,
-          "nombre": "Palta",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_36.jpg"
-        },
-        {
-          "opcion_id": 37,
-          "nombre": "Palmitos",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_37.jpg"
-        },
-        {
-          "opcion_id": 38,
-          "nombre": "Ananá",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_38.jpg"
-        },
-        {
-          "opcion_id": 39,
-          "nombre": "Mango",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_39.jpg"
-        },
-        {
-          "opcion_id": 40,
-          "nombre": "Garbanzos",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_40.jpg"
-        },
-        {
-          "opcion_id": 41,
-          "nombre": "Lentejas",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_41.jpg"
-        },
-        {
-          "opcion_id": 42,
-          "nombre": "Poroto manteca",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_42.jpg"
-        },
-        {
-          "opcion_id": 43,
-          "nombre": "Crutones",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_43.jpg"
-        },
-        {
-          "opcion_id": 44,
-          "nombre": "Sésamo",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_44.jpg"
-        }
-      ]
-    },
-    {
-      "grupo_id": 14,
-      "producto_elaborado_id": 10,
-      "nombre": "Salsas & Aderesos",
-      "paso_orden": 5,
-      "min_opciones": 1,
-      "max_opciones": 1,
-      "opciones": [
-        {
-          "opcion_id": 45,
-          "nombre": "Vinagreta",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_45.jpg"
-        },
-        {
-          "opcion_id": 46,
-          "nombre": "Soja",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_46.jpg"
-        },
-        {
-          "opcion_id": 47,
-          "nombre": "César",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_47.jpg"
-        },
-        {
-          "opcion_id": 48,
-          "nombre": "Alioli",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_48.jpg"
-        },
-        {
-          "opcion_id": 49,
-          "nombre": "Mostaza y miel",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_49.jpg"
-        },
-        {
-          "opcion_id": 50,
-          "nombre": "Teriyaki",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_50.jpg"
-        },
-        {
-          "opcion_id": 51,
-          "nombre": "Aceite de oliva",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_51.jpg"
-        },
-        {
-          "opcion_id": 52,
-          "nombre": "Albahaca",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_52.jpg"
-        },
-        {
-          "opcion_id": 53,
-          "nombre": "Tártara",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_53.jpg"
-        }
-      ]
-    },
-    {
-      "grupo_id": 15,
-      "producto_elaborado_id": 10,
-      "nombre": "Chips",
-      "paso_orden": 6,
-      "min_opciones": 0,
-      "max_opciones": 2,
-      "opciones": [
-        {
-          "opcion_id": 54,
-          "nombre": "Chip Boniato",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_54.jpg"
-        },
-        {
-          "opcion_id": 55,
-          "nombre": "Maíz canchita",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_55.jpg"
-        },
-        {
-          "opcion_id": 56,
-          "nombre": "Maní",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_56.jpg"
-        },
-        {
-          "opcion_id": 57,
-          "nombre": "Cebolla crispy",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_57.jpg"
-        },
-        {
-          "opcion_id": 58,
-          "nombre": "Sésamo",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_58.jpg"
-        },
-        {
-          "opcion_id": 59,
-          "nombre": "Crutones",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_59.jpg"
-        }
-      ]
-    },
-    {
-      "grupo_id": 23,
       "producto_elaborado_id": 12,
-      "nombre": "Salsas",
-      "paso_orden": 1,
-      "min_opciones": 1,
-      "max_opciones": 3,
-      "opciones": [
+      "tenant_id": 1,
+      "marca_id": 1,
+      "nombre": "Poke Nalú Especial",
+      "categoria": "Pokes",
+      "descripcion": "Poke Bowl de Atún & Fideos Integrales\n\nUna alternativa fresca, nutritiva y proteica. Combina una base doble de fideos integrales y lechuga fresca, acompañada de sabrosos lomitos de atún, huevo duro y garbanzos. Se complementa con tomate fresco en cubos, zanahoria rallada y maíz tierno, coronado con el toque crujiente de nuestros chips de boniato artesanales y la salsa que más te guste.",
+      "precio_venta": "320.00",
+      "costo_estimado": "107.8874",
+      "margen_estimado_pct": "66.29",
+      "es_personalizable": true,
+      "formato_venta": "unidad",
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811658/nalu_food/elaborados/tbpw7ud2h0vmr5krfyvo.png",
+      "activo": true,
+      "created_at": "2026-09-21T19:46:22.320Z",
+      "updated_at": "2026-09-30T23:41:00.662Z",
+      "orden": 3,
+      "marca_nombre": "Nalú",
+      "marca_color": "#788c50",
+      "insumos_receta": [
         {
-          "opcion_id": 108,
-          "nombre": "Teriyaki",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_108.jpg"
-        },
-        {
-          "opcion_id": 109,
-          "nombre": "Alioli",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_109.jpg"
-        },
-        {
-          "opcion_id": 110,
-          "nombre": "César",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_110.jpg"
-        }
-      ]
-    },
-    {
-      "grupo_id": 17,
-      "producto_elaborado_id": 16,
-      "nombre": "Base",
-      "paso_orden": 1,
-      "min_opciones": 1,
-      "max_opciones": 2,
-      "opciones": [
-        {
-          "opcion_id": 60,
-          "nombre": "Arroz",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_60.jpg"
-        },
-        {
-          "opcion_id": 61,
-          "nombre": "Arroz integral",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_61.jpg"
-        },
-        {
-          "opcion_id": 62,
-          "nombre": "Fideo integral",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_62.jpg"
-        },
-        {
-          "opcion_id": 63,
-          "nombre": "Quinoa",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_63.jpg"
-        },
-        {
-          "opcion_id": 64,
-          "nombre": "Lechuga",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_64.jpg"
-        }
-      ]
-    },
-    {
-      "grupo_id": 20,
-      "producto_elaborado_id": 16,
-      "nombre": "Proteína",
-      "paso_orden": 1,
-      "min_opciones": 1,
-      "max_opciones": 3,
-      "opciones": [
-        {
-          "opcion_id": 81,
-          "nombre": "Camarones (premium - costo extra)",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_81.jpg"
-        },
-        {
-          "opcion_id": 82,
-          "nombre": "Carne",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_82.jpg"
-        },
-        {
-          "opcion_id": 83,
-          "nombre": "Cerdo barbacoa",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_83.jpg"
-        },
-        {
-          "opcion_id": 84,
-          "nombre": "Pollo",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_84.jpg"
-        },
-        {
-          "opcion_id": 85,
-          "nombre": "Huevo",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_85.jpg"
-        }
-      ]
-    },
-    {
-      "grupo_id": 18,
-      "producto_elaborado_id": 16,
-      "nombre": "Verduras",
-      "paso_orden": 2,
-      "min_opciones": 1,
-      "max_opciones": 3,
-      "opciones": [
-        {
-          "opcion_id": 65,
-          "nombre": "Brócoli",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_65.jpg"
-        },
-        {
-          "opcion_id": 66,
-          "nombre": "Cebolla morada",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_66.jpg"
-        },
-        {
-          "opcion_id": 67,
-          "nombre": "Pepino",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_67.jpg"
-        },
-        {
-          "opcion_id": 68,
-          "nombre": "Remolacha",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_68.jpg"
-        },
-        {
-          "opcion_id": 69,
-          "nombre": "Repollo",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_69.jpg"
-        },
-        {
-          "opcion_id": 70,
-          "nombre": "Tomate",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_70.jpg"
-        },
-        {
-          "opcion_id": 71,
-          "nombre": "Zanahoria",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_71.jpg"
-        }
-      ]
-    },
-    {
-      "grupo_id": 19,
-      "producto_elaborado_id": 16,
-      "nombre": "Salsas",
-      "paso_orden": 3,
-      "min_opciones": 1,
-      "max_opciones": 3,
-      "opciones": [
-        {
-          "opcion_id": 72,
-          "nombre": "Aceite de oliva",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_72.jpg"
-        },
-        {
-          "opcion_id": 73,
-          "nombre": "Albahaca",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_73.jpg"
-        },
-        {
-          "opcion_id": 74,
-          "nombre": "Alioli",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_74.jpg"
-        },
-        {
-          "opcion_id": 75,
-          "nombre": "César",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_75.jpg"
-        },
-        {
-          "opcion_id": 76,
-          "nombre": "Mostaza y miel",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_76.jpg"
-        },
-        {
-          "opcion_id": 77,
-          "nombre": "Soja",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_77.jpg"
-        },
-        {
-          "opcion_id": 78,
-          "nombre": "Tártara",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_78.jpg"
-        },
-        {
-          "opcion_id": 79,
-          "nombre": "Teriyaki",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_79.jpg"
-        },
-        {
-          "opcion_id": 80,
-          "nombre": "Vinagreta",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_80.jpg"
-        }
-      ]
-    },
-    {
-      "grupo_id": 21,
-      "producto_elaborado_id": 16,
-      "nombre": "Toppings",
-      "paso_orden": 5,
-      "min_opciones": 0,
-      "max_opciones": 3,
-      "opciones": [
-        {
-          "opcion_id": 86,
-          "nombre": "Ananá",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_86.jpg"
-        },
-        {
-          "opcion_id": 88,
-          "nombre": "Chip Boniato",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_88.jpg"
-        },
-        {
-          "opcion_id": 89,
-          "nombre": "Garbanzos",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_89.jpg"
-        },
-        {
-          "opcion_id": 90,
-          "nombre": "Lentejas",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_90.jpg"
-        },
-        {
-          "opcion_id": 92,
-          "nombre": "Mango",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_92.jpg"
-        },
-        {
-          "opcion_id": 94,
-          "nombre": "Palmitos",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_94.jpg"
-        },
-        {
-          "opcion_id": 95,
-          "nombre": "Poroto manteca",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_95.jpg"
-        },
-        {
-          "opcion_id": 98,
-          "nombre": "Arvejas",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_98.jpg"
-        },
-        {
-          "opcion_id": 99,
-          "nombre": "Chaucha",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_99.jpg"
-        },
-        {
-          "opcion_id": 100,
+          "insumo_id": 19,
           "nombre": "Choclo",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_100.jpg"
+          "stock_actual": 0,
+          "cantidad_receta": 0.03,
+          "unidad": "kg",
+          "costo_unitario": 163.3333
         },
         {
-          "opcion_id": 101,
-          "nombre": "Palta",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_101.jpg"
+          "insumo_id": 13,
+          "nombre": "Tomate",
+          "stock_actual": 0,
+          "cantidad_receta": 0.04,
+          "unidad": "kg",
+          "costo_unitario": 110
+        },
+        {
+          "insumo_id": 44,
+          "nombre": "Atun",
+          "stock_actual": 0,
+          "cantidad_receta": 0.1,
+          "unidad": "kg",
+          "costo_unitario": 230
+        },
+        {
+          "insumo_id": 3,
+          "nombre": "Fideo integral",
+          "stock_actual": 0,
+          "cantidad_receta": 0.12,
+          "unidad": "kg",
+          "costo_unitario": 170
+        },
+        {
+          "insumo_id": 9,
+          "nombre": "Huevo",
+          "stock_actual": 0,
+          "cantidad_receta": 2,
+          "unidad": "un",
+          "costo_unitario": 11
+        },
+        {
+          "insumo_id": 25,
+          "nombre": "Garbanzos",
+          "stock_actual": 0,
+          "cantidad_receta": 0.04,
+          "unidad": "kg",
+          "costo_unitario": 144.7368
+        },
+        {
+          "insumo_id": 12,
+          "nombre": "Zanahoria",
+          "stock_actual": 0,
+          "cantidad_receta": 0.03,
+          "unidad": "kg",
+          "costo_unitario": 250
+        },
+        {
+          "insumo_id": 40,
+          "nombre": "Chip Boniato",
+          "stock_actual": 0,
+          "cantidad_receta": 0,
+          "unidad": "kg",
+          "costo_unitario": 990
         }
       ]
     },
     {
-      "grupo_id": 22,
-      "producto_elaborado_id": 16,
-      "nombre": "Chips",
-      "paso_orden": 6,
-      "min_opciones": 0,
-      "max_opciones": 2,
-      "opciones": [
+      "producto_elaborado_id": 14,
+      "tenant_id": 1,
+      "marca_id": 1,
+      "nombre": "MAIU",
+      "categoria": "Pokes",
+      "descripcion": "Poke Bowl de Pollo Teriyaki & Alioli\nUn bowl fresco, completo y equilibrado. Base de arroz sazonado acompañado de jugosas tiras de pollo, crujientes garbanzos, aguacate (palta) cremoso y cubos de mango fresco. Se complementa con zanahoria, pepino, cebolla morada fina y un toque de semillas de sésamo. Coronado con la combinación perfecta de salsa Teriyaki dulce y Alioli cremoso.",
+      "precio_venta": "320.00",
+      "costo_estimado": "178.8670",
+      "margen_estimado_pct": "44.10",
+      "es_personalizable": false,
+      "formato_venta": "unidad",
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811660/nalu_food/elaborados/mpqgmgd7lzsckebf8wlg.png",
+      "activo": true,
+      "created_at": "2026-09-28T01:48:57.208Z",
+      "updated_at": "2026-09-30T23:41:03.434Z",
+      "orden": 4,
+      "marca_nombre": "Nalú",
+      "marca_color": "#788c50",
+      "insumos_receta": [
         {
-          "opcion_id": 102,
-          "nombre": "Cebolla crispy",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_102.jpg"
+          "insumo_id": 1,
+          "nombre": "Arroz",
+          "stock_actual": 0,
+          "cantidad_receta": 0.15,
+          "unidad": "kg",
+          "costo_unitario": 69
         },
         {
-          "opcion_id": 103,
-          "nombre": "Chip Boniato",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_103.jpg"
+          "insumo_id": 7,
+          "nombre": "Pollo",
+          "stock_actual": 0,
+          "cantidad_receta": 0.1,
+          "unidad": "kg",
+          "costo_unitario": 639
         },
         {
-          "opcion_id": 104,
-          "nombre": "Maíz canchita",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_104.jpg"
+          "insumo_id": 12,
+          "nombre": "Zanahoria",
+          "stock_actual": 0,
+          "cantidad_receta": 0.025,
+          "unidad": "kg",
+          "costo_unitario": 250
         },
         {
-          "opcion_id": 105,
-          "nombre": "Maní",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_105.jpg"
+          "insumo_id": 15,
+          "nombre": "Pepino",
+          "stock_actual": 0,
+          "cantidad_receta": 0.03,
+          "unidad": "kg",
+          "costo_unitario": 189
         },
         {
-          "opcion_id": 106,
+          "insumo_id": 16,
+          "nombre": "Cebolla morada",
+          "stock_actual": 0,
+          "cantidad_receta": 0.015,
+          "unidad": "kg",
+          "costo_unitario": 120
+        },
+        {
+          "insumo_id": 25,
+          "nombre": "Garbanzos",
+          "stock_actual": 0,
+          "cantidad_receta": 0.03,
+          "unidad": "kg",
+          "costo_unitario": 144.7368
+        },
+        {
+          "insumo_id": 21,
+          "nombre": "Palta",
+          "stock_actual": 0,
+          "cantidad_receta": 0.03,
+          "unidad": "kg",
+          "costo_unitario": 393.3333
+        },
+        {
+          "insumo_id": 24,
+          "nombre": "Mango",
+          "stock_actual": 0,
+          "cantidad_receta": 0.03,
+          "unidad": "kg",
+          "costo_unitario": 190
+        },
+        {
+          "insumo_id": 35,
+          "nombre": "Teriyaki",
+          "stock_actual": 0,
+          "cantidad_receta": 0.015,
+          "unidad": "lt",
+          "costo_unitario": 1120
+        },
+        {
+          "insumo_id": 33,
+          "nombre": "Alioli",
+          "stock_actual": 0,
+          "cantidad_receta": 0.015,
+          "unidad": "lt",
+          "costo_unitario": 1030
+        },
+        {
+          "insumo_id": 29,
           "nombre": "Sésamo",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_106.jpg"
+          "stock_actual": 0,
+          "cantidad_receta": 0.005,
+          "unidad": "kg",
+          "costo_unitario": 420
+        }
+      ]
+    },
+    {
+      "producto_elaborado_id": 15,
+      "tenant_id": 1,
+      "marca_id": 1,
+      "nombre": "OHANA",
+      "categoria": "Pokes",
+      "descripcion": "Poke Bowl de Cerdo Barbacoa & Ananá\n\nUna propuesta ahumada, agridulce y súper crujiente. Base de arroz sazonado acompañado de jugoso cerdo braseado al estilo barbacoa, choclo tierno, tomate fresco en cubos y rodajas de ananá que aportan el toque tropical justo. Se complementa con cebolla morada fina, repollo en finas tiras y el toque 'crunch' de nuestros crutones tostados. Coronado con salsa Barbacoa ahumada y un toque de Alioli cremoso.",
+      "precio_venta": "320.00",
+      "costo_estimado": "136.9180",
+      "margen_estimado_pct": "57.21",
+      "es_personalizable": false,
+      "formato_venta": "unidad",
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811663/nalu_food/elaborados/pmxqi8q9hh8lzg0lmnlg.png",
+      "activo": true,
+      "created_at": "2026-09-28T01:50:44.898Z",
+      "updated_at": "2026-09-30T23:41:06.570Z",
+      "orden": 5,
+      "marca_nombre": "Nalú",
+      "marca_color": "#788c50",
+      "insumos_receta": [
+        {
+          "insumo_id": 1,
+          "nombre": "Arroz",
+          "stock_actual": 0,
+          "cantidad_receta": 0.15,
+          "unidad": "kg",
+          "costo_unitario": 69
         },
         {
-          "opcion_id": 107,
+          "insumo_id": 16,
+          "nombre": "Cebolla morada",
+          "stock_actual": 0,
+          "cantidad_receta": 0.015,
+          "unidad": "kg",
+          "costo_unitario": 120
+        },
+        {
+          "insumo_id": 8,
+          "nombre": "Cerdo barbacoa",
+          "stock_actual": 0,
+          "cantidad_receta": 0.1,
+          "unidad": "kg",
+          "costo_unitario": 349
+        },
+        {
+          "insumo_id": 14,
+          "nombre": "Repollo",
+          "stock_actual": 0,
+          "cantidad_receta": 0.025,
+          "unidad": "kg",
+          "costo_unitario": 45
+        },
+        {
+          "insumo_id": 13,
+          "nombre": "Tomate",
+          "stock_actual": 0,
+          "cantidad_receta": 0.035,
+          "unidad": "kg",
+          "costo_unitario": 110
+        },
+        {
+          "insumo_id": 23,
+          "nombre": "Ananá",
+          "stock_actual": 0,
+          "cantidad_receta": 0.035,
+          "unidad": "kg",
+          "costo_unitario": 149
+        },
+        {
+          "insumo_id": 19,
+          "nombre": "Choclo",
+          "stock_actual": 0,
+          "cantidad_receta": 0.03,
+          "unidad": "kg",
+          "costo_unitario": 163.3333
+        },
+        {
+          "insumo_id": 33,
+          "nombre": "Alioli",
+          "stock_actual": 0,
+          "cantidad_receta": 0.015,
+          "unidad": "lt",
+          "costo_unitario": 1030
+        },
+        {
+          "insumo_id": 28,
           "nombre": "Crutones",
-          "precio_extra": 0,
-          "imagen_url": "/ingredients/opt_107.jpg"
+          "stock_actual": 0,
+          "cantidad_receta": 0.015,
+          "unidad": "kg",
+          "costo_unitario": 650
+        },
+        {
+          "insumo_id": 39,
+          "nombre": "Salsa Barbacoa",
+          "stock_actual": 0,
+          "cantidad_receta": 0.15,
+          "unidad": "lt",
+          "costo_unitario": 159
+        }
+      ]
+    },
+    {
+      "producto_elaborado_id": 11,
+      "tenant_id": 1,
+      "marca_id": 1,
+      "nombre": "Ensalada César",
+      "categoria": "Ensaladas",
+      "descripcion": "Ensalada César con Pollo Grillado\n\nUn clásico irresistible, fresco y crocante. Base abundante de lechuga fresca seleccionada, acompañada de jugosas tiras de pechuga de pollo grillada a la plancha, crujientes crutones tostados y finas lascas de queso parmesano. Se sirve acompañada de nuestra cremosa salsa César tradicional.",
+      "precio_venta": "350.00",
+      "costo_estimado": "157.8240",
+      "margen_estimado_pct": "54.91",
+      "es_personalizable": false,
+      "formato_venta": "unidad",
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811666/nalu_food/elaborados/diujyr0f9cl6phdznfoe.png",
+      "activo": true,
+      "created_at": "2026-09-21T19:46:22.320Z",
+      "updated_at": "2026-09-30T23:41:09.019Z",
+      "orden": 6,
+      "marca_nombre": "Nalú",
+      "marca_color": "#788c50",
+      "insumos_receta": [
+        {
+          "insumo_id": 5,
+          "nombre": "Lechuga",
+          "stock_actual": 0,
+          "cantidad_receta": 0.14,
+          "unidad": "kg",
+          "costo_unitario": 230
+        },
+        {
+          "insumo_id": 7,
+          "nombre": "Pollo",
+          "stock_actual": 0,
+          "cantidad_receta": 0.12,
+          "unidad": "kg",
+          "costo_unitario": 639
+        },
+        {
+          "insumo_id": 28,
+          "nombre": "Crutones",
+          "stock_actual": 0,
+          "cantidad_receta": 0.025,
+          "unidad": "kg",
+          "costo_unitario": 650
         }
       ]
     }
@@ -789,73 +435,1090 @@
       "producto_reventa_id": 4,
       "tenant_id": 1,
       "marca_id": null,
+      "proveedor_id": null,
       "nombre": "Agua Con Gas Salus 600ml",
       "categoria": "Bebidas",
-      "precio_venta": 95,
+      "codigo_barras": "",
+      "precio_venta": "115.00",
+      "costo_unitario": "38.0000",
       "stock_actual": 0,
+      "stock_minimo": 5,
       "unidad": "unidad",
-      "imagen_url": "/ingredients/reventa_4.webp",
-      "activo": true
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811720/nalu_food/reventa/pqyh7cgjnd1xhkthh5or.jpg",
+      "activo": true,
+      "created_at": "2026-09-21T19:46:22.320Z",
+      "marca_nombre": null,
+      "marca_color": null,
+      "sin_stock": false
     },
     {
       "producto_reventa_id": 3,
       "tenant_id": 1,
       "marca_id": null,
+      "proveedor_id": null,
       "nombre": "Agua Sin Gas Salus 600ml",
       "categoria": "Bebidas",
-      "precio_venta": 95,
+      "codigo_barras": "",
+      "precio_venta": "120.00",
+      "costo_unitario": "38.0000",
       "stock_actual": 0,
+      "stock_minimo": 5,
       "unidad": "unidad",
-      "imagen_url": "/ingredients/reventa_3.webp",
-      "activo": true
-    },
-    {
-      "producto_reventa_id": 6,
-      "tenant_id": 1,
-      "marca_id": 2,
-      "nombre": "Cerveza Corona 330ml",
-      "categoria": "Bebidas",
-      "precio_venta": 170,
-      "stock_actual": 0,
-      "unidad": "unidad",
-      "imagen_url": "/ingredients/reventa_6.webp",
-      "activo": true
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790788520/nalu_food/reventa/eljjbm2byrheqd5hrplz.png",
+      "activo": true,
+      "created_at": "2026-09-21T19:46:22.320Z",
+      "marca_nombre": null,
+      "marca_color": null,
+      "sin_stock": false
     },
     {
       "producto_reventa_id": 5,
       "tenant_id": 1,
       "marca_id": null,
+      "proveedor_id": null,
       "nombre": "Paso de los Toros Pomelo 600ml",
       "categoria": "Bebidas",
-      "precio_venta": 110,
+      "codigo_barras": null,
+      "precio_venta": "110.00",
+      "costo_unitario": "52.0000",
       "stock_actual": 0,
+      "stock_minimo": 5,
       "unidad": "unidad",
-      "imagen_url": "/ingredients/reventa_5.webp",
-      "activo": true
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790788533/nalu_food/reventa/ycmkesvfbrxybtgjnsaq.png",
+      "activo": true,
+      "created_at": "2026-09-21T19:46:22.320Z",
+      "marca_nombre": null,
+      "marca_color": null,
+      "sin_stock": false
     },
     {
       "producto_reventa_id": 2,
       "tenant_id": 1,
       "marca_id": null,
+      "proveedor_id": null,
       "nombre": "Pepsi Black 600ml",
       "categoria": "Bebidas",
-      "precio_venta": 110,
+      "codigo_barras": null,
+      "precio_venta": "110.00",
+      "costo_unitario": "52.0000",
       "stock_actual": 0,
+      "stock_minimo": 5,
       "unidad": "unidad",
-      "imagen_url": "/ingredients/reventa_2.webp",
-      "activo": true
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790788551/nalu_food/reventa/izjky6czlxyoytm9ijo1.png",
+      "activo": true,
+      "created_at": "2026-09-21T19:46:22.320Z",
+      "marca_nombre": null,
+      "marca_color": null,
+      "sin_stock": false
     },
     {
       "producto_reventa_id": 1,
       "tenant_id": 1,
       "marca_id": null,
+      "proveedor_id": null,
       "nombre": "Pepsi Común 600ml",
       "categoria": "Bebidas",
-      "precio_venta": 110,
+      "codigo_barras": null,
+      "precio_venta": "110.00",
+      "costo_unitario": "52.0000",
       "stock_actual": 0,
+      "stock_minimo": 5,
       "unidad": "unidad",
-      "imagen_url": "/ingredients/reventa_1.webp",
-      "activo": true
+      "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790788562/nalu_food/reventa/zbz263pgclxw3uv94tdi.png",
+      "activo": true,
+      "created_at": "2026-09-21T19:46:22.320Z",
+      "marca_nombre": null,
+      "marca_color": null,
+      "sin_stock": false
+    }
+  ],
+  "gruposOpciones": [
+    {
+      "grupo_id": 10,
+      "tenant_id": 1,
+      "producto_elaborado_id": 10,
+      "marca_id": 1,
+      "nombre": "Base",
+      "paso_orden": 1,
+      "min_opciones": 1,
+      "max_opciones": 2,
+      "activo": true,
+      "created_at": "2026-09-24T11:46:25.229Z",
+      "peso_porcion_gramos": null,
+      "opciones": [
+        {
+          "opcion_id": 16,
+          "nombre": "Arroz",
+          "precio_extra": 0,
+          "costo_extra": 10.35,
+          "cantidad_insumo": 0.15,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811691/nalu_food/insumos/wxruxvtwtv5zpxiyrofy.jpg"
+        },
+        {
+          "opcion_id": 17,
+          "nombre": "Arroz integral",
+          "precio_extra": 0,
+          "costo_extra": 9.3,
+          "cantidad_insumo": 0.15,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811681/nalu_food/insumos/tdfg0zmez8mvimbgptol.jpg"
+        },
+        {
+          "opcion_id": 18,
+          "nombre": "Fideo integral",
+          "precio_extra": 0,
+          "costo_extra": 25.5,
+          "cantidad_insumo": 0.15,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811677/nalu_food/insumos/qi8d9jfbg5r7mamnocd9.jpg"
+        },
+        {
+          "opcion_id": 19,
+          "nombre": "Quinoa",
+          "precio_extra": 0,
+          "costo_extra": 50.7,
+          "cantidad_insumo": 0.15,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811679/nalu_food/insumos/kimhcw8oqmypbtgjxheb.jpg"
+        },
+        {
+          "opcion_id": 20,
+          "nombre": "Lechuga",
+          "precio_extra": 0,
+          "costo_extra": 23,
+          "cantidad_insumo": 0.1,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811674/nalu_food/insumos/deir4ngt1rzwba9gtgiw.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 11,
+      "tenant_id": 1,
+      "producto_elaborado_id": 10,
+      "marca_id": 1,
+      "nombre": "Proteína",
+      "paso_orden": 2,
+      "min_opciones": 1,
+      "max_opciones": 2,
+      "activo": true,
+      "created_at": "2026-09-24T11:46:25.229Z",
+      "peso_porcion_gramos": null,
+      "opciones": [
+        {
+          "opcion_id": 21,
+          "nombre": "Carne",
+          "precio_extra": 0,
+          "costo_extra": 58.68,
+          "cantidad_insumo": 0.12,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811682/nalu_food/insumos/xlb0iykogvyoynw7hcsf.jpg"
+        },
+        {
+          "opcion_id": 22,
+          "nombre": "Pollo",
+          "precio_extra": 0,
+          "costo_extra": 76.68,
+          "cantidad_insumo": 0.12,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811690/nalu_food/insumos/ouq2mtdwm0grrntttjzh.jpg"
+        },
+        {
+          "opcion_id": 23,
+          "nombre": "Cerdo barbacoa",
+          "precio_extra": 0,
+          "costo_extra": 41.88,
+          "cantidad_insumo": 0.12,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811694/nalu_food/insumos/xtlrqjebviovnngxcylm.jpg"
+        },
+        {
+          "opcion_id": 24,
+          "nombre": "Huevo",
+          "precio_extra": 0,
+          "costo_extra": 33,
+          "cantidad_insumo": 3,
+          "unidad_insumo": "un",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811678/nalu_food/insumos/y3md5fcmojrk4kqqgsdt.jpg"
+        },
+        {
+          "opcion_id": 25,
+          "nombre": "Camarones (premium - costo extra)",
+          "precio_extra": 90,
+          "costo_extra": 97.25,
+          "cantidad_insumo": 0.1,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811683/nalu_food/insumos/iybjrmst7aof7eijezod.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 12,
+      "tenant_id": 1,
+      "producto_elaborado_id": 10,
+      "marca_id": 1,
+      "nombre": "Verduras",
+      "paso_orden": 3,
+      "min_opciones": 1,
+      "max_opciones": 3,
+      "activo": true,
+      "created_at": "2026-09-24T11:46:25.229Z",
+      "peso_porcion_gramos": null,
+      "opciones": [
+        {
+          "opcion_id": 26,
+          "nombre": "Remolacha",
+          "precio_extra": 0,
+          "costo_extra": 2.6,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811686/nalu_food/insumos/eino65vyyxdi37h6iesl.jpg"
+        },
+        {
+          "opcion_id": 27,
+          "nombre": "Zanahoria",
+          "precio_extra": 0,
+          "costo_extra": 10,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811693/nalu_food/insumos/xntlxuojggcnny0h0cff.jpg"
+        },
+        {
+          "opcion_id": 28,
+          "nombre": "Tomate",
+          "precio_extra": 0,
+          "costo_extra": 4.4,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811670/nalu_food/insumos/mq8pylse04ksclr1gsoq.jpg"
+        },
+        {
+          "opcion_id": 29,
+          "nombre": "Repollo",
+          "precio_extra": 0,
+          "costo_extra": 1.8,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811675/nalu_food/insumos/dmogqkppdgjbqfkp5ocq.jpg"
+        },
+        {
+          "opcion_id": 30,
+          "nombre": "Pepino",
+          "precio_extra": 0,
+          "costo_extra": 7.56,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811692/nalu_food/insumos/fjabtrdrqolnbwqhafkx.jpg"
+        },
+        {
+          "opcion_id": 31,
+          "nombre": "Cebolla morada",
+          "precio_extra": 0,
+          "costo_extra": 3.6,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811695/nalu_food/insumos/hlrxaacdk8z7jxvswk3i.jpg"
+        },
+        {
+          "opcion_id": 32,
+          "nombre": "Brócoli",
+          "precio_extra": 0,
+          "costo_extra": 16.125,
+          "cantidad_insumo": 0.05,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811685/nalu_food/insumos/wxahiv3jldglhmokm8ow.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 13,
+      "tenant_id": 1,
+      "producto_elaborado_id": 10,
+      "marca_id": 1,
+      "nombre": "Toppings",
+      "paso_orden": 4,
+      "min_opciones": 0,
+      "max_opciones": 2,
+      "activo": true,
+      "created_at": "2026-09-24T11:46:25.229Z",
+      "peso_porcion_gramos": null,
+      "opciones": [
+        {
+          "opcion_id": 33,
+          "nombre": "Chaucha",
+          "precio_extra": 0,
+          "costo_extra": 7.425,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811705/nalu_food/insumos/rdfne4uiludilvjq4m2y.jpg"
+        },
+        {
+          "opcion_id": 34,
+          "nombre": "Choclo",
+          "precio_extra": 0,
+          "costo_extra": 4.9,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811673/nalu_food/insumos/k2pj76pc7mb8gasijubp.jpg"
+        },
+        {
+          "opcion_id": 35,
+          "nombre": "Arvejas",
+          "precio_extra": 0,
+          "costo_extra": 3.3429,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811705/nalu_food/insumos/x6mlymnajfumbupwom9o.jpg"
+        },
+        {
+          "opcion_id": 36,
+          "nombre": "Palta",
+          "precio_extra": 0,
+          "costo_extra": 15.7333,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811688/nalu_food/insumos/cqenzuljxsuch5b34m1p.jpg"
+        },
+        {
+          "opcion_id": 37,
+          "nombre": "Palmitos",
+          "precio_extra": 0,
+          "costo_extra": 25.7727,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811702/nalu_food/insumos/l2drjmfy8zodcacg7pb3.jpg"
+        },
+        {
+          "opcion_id": 38,
+          "nombre": "Ananá",
+          "precio_extra": 0,
+          "costo_extra": 5.215,
+          "cantidad_insumo": 0.035,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811672/nalu_food/insumos/herolamfcnju9ydngckp.jpg"
+        },
+        {
+          "opcion_id": 39,
+          "nombre": "Mango",
+          "precio_extra": 0,
+          "costo_extra": 6.65,
+          "cantidad_insumo": 0.035,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811700/nalu_food/insumos/jlui95iptdmcq43pszhv.jpg"
+        },
+        {
+          "opcion_id": 40,
+          "nombre": "Garbanzos",
+          "precio_extra": 0,
+          "costo_extra": 4.3421,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811687/nalu_food/insumos/s80um7bholxa6tkbrpsh.jpg"
+        },
+        {
+          "opcion_id": 41,
+          "nombre": "Lentejas",
+          "precio_extra": 0,
+          "costo_extra": 3.54,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811697/nalu_food/insumos/sjzsnirsvxxx5sohvfom.jpg"
+        },
+        {
+          "opcion_id": 42,
+          "nombre": "Poroto manteca",
+          "precio_extra": 0,
+          "costo_extra": 4.14,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811703/nalu_food/insumos/vnsmeh6purypulnpltb1.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 14,
+      "tenant_id": 1,
+      "producto_elaborado_id": 10,
+      "marca_id": 1,
+      "nombre": "Salsas & Aderesos",
+      "paso_orden": 5,
+      "min_opciones": 1,
+      "max_opciones": 1,
+      "activo": true,
+      "created_at": "2026-09-24T11:46:25.229Z",
+      "peso_porcion_gramos": null,
+      "opciones": [
+        {
+          "opcion_id": 45,
+          "nombre": "Vinagreta",
+          "precio_extra": 0,
+          "costo_extra": 15.48,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811715/nalu_food/insumos/vkwxl1cojxvdue9xomcx.jpg"
+        },
+        {
+          "opcion_id": 46,
+          "nombre": "Soja",
+          "precio_extra": 0,
+          "costo_extra": 8.94,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811713/nalu_food/insumos/hamq0kvvhhzfzwj4gph6.jpg"
+        },
+        {
+          "opcion_id": 47,
+          "nombre": "César",
+          "precio_extra": 0,
+          "costo_extra": 22.68,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811711/nalu_food/insumos/mq1u5fr4itvivhbuvc0t.jpg"
+        },
+        {
+          "opcion_id": 48,
+          "nombre": "Alioli",
+          "precio_extra": 0,
+          "costo_extra": 30.9,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811706/nalu_food/insumos/vdduxuv9fxr5tslmxchi.jpg"
+        },
+        {
+          "opcion_id": 49,
+          "nombre": "Mostaza y miel",
+          "precio_extra": 0,
+          "costo_extra": 21.48,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811712/nalu_food/insumos/ypavnladgyhqef3otchh.jpg"
+        },
+        {
+          "opcion_id": 50,
+          "nombre": "Teriyaki",
+          "precio_extra": 0,
+          "costo_extra": 33.6,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811707/nalu_food/insumos/yvn202cfzenemt6g05vk.jpg"
+        },
+        {
+          "opcion_id": 51,
+          "nombre": "Aceite de oliva",
+          "precio_extra": 0,
+          "costo_extra": 15.56,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811708/nalu_food/insumos/rxyzpgadvyxspdykbtli.jpg"
+        },
+        {
+          "opcion_id": 52,
+          "nombre": "Albahaca",
+          "precio_extra": 0,
+          "costo_extra": 29.8421,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811710/nalu_food/insumos/liqkkfofngsnvjnyn43q.jpg"
+        },
+        {
+          "opcion_id": 53,
+          "nombre": "Tártara",
+          "precio_extra": 0,
+          "costo_extra": 23.85,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811714/nalu_food/insumos/pyuscwjwnsruug5s4kur.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 15,
+      "tenant_id": 1,
+      "producto_elaborado_id": 10,
+      "marca_id": 1,
+      "nombre": "Chips",
+      "paso_orden": 6,
+      "min_opciones": 0,
+      "max_opciones": 2,
+      "activo": true,
+      "created_at": "2026-09-27T15:10:13.178Z",
+      "peso_porcion_gramos": "20.0",
+      "opciones": [
+        {
+          "opcion_id": 54,
+          "nombre": "Chip Boniato",
+          "precio_extra": 0,
+          "costo_extra": 19.8,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811696/nalu_food/insumos/em3c7irxqnlq0r3isr8d.jpg"
+        },
+        {
+          "opcion_id": 55,
+          "nombre": "Maíz canchita",
+          "precio_extra": 0,
+          "costo_extra": 11.8667,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811698/nalu_food/insumos/xnbwns4hwibqp7jv7zhq.jpg"
+        },
+        {
+          "opcion_id": 56,
+          "nombre": "Maní",
+          "precio_extra": 0,
+          "costo_extra": 7.9,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811701/nalu_food/insumos/lptdydxecptsnw1tonwg.jpg"
+        },
+        {
+          "opcion_id": 57,
+          "nombre": "Cebolla crispy",
+          "precio_extra": 0,
+          "costo_extra": 19.8667,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811689/nalu_food/insumos/jtdi2k38tbklytkxnmgs.jpg"
+        },
+        {
+          "opcion_id": 58,
+          "nombre": "Sésamo",
+          "precio_extra": 0,
+          "costo_extra": 4.2,
+          "cantidad_insumo": 0.01,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811716/nalu_food/insumos/k3r6ydt0l8pxrxmrdu1g.jpg"
+        },
+        {
+          "opcion_id": 59,
+          "nombre": "Crutones",
+          "precio_extra": 0,
+          "costo_extra": 13,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811717/nalu_food/insumos/epgsklmbqmdwcfuxvz5c.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 23,
+      "tenant_id": 1,
+      "producto_elaborado_id": 12,
+      "marca_id": 1,
+      "nombre": "Salsas",
+      "paso_orden": 1,
+      "min_opciones": 1,
+      "max_opciones": 3,
+      "activo": true,
+      "created_at": "2026-09-29T12:59:14.436Z",
+      "peso_porcion_gramos": "30.0",
+      "opciones": [
+        {
+          "opcion_id": 108,
+          "nombre": "Teriyaki",
+          "precio_extra": 0,
+          "costo_extra": 33.6,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811707/nalu_food/insumos/yvn202cfzenemt6g05vk.jpg"
+        },
+        {
+          "opcion_id": 109,
+          "nombre": "Alioli",
+          "precio_extra": 0,
+          "costo_extra": 30.9,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811706/nalu_food/insumos/vdduxuv9fxr5tslmxchi.jpg"
+        },
+        {
+          "opcion_id": 110,
+          "nombre": "César",
+          "precio_extra": 0,
+          "costo_extra": 22.68,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811711/nalu_food/insumos/mq1u5fr4itvivhbuvc0t.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 17,
+      "tenant_id": 1,
+      "producto_elaborado_id": 16,
+      "marca_id": 1,
+      "nombre": "Base",
+      "paso_orden": 1,
+      "min_opciones": 1,
+      "max_opciones": 2,
+      "activo": true,
+      "created_at": "2026-09-29T12:41:22.959Z",
+      "peso_porcion_gramos": "150.0",
+      "opciones": [
+        {
+          "opcion_id": 60,
+          "nombre": "Arroz",
+          "precio_extra": 0,
+          "costo_extra": 10.35,
+          "cantidad_insumo": 0.15,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811691/nalu_food/insumos/wxruxvtwtv5zpxiyrofy.jpg"
+        },
+        {
+          "opcion_id": 61,
+          "nombre": "Arroz integral",
+          "precio_extra": 0,
+          "costo_extra": 9.3,
+          "cantidad_insumo": 0.15,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811681/nalu_food/insumos/tdfg0zmez8mvimbgptol.jpg"
+        },
+        {
+          "opcion_id": 62,
+          "nombre": "Fideo integral",
+          "precio_extra": 0,
+          "costo_extra": 25.5,
+          "cantidad_insumo": 0.15,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811677/nalu_food/insumos/qi8d9jfbg5r7mamnocd9.jpg"
+        },
+        {
+          "opcion_id": 63,
+          "nombre": "Quinoa",
+          "precio_extra": 0,
+          "costo_extra": 50.7,
+          "cantidad_insumo": 0.15,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811679/nalu_food/insumos/kimhcw8oqmypbtgjxheb.jpg"
+        },
+        {
+          "opcion_id": 64,
+          "nombre": "Lechuga",
+          "precio_extra": 0,
+          "costo_extra": 34.5,
+          "cantidad_insumo": 0.15,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811674/nalu_food/insumos/deir4ngt1rzwba9gtgiw.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 20,
+      "tenant_id": 1,
+      "producto_elaborado_id": 16,
+      "marca_id": 1,
+      "nombre": "Proteína",
+      "paso_orden": 2,
+      "min_opciones": 1,
+      "max_opciones": 3,
+      "activo": true,
+      "created_at": "2026-09-29T12:42:29.394Z",
+      "peso_porcion_gramos": "120.0",
+      "opciones": [
+        {
+          "opcion_id": 81,
+          "nombre": "Camarones (premium - costo extra)",
+          "precio_extra": 0,
+          "costo_extra": 116.7,
+          "cantidad_insumo": 0.12,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811683/nalu_food/insumos/iybjrmst7aof7eijezod.jpg"
+        },
+        {
+          "opcion_id": 82,
+          "nombre": "Carne",
+          "precio_extra": 0,
+          "costo_extra": 58.68,
+          "cantidad_insumo": 0.12,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811682/nalu_food/insumos/xlb0iykogvyoynw7hcsf.jpg"
+        },
+        {
+          "opcion_id": 83,
+          "nombre": "Cerdo barbacoa",
+          "precio_extra": 0,
+          "costo_extra": 41.88,
+          "cantidad_insumo": 0.12,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811694/nalu_food/insumos/xtlrqjebviovnngxcylm.jpg"
+        },
+        {
+          "opcion_id": 84,
+          "nombre": "Pollo",
+          "precio_extra": 0,
+          "costo_extra": 76.68,
+          "cantidad_insumo": 0.12,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811690/nalu_food/insumos/ouq2mtdwm0grrntttjzh.jpg"
+        },
+        {
+          "opcion_id": 85,
+          "nombre": "Huevo",
+          "precio_extra": 0,
+          "costo_extra": 11,
+          "cantidad_insumo": 1,
+          "unidad_insumo": "un",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811678/nalu_food/insumos/y3md5fcmojrk4kqqgsdt.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 18,
+      "tenant_id": 1,
+      "producto_elaborado_id": 16,
+      "marca_id": 1,
+      "nombre": "Verduras",
+      "paso_orden": 3,
+      "min_opciones": 1,
+      "max_opciones": 3,
+      "activo": true,
+      "created_at": "2026-09-29T12:41:27.835Z",
+      "peso_porcion_gramos": "40.0",
+      "opciones": [
+        {
+          "opcion_id": 65,
+          "nombre": "Brócoli",
+          "precio_extra": 0,
+          "costo_extra": 12.9,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811685/nalu_food/insumos/wxahiv3jldglhmokm8ow.jpg"
+        },
+        {
+          "opcion_id": 66,
+          "nombre": "Cebolla morada",
+          "precio_extra": 0,
+          "costo_extra": 4.8,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811695/nalu_food/insumos/hlrxaacdk8z7jxvswk3i.jpg"
+        },
+        {
+          "opcion_id": 67,
+          "nombre": "Pepino",
+          "precio_extra": 0,
+          "costo_extra": 7.56,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811692/nalu_food/insumos/fjabtrdrqolnbwqhafkx.jpg"
+        },
+        {
+          "opcion_id": 68,
+          "nombre": "Remolacha",
+          "precio_extra": 0,
+          "costo_extra": 2.6,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811686/nalu_food/insumos/eino65vyyxdi37h6iesl.jpg"
+        },
+        {
+          "opcion_id": 69,
+          "nombre": "Repollo",
+          "precio_extra": 0,
+          "costo_extra": 1.8,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811675/nalu_food/insumos/dmogqkppdgjbqfkp5ocq.jpg"
+        },
+        {
+          "opcion_id": 70,
+          "nombre": "Tomate",
+          "precio_extra": 0,
+          "costo_extra": 4.4,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811670/nalu_food/insumos/mq8pylse04ksclr1gsoq.jpg"
+        },
+        {
+          "opcion_id": 71,
+          "nombre": "Zanahoria",
+          "precio_extra": 0,
+          "costo_extra": 10,
+          "cantidad_insumo": 0.04,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811693/nalu_food/insumos/xntlxuojggcnny0h0cff.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 21,
+      "tenant_id": 1,
+      "producto_elaborado_id": 16,
+      "marca_id": 1,
+      "nombre": "Toppings",
+      "paso_orden": 4,
+      "min_opciones": 0,
+      "max_opciones": 3,
+      "activo": true,
+      "created_at": "2026-09-29T12:44:06.469Z",
+      "peso_porcion_gramos": "30.0",
+      "opciones": [
+        {
+          "opcion_id": 86,
+          "nombre": "Ananá",
+          "precio_extra": 0,
+          "costo_extra": 4.47,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811672/nalu_food/insumos/herolamfcnju9ydngckp.jpg"
+        },
+        {
+          "opcion_id": 88,
+          "nombre": "Chip Boniato",
+          "precio_extra": 0,
+          "costo_extra": 29.7,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811696/nalu_food/insumos/em3c7irxqnlq0r3isr8d.jpg"
+        },
+        {
+          "opcion_id": 89,
+          "nombre": "Garbanzos",
+          "precio_extra": 0,
+          "costo_extra": 4.3421,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811687/nalu_food/insumos/s80um7bholxa6tkbrpsh.jpg"
+        },
+        {
+          "opcion_id": 90,
+          "nombre": "Lentejas",
+          "precio_extra": 0,
+          "costo_extra": 3.54,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811697/nalu_food/insumos/sjzsnirsvxxx5sohvfom.jpg"
+        },
+        {
+          "opcion_id": 92,
+          "nombre": "Mango",
+          "precio_extra": 0,
+          "costo_extra": 5.7,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811700/nalu_food/insumos/jlui95iptdmcq43pszhv.jpg"
+        },
+        {
+          "opcion_id": 94,
+          "nombre": "Palmitos",
+          "precio_extra": 0,
+          "costo_extra": 25.7727,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811702/nalu_food/insumos/l2drjmfy8zodcacg7pb3.jpg"
+        },
+        {
+          "opcion_id": 95,
+          "nombre": "Poroto manteca",
+          "precio_extra": 0,
+          "costo_extra": 4.14,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811703/nalu_food/insumos/vnsmeh6purypulnpltb1.jpg"
+        },
+        {
+          "opcion_id": 98,
+          "nombre": "Arvejas",
+          "precio_extra": 0,
+          "costo_extra": 3.3429,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811705/nalu_food/insumos/x6mlymnajfumbupwom9o.jpg"
+        },
+        {
+          "opcion_id": 99,
+          "nombre": "Chaucha",
+          "precio_extra": 0,
+          "costo_extra": 7.425,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811705/nalu_food/insumos/rdfne4uiludilvjq4m2y.jpg"
+        },
+        {
+          "opcion_id": 100,
+          "nombre": "Choclo",
+          "precio_extra": 0,
+          "costo_extra": 4.9,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811673/nalu_food/insumos/k2pj76pc7mb8gasijubp.jpg"
+        },
+        {
+          "opcion_id": 101,
+          "nombre": "Palta",
+          "precio_extra": 0,
+          "costo_extra": 11.8,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811688/nalu_food/insumos/cqenzuljxsuch5b34m1p.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 19,
+      "tenant_id": 1,
+      "producto_elaborado_id": 16,
+      "marca_id": 1,
+      "nombre": "Salsas",
+      "paso_orden": 5,
+      "min_opciones": 1,
+      "max_opciones": 3,
+      "activo": true,
+      "created_at": "2026-09-29T12:41:29.548Z",
+      "peso_porcion_gramos": "30.0",
+      "opciones": [
+        {
+          "opcion_id": 72,
+          "nombre": "Aceite de oliva",
+          "precio_extra": 0,
+          "costo_extra": 23.34,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811708/nalu_food/insumos/rxyzpgadvyxspdykbtli.jpg"
+        },
+        {
+          "opcion_id": 73,
+          "nombre": "Albahaca",
+          "precio_extra": 0,
+          "costo_extra": 29.8421,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811710/nalu_food/insumos/liqkkfofngsnvjnyn43q.jpg"
+        },
+        {
+          "opcion_id": 74,
+          "nombre": "Alioli",
+          "precio_extra": 0,
+          "costo_extra": 30.9,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811706/nalu_food/insumos/vdduxuv9fxr5tslmxchi.jpg"
+        },
+        {
+          "opcion_id": 75,
+          "nombre": "César",
+          "precio_extra": 0,
+          "costo_extra": 22.68,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811711/nalu_food/insumos/mq1u5fr4itvivhbuvc0t.jpg"
+        },
+        {
+          "opcion_id": 76,
+          "nombre": "Mostaza y miel",
+          "precio_extra": 0,
+          "costo_extra": 21.48,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811712/nalu_food/insumos/ypavnladgyhqef3otchh.jpg"
+        },
+        {
+          "opcion_id": 77,
+          "nombre": "Soja",
+          "precio_extra": 0,
+          "costo_extra": 8.94,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811713/nalu_food/insumos/hamq0kvvhhzfzwj4gph6.jpg"
+        },
+        {
+          "opcion_id": 78,
+          "nombre": "Tártara",
+          "precio_extra": 0,
+          "costo_extra": 23.85,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811714/nalu_food/insumos/pyuscwjwnsruug5s4kur.jpg"
+        },
+        {
+          "opcion_id": 79,
+          "nombre": "Teriyaki",
+          "precio_extra": 0,
+          "costo_extra": 33.6,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811707/nalu_food/insumos/yvn202cfzenemt6g05vk.jpg"
+        },
+        {
+          "opcion_id": 80,
+          "nombre": "Vinagreta",
+          "precio_extra": 0,
+          "costo_extra": 15.48,
+          "cantidad_insumo": 0.03,
+          "unidad_insumo": "lt",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811715/nalu_food/insumos/vkwxl1cojxvdue9xomcx.jpg"
+        }
+      ]
+    },
+    {
+      "grupo_id": 22,
+      "tenant_id": 1,
+      "producto_elaborado_id": 16,
+      "marca_id": 1,
+      "nombre": "Chips",
+      "paso_orden": 6,
+      "min_opciones": 0,
+      "max_opciones": 2,
+      "activo": true,
+      "created_at": "2026-09-29T12:44:09.690Z",
+      "peso_porcion_gramos": "20.0",
+      "opciones": [
+        {
+          "opcion_id": 102,
+          "nombre": "Cebolla crispy",
+          "precio_extra": 0,
+          "costo_extra": 19.8667,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811689/nalu_food/insumos/jtdi2k38tbklytkxnmgs.jpg"
+        },
+        {
+          "opcion_id": 103,
+          "nombre": "Chip Boniato",
+          "precio_extra": 0,
+          "costo_extra": 19.8,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811696/nalu_food/insumos/em3c7irxqnlq0r3isr8d.jpg"
+        },
+        {
+          "opcion_id": 104,
+          "nombre": "Maíz canchita",
+          "precio_extra": 0,
+          "costo_extra": 11.8667,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811698/nalu_food/insumos/xnbwns4hwibqp7jv7zhq.jpg"
+        },
+        {
+          "opcion_id": 105,
+          "nombre": "Maní",
+          "precio_extra": 0,
+          "costo_extra": 7.9,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811701/nalu_food/insumos/lptdydxecptsnw1tonwg.jpg"
+        },
+        {
+          "opcion_id": 106,
+          "nombre": "Sésamo",
+          "precio_extra": 0,
+          "costo_extra": 8.4,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811716/nalu_food/insumos/k3r6ydt0l8pxrxmrdu1g.jpg"
+        },
+        {
+          "opcion_id": 107,
+          "nombre": "Crutones",
+          "precio_extra": 0,
+          "costo_extra": 13,
+          "cantidad_insumo": 0.02,
+          "unidad_insumo": "kg",
+          "imagen_url": "https://res.cloudinary.com/domyogu15/image/upload/v1790811717/nalu_food/insumos/epgsklmbqmdwcfuxvz5c.jpg"
+        }
+      ]
     }
   ]
 }

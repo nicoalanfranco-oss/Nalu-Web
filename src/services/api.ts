@@ -121,15 +121,24 @@ export async function fetchNaluCatalogo(): Promise<{
   }
 
   try {
-    let res = await fetch('/api/public/catalogo?tenant_id=1&marca_id=1');
-    if (!res.ok) {
-      res = await fetch('/api/admin/public/catalogo?tenant_id=1&marca_id=1');
-    }
-    if (!res.ok) {
-      res = await fetch('/api/admin/productos/catalogo');
+    const urls = [
+      '/api/public/catalogo?tenant_id=1&marca_id=1',
+      '/api/admin/public/catalogo?tenant_id=1&marca_id=1',
+      '/api/admin/productos/catalogo',
+      'http://localhost:3002/api/public/catalogo?tenant_id=1&marca_id=1',
+    ];
+    let res: Response | null = null;
+    for (const url of urls) {
+      try {
+        const candidate = await fetch(url);
+        if (candidate.ok) {
+          res = candidate;
+          break;
+        }
+      } catch (_) {}
     }
 
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       const elaboradosBD = (data.elaborados || []).filter((p: any) => p.marca_id === 1 || !p.marca_id);
       if (elaboradosBD.length > 0) {
@@ -191,13 +200,26 @@ export async function sendOrderToFood(orderPayload: any): Promise<{ success: boo
       enviar_a_cocina: true,
     };
 
-    const res = await fetch('/api/admin/pedidos/pos/guardar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payloadConCocina),
-    });
+    const urls = [
+      '/api/admin/pedidos/pos/guardar',
+      'http://localhost:3002/api/admin/pedidos/pos/guardar',
+    ];
+    let res: Response | null = null;
+    for (const url of urls) {
+      try {
+        const candidate = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payloadConCocina),
+        });
+        if (candidate.ok) {
+          res = candidate;
+          break;
+        }
+      } catch (_) {}
+    }
 
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       return {
         success: true,
