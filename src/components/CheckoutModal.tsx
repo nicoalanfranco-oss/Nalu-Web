@@ -123,8 +123,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [nombre, setNombre] = useState(savedCustomer?.nombre || '');
   const [email, setEmail] = useState(savedCustomer?.email || '');
   const [telefono, setTelefono] = useState(savedCustomer?.telefono || '');
-  const [fechaNacimiento, setFechaNacimiento] = useState(savedCustomer?.fecha_nacimiento || '');
-  const [cargandoGooglePeople, setCargandoGooglePeople] = useState(false);
+  const [fechaNacimiento, setFechaNacimiento] = useState(() => {
+    const raw = savedCustomer?.fecha_nacimiento || '';
+    return parseFlexibleDate(raw).display || raw;
+  });
   const [direccion, setDireccion] = useState(savedCustomer?.direccion || '');
   const [apartamento, setApartamento] = useState(savedCustomer?.apartamento || '');
   const [googleMapsUrl, setGoogleMapsUrl] = useState(savedCustomer?.google_maps_url || '');
@@ -153,116 +155,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [buscandoGps, setBuscandoGps] = useState(false);
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
 
-  // Solicitar datos ampliados (teléfono, cumpleaños, dirección) mediante Google People API
-  const solicitarDatosCompletosGoogle = () => {
+  // Solicitar inicio con Google One Tap
+  const handleGoogleSignInPrompt = () => {
     try {
       const g = (window as any).google;
-      if (!g?.accounts?.oauth2) {
-        setErrorMsg('Servicio de Google OAuth no disponible en el navegador');
-        return;
-      }
-
-      setCargandoGooglePeople(true);
-      setErrorMsg('');
-      const client = g.accounts.oauth2.initTokenClient({
-        client_id: GOOGLE_CLIENT_ID,
-        scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/user.phonenumbers.read https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.addresses.read',
-        callback: async (tokenResponse: any) => {
-          if (tokenResponse?.error) {
-            console.warn('Error OAuth Google:', tokenResponse);
-            setCargandoGooglePeople(false);
-            if (tokenResponse.error !== 'access_denied') {
-              setErrorMsg('No se pudo sincronizar con Google. Puedes completar los campos manualmente.');
-            }
-            return;
-          }
-          if (tokenResponse?.access_token) {
-            try {
-              const res = await fetch(
-                'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,phoneNumbers,birthdays,addresses,photos',
-                {
-                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-                }
-              );
-              if (res.ok) {
-                const data = await res.json();
-                const nombreGoogle = data.names?.[0]?.displayName || nombre;
-                const emailGoogle = data.emailAddresses?.[0]?.value || email;
-                let telGoogle = telefono;
-                if (data.phoneNumbers && data.phoneNumbers.length > 0) {
-                  telGoogle = data.phoneNumbers[0].canonicalForm || data.phoneNumbers[0].value || telefono;
-                }
-
-                // Formatear cumpleaños YYYY-MM-DD
-                let bdayGoogle = fechaNacimiento;
-                if (data.birthdays && data.birthdays.length > 0) {
-                  const bdayObj = data.birthdays.find((b: any) => b.date) || data.birthdays[0];
-                  if (bdayObj?.date) {
-                    const b = bdayObj.date;
-                    if (b.month && b.day) {
-                      const y = b.year ? String(b.year).padStart(4, '0') : '2000';
-                      const m = String(b.month).padStart(2, '0');
-                      const d = String(b.day).padStart(2, '0');
-                      bdayGoogle = `${y}-${m}-${d}`;
-                    }
-                  }
-                }
-
-                // Dirección de casa o principal
-                let dirGoogle = direccion;
-                if (data.addresses && data.addresses.length > 0) {
-                  dirGoogle = data.addresses[0].formattedValue || direccion;
-                }
-
-                if (nombreGoogle) setNombre(nombreGoogle);
-                if (emailGoogle) setEmail(emailGoogle);
-                if (telGoogle) setTelefono(telGoogle);
-                if (bdayGoogle) setFechaNacimiento(bdayGoogle);
-                if (dirGoogle) setDireccion(dirGoogle);
-
-                const updatedUser: GoogleUserData = {
-                  name: nombreGoogle,
-                  email: emailGoogle,
-                  picture: data.photos?.[0]?.url || googleUser?.picture,
-                  phone: telGoogle,
-                  birthday: bdayGoogle,
-                  address: dirGoogle,
-                };
-                setGoogleUser(updatedUser);
-                localStorage.setItem('nalu_google_user', JSON.stringify(updatedUser));
-
-                try {
-                  const currentProfile = JSON.parse(localStorage.getItem('nalu_customer_profile') || '{}');
-                  localStorage.setItem('nalu_customer_profile', JSON.stringify({
-                    ...currentProfile,
-                    nombre: nombreGoogle,
-                    email: emailGoogle,
-                    telefono: telGoogle,
-                    fecha_nacimiento: bdayGoogle,
-                    direccion: dirGoogle || currentProfile.direccion,
-                  }));
-                } catch {}
-              }
-            } catch (err) {
-              console.warn('Error al consultar People API:', err);
-            } finally {
-              setCargandoGooglePeople(false);
-            }
-          } else {
-            setCargandoGooglePeople(false);
-          }
-        },
-      });
-
-      // Si ya tenemos el email de Google, pasamos hint para agilizar; usamos prompt 'select_account' para garantizar que abra el diálogo
-      if (email && email.includes('@')) {
-        client.requestAccessToken({ hint: email, prompt: 'select_account' });
-      } else {
-        client.requestAccessToken({ prompt: 'select_account' });
+      if (g?.accounts?.id) {
+        g.accounts.id.prompt();
       }
     } catch (e) {
-      console.warn('Error inicializando People OAuth:', e);
-      setCargandoGooglePeople(false);
+      console.warn('Error al invocar Google One Tap:', e);
     }
   };
 
@@ -597,74 +498,35 @@ ${lineasItems}
               borderRadius: 'var(--radius-md)',
               border: '1px solid #BBF7D0',
               display: 'flex',
-              flexDirection: 'column',
+              alignItems: 'center',
               gap: '10px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {googleUser.picture ? (
-                  <img
-                    src={googleUser.picture}
-                    alt=""
-                    style={{ width: '34px', height: '34px', borderRadius: '50%', border: '2px solid var(--primary)', flexShrink: 0 }}
-                  />
-                ) : (
-                  <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0 }}>G</div>
-                )}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-main)' }}>{googleUser.name}</span>
-                    <span style={{ fontSize: '0.65rem', background: '#DCFCE7', color: '#166534', padding: '2px 6px', borderRadius: 'var(--radius-full)', fontWeight: 700 }}>Google ✓</span>
-                  </div>
-                  <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {googleUser.email}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => { setGoogleUser(null); localStorage.removeItem('nalu_google_user'); }}
-                  style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '4px', flexShrink: 0 }}
-                  title="Desvincular cuenta de Google"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Botón interactivo para autocompletar teléfono y cumpleaños con Google People API */}
-              {(!telefono || !fechaNacimiento) && (
-                <button
-                  type="button"
-                  onClick={solicitarDatosCompletosGoogle}
-                  disabled={cargandoGooglePeople}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    padding: '8px 12px',
-                    background: 'white',
-                    color: '#166534',
-                    border: '1.5px solid #86EFAC',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                    cursor: cargandoGooglePeople ? 'wait' : 'pointer',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                  }}
-                >
-                  {cargandoGooglePeople ? (
-                    <>
-                      <Loader2 size={13} className="spin" />
-                      <span>Conectando con Google...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles size={13} color="#16a34a" />
-                      <span>⚡ Autocompletar Teléfono y Cumpleaños con Google</span>
-                    </>
-                  )}
-                </button>
+              {googleUser.picture ? (
+                <img
+                  src={googleUser.picture}
+                  alt=""
+                  style={{ width: '34px', height: '34px', borderRadius: '50%', border: '2px solid var(--primary)', flexShrink: 0 }}
+                />
+              ) : (
+                <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0 }}>G</div>
               )}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-main)' }}>{googleUser.name}</span>
+                  <span style={{ fontSize: '0.65rem', background: '#DCFCE7', color: '#166534', padding: '2px 6px', borderRadius: 'var(--radius-full)', fontWeight: 700 }}>Google ✓</span>
+                </div>
+                <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {googleUser.email}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setGoogleUser(null); localStorage.removeItem('nalu_google_user'); }}
+                style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '4px', flexShrink: 0 }}
+                title="Desvincular cuenta de Google"
+              >
+                ✕
+              </button>
             </div>
           ) : (
             <div style={{
@@ -678,12 +540,11 @@ ${lineasItems}
               gap: '10px',
             }}>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                ¿Querés autocompletar tus datos más rápido?
+                ¿Querés autocompletar tu nombre y correo?
               </div>
               <button
                 type="button"
-                onClick={solicitarDatosCompletosGoogle}
-                disabled={cargandoGooglePeople}
+                onClick={handleGoogleSignInPrompt}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -699,8 +560,8 @@ ${lineasItems}
                   flexShrink: 0,
                 }}
               >
-                {cargandoGooglePeople ? <Loader2 size={12} className="spin" /> : <Sparkles size={12} color="#D97706" />}
-                <span>Usar Google</span>
+                <Sparkles size={12} color="#D97706" />
+                <span>Conectar Google</span>
               </button>
             </div>
           )}
@@ -829,6 +690,7 @@ ${lineasItems}
                   onChange={e => setTelefono(e.target.value)}
                   name="tel"
                   autoComplete="tel"
+                  inputMode="tel"
                   placeholder="Ej: 099 123 456"
                   style={{
                     width: '100%',
@@ -1001,6 +863,7 @@ ${lineasItems}
                     onChange={e => setApartamento(e.target.value)}
                     placeholder="Ej: Apto 204, portón negro, timbre 2"
                     name="address-line2"
+                    autoComplete="address-line2"
                     style={{
                       width: '100%',
                       padding: '10px 14px',
