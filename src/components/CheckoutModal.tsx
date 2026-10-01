@@ -49,6 +49,48 @@ function decodeGoogleJwt(token: string): GoogleUserData | null {
   }
 }
 
+// Helper inteligente para parsear cualquier formato de fecha libre (DD/MM/AAAA, DD-MM-YYYY, YYYY-MM-DD, D/M/YY, etc.)
+export function parseFlexibleDate(val: string): { iso: string; display: string } {
+  if (!val) return { iso: '', display: '' };
+  const clean = val.trim();
+  // Formato ISO: YYYY-MM-DD o YYYY/MM/DD
+  let m = clean.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if (m) {
+    const y = m[1];
+    const mo = m[2].padStart(2, '0');
+    const d = m[3].padStart(2, '0');
+    return { iso: `${y}-${mo}-${d}`, display: `${d}/${mo}/${y}` };
+  }
+  // Formato día/mes/año: DD/MM/AAAA o DD-MM-AAAA
+  m = clean.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})$/);
+  if (m) {
+    const d = m[1].padStart(2, '0');
+    const mo = m[2].padStart(2, '0');
+    let y = m[3];
+    if (y.length === 2) {
+      const yrNum = parseInt(y, 10);
+      y = yrNum > 30 ? `19${y}` : `20${y}`;
+    }
+    return { iso: `${y}-${mo}-${d}`, display: `${d}/${mo}/${y}` };
+  }
+  // Formato 8 dígitos seguidos: DDMMYYYY
+  m = clean.match(/^(\d{2})(\d{2})(\d{4})$/);
+  if (m) {
+    const d = m[1];
+    const mo = m[2];
+    const y = m[3];
+    return { iso: `${y}-${mo}-${d}`, display: `${d}/${mo}/${y}` };
+  }
+  // Formato día y mes sin año: DD/MM
+  m = clean.match(/^(\d{1,2})[-/.](\d{1,2})$/);
+  if (m) {
+    const d = m[1].padStart(2, '0');
+    const mo = m[2].padStart(2, '0');
+    return { iso: `2000-${mo}-${d}`, display: `${d}/${mo}` };
+  }
+  return { iso: clean, display: clean };
+}
+
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   isOpen,
   items,
@@ -212,7 +254,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         },
       });
 
-      client.requestAccessToken({ prompt: '' });
+      // Si ya tenemos el email de Google, pasamos hint para agilizar; usamos prompt 'select_account' para garantizar que abra el diálogo
+      if (email && email.includes('@')) {
+        client.requestAccessToken({ hint: email, prompt: 'select_account' });
+      } else {
+        client.requestAccessToken({ prompt: 'select_account' });
+      }
     } catch (e) {
       console.warn('Error inicializando People OAuth:', e);
       setCargandoGooglePeople(false);
@@ -400,7 +447,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           nombre: nombre.trim(),
           email: email.trim(),
           telefono: telefono.trim(),
-          fecha_nacimiento: fechaNacimiento.trim(),
+          fecha_nacimiento: parseFlexibleDate(fechaNacimiento).iso || fechaNacimiento.trim(),
           direccion: direccion.trim(),
           apartamento: apartamento.trim(),
           google_maps_url: googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', Tacuarembó')}`,
@@ -423,13 +470,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         canal: tipoEntrega === 'delivery' ? 'delivery' : 'take_away',
         nombre_cliente_rapido: nombre.trim(),
         email: email.trim(),
-        fecha_nacimiento: fechaNacimiento.trim() || null,
+        fecha_nacimiento: parseFlexibleDate(fechaNacimiento).iso || fechaNacimiento.trim() || null,
         comensales: 1,
         datos_delivery: {
           nombre: nombre.trim(),
           telefono: telefono.trim(),
           email: email.trim(),
-          fecha_nacimiento: fechaNacimiento.trim() || null,
+          fecha_nacimiento: parseFlexibleDate(fechaNacimiento).iso || fechaNacimiento.trim() || null,
           direccion: direccion.trim(),
           apartamento: apartamento.trim(),
           google_maps_url: resolvedGmapsUrl,
@@ -483,7 +530,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           ? 'POS Tarjeta (Débito/Crédito)'
           : 'Transferencia Bancaria';
 
-      const cumpleTxt = fechaNacimiento.trim() ? `\n🎂 *Cumpleaños:* ${fechaNacimiento.trim()}` : '';
+      const parsedBday = parseFlexibleDate(fechaNacimiento);
+    const cumpleTxt = (parsedBday.display || fechaNacimiento.trim()) ? `\n🎂 *Cumpleaños:* ${parsedBday.display || fechaNacimiento.trim()}` : '';
 
       const textoWhatsApp = `*¡Hola Nalú Poke Bowls Tacuarembó!* 🥗🌊
 Acabo de realizar mi pedido desde la web oficial.
@@ -768,55 +816,64 @@ ${lineasItems}
               />
             </div>
 
-            <div>
-              <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '4px', display: 'block' }}>
-                Teléfono / WhatsApp *
-              </label>
-              <input
-                type="tel"
-                required
-                value={telefono}
-                onChange={e => setTelefono(e.target.value)}
-                name="tel"
-                autoComplete="tel"
-                placeholder="Ej: 099 123 456"
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1.5px solid var(--border-light)',
-                  outline: 'none',
-                  fontSize: '0.9rem',
-                }}
-              />
-            </div>
+            {/* Teléfono y Fecha de Nacimiento juntos en el mismo renglón */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '10px' }}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '4px', display: 'block' }}>
+                  Teléfono / WhatsApp *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={telefono}
+                  onChange={e => setTelefono(e.target.value)}
+                  name="tel"
+                  autoComplete="tel"
+                  placeholder="Ej: 099 123 456"
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1.5px solid var(--border-light)',
+                    outline: 'none',
+                    fontSize: '0.88rem',
+                  }}
+                />
+              </div>
 
-            {/* Fecha de Nacimiento (opcional para beneficio de cumpleaños) */}
-            <div>
-              <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>Fecha de Nacimiento (opcional) 🎂</span>
-                {fechaNacimiento && (
-                  <span style={{ color: '#166534', fontSize: '0.72rem', fontWeight: 600 }}>¡Te avisaremos tu beneficio!</span>
-                )}
-              </label>
-              <input
-                type="date"
-                value={fechaNacimiento}
-                onChange={e => setFechaNacimiento(e.target.value)}
-                name="bday"
-                autoComplete="bday"
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1.5px solid var(--border-light)',
-                  outline: 'none',
-                  fontSize: '0.9rem',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-main)',
-                  background: 'var(--bg-card)',
-                }}
-              />
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span title="Día/Mes/Año o con guiones">Cumpleaños 🎂</span>
+                  {fechaNacimiento && (
+                    <span style={{ color: '#166534', fontSize: '0.68rem', fontWeight: 700 }}>🎁 ¡Beneficio!</span>
+                  )}
+                </label>
+                <input
+                  type="text"
+                  value={fechaNacimiento}
+                  onChange={e => setFechaNacimiento(e.target.value)}
+                  onBlur={e => {
+                    const parsed = parseFlexibleDate(e.target.value);
+                    if (parsed.display) {
+                      setFechaNacimiento(parsed.display);
+                    }
+                  }}
+                  name="bday"
+                  autoComplete="bday"
+                  placeholder="DD/MM/AAAA"
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1.5px solid var(--border-light)',
+                    outline: 'none',
+                    fontSize: '0.88rem',
+                    fontFamily: 'inherit',
+                    color: 'var(--text-main)',
+                    background: 'var(--bg-card)',
+                  }}
+                />
+              </div>
             </div>
 
             {/* ── 4. Dirección Tipo Google Maps (Solo Delivery) ── */}
