@@ -154,6 +154,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [searchingAddress, setSearchingAddress] = useState(false);
   const [buscandoGps, setBuscandoGps] = useState(false);
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+  const [requiresReference, setRequiresReference] = useState(false);
 
   // Solicitar inicio con Google One Tap
   const handleGoogleSignInPrompt = () => {
@@ -268,11 +269,31 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const handleSelectSuggestion = (sug: any) => {
     const lat = parseFloat(sug.lat);
     const lon = parseFloat(sug.lon);
-    setDireccion(sug.display_name.split(',')[0] + ', ' + (sug.address?.suburb || sug.address?.city || 'Tacuarembó'));
+
+    // Construir dirección completa desde los datos estructurados de Nominatim
+    const addr = sug.address || {};
+    const road = addr.road || addr.pedestrian || addr.footway || '';
+    const houseNumber = addr.house_number || '';
+    const suburb = addr.suburb || addr.neighbourhood || '';
+    const city = addr.city || addr.town || addr.village || 'Tacuarembó';
+    const state = addr.state || addr.county || 'Tacuarembó';
+    const country = addr.country || 'Uruguay';
+
+    // Calle con o sin número
+    const streetPart = [road, houseNumber].filter(Boolean).join(' ');
+    // Dirección completa: "Domingo Catalina 210, Tacuarembó, Tacuarembó, Uruguay"
+    const fullAddress = [streetPart, suburb, city, state, country]
+      .filter((v, i, arr) => v && arr.indexOf(v) === i) // Deduplicar valores repetidos
+      .join(', ');
+
+    setDireccion(fullAddress);
     setLatitud(lat);
     setLongitud(lon);
     setGoogleMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
     setShowAddressDropdown(false);
+
+    // Si no tiene número de casa, marcar que se requiere referencia
+    setRequiresReference(!houseNumber);
   };
 
   // Obtener ubicación GPS con 1 clic
@@ -282,37 +303,78 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       return;
     }
     setBuscandoGps(true);
-    navigator.geolocation.getCurrentPosition(
-      async pos => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        setLatitud(lat);
-        setLongitud(lon);
-        setGoogleMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
+    setErrorMsg('');
 
-        // Reverse geocoding para obtener la calle aproximada
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-          if (res.ok) {
-            const data = await res.json();
-            const road = data.address?.road || '';
-            const houseNumber = data.address?.house_number || '';
-            const dir = [road, houseNumber].filter(Boolean).join(' ');
-            setDireccion(dir || `Ubicación GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
-          } else {
-            setDireccion(`Ubicación GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
-          }
-        } catch {
+    const processPosition = async (pos: GeolocationPosition) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      setLatitud(lat);
+      setLongitud(lon);
+      setGoogleMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
+
+      // Reverse geocoding para obtener la dirección completa
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`);
+        if (res.ok) {
+          const data = await res.json();
+          const addr = data.address || {};
+          const road = addr.road || addr.pedestrian || addr.footway || '';
+          const houseNumber = addr.house_number || '';
+          const suburb = addr.suburb || addr.neighbourhood || '';
+          const city = addr.city || addr.town || addr.village || 'Tacuarembó';
+          const state = addr.state || addr.county || 'Tacuarembó';
+          const country = addr.country || 'Uruguay';
+
+          const streetPart = [road, houseNumber].filter(Boolean).join(' ');
+          const fullAddress = [streetPart, suburb, city, state, country]
+            .filter((v, i, arr) => v && arr.indexOf(v) === i)
+            .join(', ');
+
+          setDireccion(fullAddress || `Ubicación GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
+          setRequiresReference(!houseNumber);
+        } else {
           setDireccion(`Ubicación GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
+          setRequiresReference(true);
         }
-        setBuscandoGps(false);
-      },
-      err => {
-        console.warn('Error GPS:', err);
-        setBuscandoGps(false);
-        setErrorMsg('No pudimos acceder a tu ubicación. Ingresa la calle manualmente.');
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
+      } catch {
+        setDireccion(`Ubicación GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
+        setRequiresReference(true);
+      }
+      setBuscandoGps(false);
+    };
+
+    const handleGPSError = (err: GeolocationPositionError) => {
+      // Si falla con alta precisión, reintentar con baja precisión
+      if (err.code === err.TIMEOUT) {
+        navigator.geolocation.getCurrentPosition(
+          processPosition,
+          (retryErr) => {
+            console.warn('Error GPS (retry):', retryErr);
+            setBuscandoGps(false);
+            if (retryErr.code === retryErr.PERMISSION_DENIED) {
+              setErrorMsg('Permiso de ubicación denegado. Habilitá la ubicación en tu navegador o ingresá la dirección manualmente.');
+            } else {
+              setErrorMsg('No pudimos obtener tu ubicación. Ingresá la calle manualmente o pegá un link de Google Maps.');
+            }
+          },
+          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+        );
+        return;
+      }
+
+      console.warn('Error GPS:', err);
+      setBuscandoGps(false);
+      if (err.code === err.PERMISSION_DENIED) {
+        setErrorMsg('Permiso de ubicación denegado. Habilitá la ubicación en tu navegador o ingresá la dirección manualmente.');
+      } else {
+        setErrorMsg('No pudimos obtener tu ubicación. Ingresá la calle manualmente o pegá un link de Google Maps.');
+      }
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      processPosition,
+      handleGPSError,
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
     );
   };
 
@@ -334,6 +396,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     }
     if (tipoEntrega === 'delivery' && !direccion.trim()) {
       setErrorMsg('Por favor ingresa tu dirección de entrega');
+      return;
+    }
+    if (tipoEntrega === 'delivery' && requiresReference && !apartamento.trim()) {
+      setErrorMsg('Tu dirección no tiene número de puerta. Por favor completá el campo de Referencia para que podamos encontrarte.');
       return;
     }
 
@@ -463,7 +529,7 @@ ${lineasItems}
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop">
       <div
         className="modal-container"
         style={{ maxWidth: '540px', padding: 0, overflow: 'hidden' }}
@@ -857,20 +923,27 @@ ${lineasItems}
 
                 <div>
                   <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '4px', display: 'block' }}>
-                    Apartamento / Timbre / Referencia
+                    Apartamento / Timbre / Referencia {requiresReference && <span style={{ color: '#DC2626' }}>* (obligatorio)</span>}
                   </label>
+                  {requiresReference && (
+                    <div style={{ fontSize: '0.72rem', color: '#B45309', background: '#FEF3C7', padding: '6px 10px', borderRadius: 'var(--radius-sm)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <AlertCircle size={13} />
+                      <span>Tu dirección no tiene número. Indicá una referencia para encontrarte (ej: casa azul frente a la plaza).</span>
+                    </div>
+                  )}
                   <input
                     type="text"
                     value={apartamento}
                     onChange={e => setApartamento(e.target.value)}
-                    placeholder="Ej: Apto 204, portón negro, timbre 2"
+                    required={requiresReference}
+                    placeholder={requiresReference ? '⚠️ Obligatorio: describí cómo llegar (ej: casa azul, portón rojo)' : 'Ej: Apto 204, portón negro, timbre 2'}
                     name="address-line2"
                     autoComplete="address-line2"
                     style={{
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: 'var(--radius-md)',
-                      border: '1.5px solid var(--border-light)',
+                      border: `1.5px solid ${requiresReference && !apartamento.trim() ? '#DC2626' : 'var(--border-light)'}`,
                       outline: 'none',
                       fontSize: '0.9rem',
                     }}

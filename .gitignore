@@ -21,6 +21,17 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
-*.tsbuildinfo
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Temporary & scratch
+scratch/
+*/scratch/
+*.tmp
+*.bak
+*.old
+*.swp
+
 
