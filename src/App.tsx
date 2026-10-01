@@ -267,21 +267,23 @@ export const App: React.FC = () => {
       {/* Pie de Página */}
       <Footer marca={marca} tenant={tenant} />
 
-      {/* Barra de Navegación Inferior Móvil (Mobile First) */}
-      <MobileBottomNav
-        activeTab={mobileTab}
-        cartCount={cartCount}
-        onNavigate={tab => {
-          setMobileTab(tab);
-          if (tab === 'inicio') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else {
-            handleExploreMenu();
-          }
-        }}
-        onOpenCustomizer={handleOpenGeneralCustomizer}
-        onOpenCart={() => setIsCartOpen(true)}
-      />
+      {/* Barra de Navegación Inferior Móvil (oculta si hay un modal abierto para no bloquear botones de acción) */}
+      {!isCustomizerOpen && !isCartOpen && !isCheckoutOpen && !orderSuccessNumber && (
+        <MobileBottomNav
+          activeTab={mobileTab}
+          cartCount={cartCount}
+          onNavigate={tab => {
+            setMobileTab(tab);
+            if (tab === 'inicio') {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+              handleExploreMenu();
+            }
+          }}
+          onOpenCustomizer={handleOpenGeneralCustomizer}
+          onOpenCart={() => setIsCartOpen(true)}
+        />
+      )}
 
       {/* Notificación Flotante Toast al agregar items */}
       <ToastNotification

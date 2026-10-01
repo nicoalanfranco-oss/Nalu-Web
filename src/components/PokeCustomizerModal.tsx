@@ -21,13 +21,12 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
   // Bloquear el scroll del fondo (body) mientras el modal esté abierto
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
-    const originalTouchAction = document.body.style.touchAction;
     document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
+    document.body.classList.add('modal-open');
 
     return () => {
       document.body.style.overflow = originalOverflow;
-      document.body.style.touchAction = originalTouchAction;
+      document.body.classList.remove('modal-open');
     };
   }, []);
 
@@ -126,6 +125,28 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
 
   const esUltimoPaso = pasoActivo === gruposOrdenados.length - 1;
 
+  // Navegación entre pasos con scroll suave arriba
+  const handleAvanzarPaso = () => {
+    if (!pasoValido) return;
+    triggerHaptic('light');
+    if (!esUltimoPaso) {
+      setPasoActivo(prev => prev + 1);
+      const scrollEl = document.getElementById('customizer-scroll-body');
+      if (scrollEl) scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      handleConfirmar();
+    }
+  };
+
+  const handleRetrocederPaso = () => {
+    if (pasoActivo > 0) {
+      triggerHaptic('light');
+      setPasoActivo(prev => prev - 1);
+      const scrollEl = document.getElementById('customizer-scroll-body');
+      if (scrollEl) scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container" onClick={e => e.stopPropagation()}>
@@ -161,7 +182,11 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
                 <button
                   key={grp.grupo_id}
                   type="button"
-                  onClick={() => setPasoActivo(idx)}
+                  onClick={() => {
+                    setPasoActivo(idx);
+                    const scrollEl = document.getElementById('customizer-scroll-body');
+                    if (scrollEl) scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                   className={`stepper-tab ${isActive ? 'active' : isCompleted ? 'completed' : ''}`}
                 >
                   <span className="stepper-num" style={{
@@ -222,7 +247,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
         )}
 
         {/* Contenido: Opciones del Paso Actual con Fotos Reales de la BD */}
-        <div className="modal-scroll-body" style={{ flex: 1 }}>
+        <div className="modal-scroll-body" id="customizer-scroll-body">
           {grupoActual && (
             <div className="ingredients-selector-grid">
               {grupoActual.opciones.map(opc => {
@@ -293,6 +318,56 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
               />
             </div>
           )}
+
+          {/* Botones de acción directos al final del formulario (Garantiza que siempre puedas avanzar al escrolear) */}
+          <div className="customizer-bottom-form-actions">
+            {!esUltimoPaso ? (
+              <button
+                type="button"
+                onClick={handleAvanzarPaso}
+                disabled={!pasoValido}
+                className="btn-primary customizer-inline-next-btn"
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left' }}>
+                  <span style={{ fontSize: '0.96rem', fontWeight: 800 }}>
+                    Siguiente: {gruposOrdenados[pasoActivo + 1]?.nombre || 'Continuar'}
+                  </span>
+                  <span style={{ fontSize: '0.74rem', opacity: 0.9 }}>
+                    Paso {pasoActivo + 2} de {gruposOrdenados.length}
+                  </span>
+                </div>
+                <ArrowRight size={20} />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleConfirmar}
+                disabled={!pasoValido}
+                className="btn-primary customizer-inline-confirm-btn"
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left' }}>
+                  <span style={{ fontSize: '1rem', fontWeight: 900 }}>
+                    ✓ Agregar Bowl al Pedido
+                  </span>
+                  <span style={{ fontSize: '0.78rem', opacity: 0.9 }}>
+                    Total: ${precioFinalUnitario.toLocaleString()}
+                  </span>
+                </div>
+                <Plus size={22} />
+              </button>
+            )}
+
+            {!pasoValido && (
+              <div className="customizer-step-warning">
+                <AlertCircle size={15} />
+                <span>
+                  {grupoActual?.min_opciones === 1
+                    ? `Elige 1 opción en "${grupoActual.nombre}" para continuar`
+                    : `Elige al menos ${grupoActual?.min_opciones} opciones en "${grupoActual.nombre}" para avanzar`}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Footer del Wizard: Anterior, Precio y Siguiente/Agregar */}
@@ -301,12 +376,9 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
             {pasoActivo > 0 && (
               <button
                 type="button"
-                onClick={() => {
-                  triggerHaptic('light');
-                  setPasoActivo(prev => prev - 1);
-                }}
+                onClick={handleRetrocederPaso}
                 className="btn-secondary"
-                style={{ padding: '10px 16px', fontSize: '0.85rem' }}
+                style={{ padding: '10px 14px', fontSize: '0.85rem' }}
               >
                 <ArrowLeft size={16} />
                 <span>Anterior</span>
@@ -322,16 +394,13 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
             {!esUltimoPaso ? (
               <button
                 type="button"
-                onClick={() => {
-                  triggerHaptic('light');
-                  setPasoActivo(prev => prev + 1);
-                }}
+                onClick={handleAvanzarPaso}
                 disabled={!pasoValido}
                 className="btn-primary"
                 style={{
                   padding: '12px 20px',
                   fontSize: '0.9rem',
-                  opacity: pasoValido ? 1 : 0.6,
+                  opacity: pasoValido ? 1 : 0.55,
                   cursor: pasoValido ? 'pointer' : 'not-allowed'
                 }}
               >
@@ -349,7 +418,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
                   fontSize: '0.92rem',
                   background: '#788c50',
                   boxShadow: '0 8px 24px rgba(120, 140, 80, 0.4)',
-                  opacity: pasoValido ? 1 : 0.6,
+                  opacity: pasoValido ? 1 : 0.55,
                   cursor: pasoValido ? 'pointer' : 'not-allowed'
                 }}
               >

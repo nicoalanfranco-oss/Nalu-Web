@@ -1364,7 +1364,7 @@ button {
 .dish-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1200;
+  z-index: 3000;
   background: rgba(15, 23, 42, 0.65);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
@@ -1949,7 +1949,7 @@ button {
   background: var(--bg-overlay);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  z-index: 200;
+  z-index: 3000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2169,13 +2169,13 @@ button {
 }
 
 .modal-scroll-body {
-  flex: 1;
+  flex: 1 1 0%;
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   touch-action: pan-y;
-  padding: 20px;
+  padding: 20px 20px 70px 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -2313,15 +2313,60 @@ button {
   color: white;
 }
 
+/* Acciones al fondo del formulario scrolleable (garantiza avance directo con el dedo) */
+.customizer-bottom-form-actions {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1.5px dashed var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.customizer-inline-next-btn,
+.customizer-inline-confirm-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(255, 90, 54, 0.25);
+  transition: all var(--transition-fast);
+}
+
+.customizer-inline-confirm-btn {
+  background: #788c50 !important;
+  box-shadow: 0 6px 20px rgba(120, 140, 80, 0.4) !important;
+}
+
+.customizer-step-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: #D97706;
+  font-weight: 600;
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+
 /* Footer del modal */
 .modal-footer {
-  padding: 16px 20px;
+  padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px)) 20px;
   background: var(--bg-card);
   border-top: 1px solid var(--border-light);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 30;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .modal-price-summary {
@@ -2352,7 +2397,7 @@ button {
   background: var(--bg-overlay);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  z-index: 250;
+  z-index: 3000;
   display: flex;
   justify-content: flex-end;
   animation: fadeIn 0.2s ease-out;
@@ -2623,34 +2668,59 @@ button {
     height: 250px;
   }
 
+  /* Si un modal está abierto, ocultar la barra inferior y bloquear scroll del body */
+  body.modal-open {
+    overflow: hidden !important;
+  }
+
+  body.modal-open .mobile-bottom-nav {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
   /* Modal a pantalla completa o bottom sheet en celular con scroll contenido */
   .modal-container {
-    max-height: 94dvh;
-    height: 94dvh;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    width: 100%;
+    max-height: 92dvh;
+    height: 92dvh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     overscroll-behavior: contain;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .modal-scroll-body {
-    flex: 1;
+    flex: 1 1 0%;
     min-height: 0;
-    overflow-y: scroll;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     touch-action: pan-y;
+    padding: 14px 14px 90px 14px;
   }
 
   .modal-backdrop {
+    position: fixed;
+    inset: 0;
     align-items: flex-end;
     padding: 0;
+    height: 100%;
     height: 100dvh;
-    touch-action: none;
     overscroll-behavior: contain;
+    z-index: 3000 !important;
   }
 
   .modal-header-hero {
-    height: 150px;
+    height: 110px;
+    flex-shrink: 0;
+  }
+
+  .modal-footer {
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) 16px;
+    flex-shrink: 0;
+    z-index: 30;
   }
 
   .modal-dish-title-bar {
@@ -3824,7 +3894,7 @@ button {
   position: fixed;
   inset: 0;
   background: rgba(10, 15, 10, 0.72);
-  z-index: 900;
+  z-index: 3000;
   display: flex;
   align-items: stretch;
   justify-content: center;
