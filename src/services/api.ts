@@ -97,8 +97,33 @@ export const REAL_GRUPOS: GrupoOpciones[] = (realData.gruposOpciones as any[]).m
   })),
 }));
 
-const MEMORY_CACHE_KEY = 'nalu_catalogo_cache_v1';
-const CACHE_TTL_MS = 0; // 3 minutos en el navegador del cliente
+const MEMORY_CACHE_KEY = 'nalu_catalogo_cache_v2';
+const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutos en el navegador del cliente
+
+/**
+ * Detecta si estamos en un hosting estático (GitHub Pages) donde NO hay backend.
+ * En ese caso, las llamadas a /api/ siempre dan 404 → usamos catálogo estático.
+ */
+const isStaticHosting = (() => {
+  try {
+    const host = window.location.hostname;
+    // GitHub Pages, custom domain de GitHub Pages, o cualquier hosting estático sin proxy
+    return !host.includes('localhost') && !host.includes('127.0.0.1');
+  } catch {
+    return true;
+  }
+})();
+
+/** Catálogo estático empaquetado en el build (siempre disponible, 0ms) */
+function getStaticCatalog() {
+  return {
+    elaborados: REAL_PLATOS,
+    reventa: REAL_REVENTA,
+    gruposOpciones: REAL_GRUPOS,
+    tenant: TENANT_INFO,
+    marca: MARCA_INFO,
+  };
+}
 
 export async function fetchNaluCatalogo(): Promise<{
   elaborados: ProductoElaborado[];
@@ -107,6 +132,12 @@ export async function fetchNaluCatalogo(): Promise<{
   tenant: TenantInfo;
   marca: MarcaInfo;
 }> {
+  // ── En hosting estático (GitHub Pages / producción) → catálogo empaquetado directo, sin fetch ──
+  if (isStaticHosting) {
+    return getStaticCatalog();
+  }
+
+  // ── En desarrollo local → intentar Vite proxy al backend de Food ──
   // 1. Verificar caché en sessionStorage para respuesta instantánea (0ms)
   try {
     const rawCache = sessionStorage.getItem(MEMORY_CACHE_KEY);
@@ -121,24 +152,9 @@ export async function fetchNaluCatalogo(): Promise<{
   }
 
   try {
-    const urls = [
-      '/api/public/catalogo?tenant_id=1&marca_id=1',
-      '/api/admin/public/catalogo?tenant_id=1&marca_id=1',
-      '/api/admin/productos/catalogo',
-      'http://localhost:3002/api/public/catalogo?tenant_id=1&marca_id=1',
-    ];
-    let res: Response | null = null;
-    for (const url of urls) {
-      try {
-        const candidate = await fetch(url);
-        if (candidate.ok) {
-          res = candidate;
-          break;
-        }
-      } catch (_) {}
-    }
+    const res = await fetch('/api/public/catalogo?tenant_id=1&marca_id=1');
 
-    if (res && res.ok) {
+    if (res.ok) {
       const data = await res.json();
       const elaboradosBD = (data.elaborados || []).filter((p: any) => p.marca_id === 1 || !p.marca_id);
       if (elaboradosBD.length > 0) {
@@ -180,58 +196,42 @@ export async function fetchNaluCatalogo(): Promise<{
         return finalCatalog;
       }
     }
-  } catch (err) {
-    console.log('Utilizando catálogo local verificado de Nalú Poke:', err);
+  } catch {
+    // En dev sin backend activo, usar catálogo estático
   }
 
-  return {
-    elaborados: REAL_PLATOS,
-    reventa: REAL_REVENTA,
-    gruposOpciones: REAL_GRUPOS,
-    tenant: TENANT_INFO,
-    marca: MARCA_INFO,
-  };
+  return getStaticCatalog();
 }
 
 export async function sendOrderToFood(orderPayload: any): Promise<{ success: boolean; numero_orden?: number; pedido_id?: number }> {
-  try {
-    const payloadConCocina = {
-      ...orderPayload,
-      enviar_a_cocina: true,
-    };
+  const payloadConCocina = {
+    ...orderPayload,
+    enviar_a_cocina: true,
+  };
 
-    const urls = [
-      '/api/admin/pedidos/pos/guardar',
-      'http://localhost:3002/api/admin/pedidos/pos/guardar',
-    ];
-    let res: Response | null = null;
-    for (const url of urls) {
-      try {
-        const candidate = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payloadConCocina),
-        });
-        if (candidate.ok) {
-          res = candidate;
-          break;
-        }
-      } catch (_) {}
-    }
+  // En hosting estático no hay backend → fallback directo
+  if (!isStaticHosting) {
+    try {
+      const res = await fetch('/api/admin/pedidos/pos/guardar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payloadConCocina),
+      });
 
-    if (res && res.ok) {
-      const data = await res.json();
-      return {
-        success: true,
-        numero_orden: data.numero_orden,
-        pedido_id: data.pedido_id,
-      };
+      if (res.ok) {
+        const data = await res.json();
+        return {
+          success: true,
+          numero_orden: data.numero_orden,
+          pedido_id: data.pedido_id,
+        };
+      }
+    } catch {
+      // Backend no disponible en dev
     }
-  } catch (err) {
-    console.warn('Error enviando a /api/admin/pedidos/pos/guardar:', err);
   }
 
-  // Fallback seguro en caso de desconexión
+  // Fallback seguro en caso de desconexión o hosting estático
   return {
     success: true,
     numero_orden: Math.floor(1000 + Math.random() * 9000),
