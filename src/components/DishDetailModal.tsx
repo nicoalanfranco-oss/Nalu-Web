@@ -76,22 +76,7 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({
             />
             <div className="dish-modal-image-gradient" />
             
-            {/* Badges superiores sobre la imagen */}
-            <div className="dish-modal-badges">
-              {isCustomizable ? (
-                <span className="badge-tag gold">
-                  <Sparkles size={13} /> Personalizable a tu medida
-                </span>
-              ) : isElaborado ? (
-                <span className="badge-tag green">
-                  ⭐ Receta de Autor
-                </span>
-              ) : (
-                <span className="badge-tag blue">
-                  🥤 Bebida Fría
-                </span>
-              )}
-            </div>
+            {/* Sin badges sobre la imagen */}
           </div>
 
           {/* Lado Detalles */}

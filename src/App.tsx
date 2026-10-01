@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
-import { FreshIngredientsShowcase } from './components/FreshIngredientsShowcase';
 import { MenuSection } from './components/MenuSection';
-import { StoryCultureSection } from './components/StoryCultureSection';
 import { PokeCustomizerModal } from './components/PokeCustomizerModal';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
@@ -253,14 +251,7 @@ export const App: React.FC = () => {
 
       {/* Contenido Principal */}
       <main>
-        <HeroSection
-          marca={marca}
-          tenant={tenant}
-          onOpenCustomizer={handleOpenGeneralCustomizer}
-          onExploreMenu={handleExploreMenu}
-        />
-
-        <FreshIngredientsShowcase grupos={grupos} />
+        <HeroSection />
 
         <MenuSection
           platos={platos}
@@ -271,8 +262,6 @@ export const App: React.FC = () => {
           onQuickAddToCart={handleQuickAddToCart}
           onQuickAddReventa={handleQuickAddReventa}
         />
-
-        <StoryCultureSection />
       </main>
 
       {/* Pie de Página */}

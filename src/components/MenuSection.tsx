@@ -56,16 +56,6 @@ const DishCardItem: React.FC<{
           className="dish-image"
           loading="lazy"
         />
-        {isCustom ? (
-          <span className="dish-custom-badge">
-            <Sparkles size={12} style={{ display: 'inline', marginRight: 4 }} />
-            Personalizable
-          </span>
-        ) : (
-          <span className="dish-custom-badge dish-badge-chef">
-            ⭐ Nalú
-          </span>
-        )}
         
         {/* Overlay en hover con botón "Ver detalle" */}
         <div className="dish-image-hover-overlay">
@@ -151,9 +141,6 @@ const ReventaCardItem: React.FC<{
           className="dish-image"
           loading="lazy"
         />
-        <span className="dish-custom-badge" style={{ background: 'var(--sea-blue)', color: 'white', borderColor: 'transparent' }}>
-          🥤 Bebida
-        </span>
         <div className="dish-image-hover-overlay">
           <span className="dish-preview-hint-pill">
             <Eye size={14} />
@@ -211,17 +198,24 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
     { tipo: 'elaborado'; data: ProductoElaborado } | { tipo: 'reventa'; data: ProductoReventa } | null
   >(null);
 
-  // Extraer categorías únicas (platos + añadir Bebidas si hay reventa o bebidas)
+  // Extraer categorías únicas ordenadas: 'todos', 'Pokes', 'Ensaladas', 'Bebidas' y el resto si hubiera
   const categorias = useMemo(() => {
-    const list = Array.from(new Set(platos.map(p => p.categoria || 'Pokes')));
-    if (reventa.length > 0 && !list.includes('Bebidas')) {
-      list.push('Bebidas');
+    const rawCategories = Array.from(new Set(platos.map(p => p.categoria || 'Pokes')));
+    if (reventa.length > 0 && !rawCategories.includes('Bebidas')) {
+      rawCategories.push('Bebidas');
     }
-    return ['todos', ...list];
+
+    const priorityOrder = ['Pokes', 'Ensaladas', 'Bebidas'];
+    const ordered = [
+      ...priorityOrder.filter(cat => rawCategories.includes(cat)),
+      ...rawCategories.filter(cat => !priorityOrder.includes(cat)),
+    ];
+
+    return ['todos', ...ordered];
   }, [platos, reventa]);
 
   // Filtrar platos elaborados:
-  // REQUERIMIENTO 2.1: En "todos" NO se muestran las bebidas.
+  // En "todos", se muestran los platos (pokes, ensaladas, etc.)
   const platosFiltrados = useMemo(() => {
     if (categoriaSeleccionada === 'todos') {
       return platos.filter(p => (p.categoria || '').toLowerCase() !== 'bebidas');
@@ -233,7 +227,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
   }, [platos, categoriaSeleccionada]);
 
   // Filtrar bebidas de reventa:
-  // REQUERIMIENTO 2.1: Las bebidas se ven ÚNICAMENTE al ir a la pestaña "Bebidas"
   const reventaFiltrada = useMemo(() => {
     if (categoriaSeleccionada === 'Bebidas') return reventa;
     return [];
@@ -261,13 +254,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
 
       <div className="page-container" style={{ position: 'relative', zIndex: 1 }}>
         <div className={`section-header scroll-reveal ${isVisible ? 'revealed' : ''}`}>
-          <span className="badge-tag gold section-tag">
-            <Sparkles size={14} /> NUESTRA CARTA
-          </span>
-          <h2>Explora el Menú de Nalú</h2>
-          <p>
-            Platos pensados para energizar tu día: combina tus bases y proteínas favoritas o elige nuestras creaciones de autor.
-          </p>
+          <h2>Nalú Pokes</h2>
         </div>
 
         {/* Barra de Filtro de Categorías con Scroll Sticky */}
@@ -281,7 +268,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                 className={`category-tab-btn ${categoriaSeleccionada === cat ? 'active' : ''}`}
               >
                 <span>{CATEGORY_EMOJIS[cat] || '🍽️'}</span>
-                {cat === 'todos' ? 'Todos los Platos' : cat}
+                {cat === 'todos' ? 'Todos' : cat}
               </button>
             ))}
           </div>
