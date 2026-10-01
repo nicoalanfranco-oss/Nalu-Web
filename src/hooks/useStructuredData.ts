@@ -18,7 +18,7 @@ interface StructuredDataOptions {
 }
 
 // URL canónica del sitio
-const SITE_URL = 'https://naludeuna.com.uy';
+const SITE_URL = 'https://nalu.nico-family.com';
 const CURRENCY = 'UYU';
 
 /**

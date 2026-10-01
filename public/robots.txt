@@ -1,6 +1,6 @@
-﻿# robots.txt — Nalú Poke Bowls
-# Sitio: https://naludeuna.com.uy
-# Actualizado: 2026-09-30
+# robots.txt — Nalú Poke Bowls
+# Sitio: https://nalu.nico-family.com
+# Actualizado: 2026-10-01
 
 User-agent: *
 Allow: /
@@ -17,4 +17,4 @@ Allow: /pwa-*.png
 Allow: /hero_*.jpg
 
 # Sitemap
-Sitemap: https://naludeuna.com.uy/sitemap.xml
+Sitemap: https://nalu.nico-family.com/sitemap.xml
