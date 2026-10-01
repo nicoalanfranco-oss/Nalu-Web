@@ -1654,22 +1654,38 @@ button {
 
 /* Adaptación responsive para móvil */
 @media (max-width: 768px) {
+  .dish-modal-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+
   .dish-modal-container {
-    max-height: 94vh;
+    max-height: 94dvh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    overflow: hidden;
   }
 
   .dish-modal-content-grid {
     grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    max-height: 94dvh;
   }
 
   .dish-modal-media-col {
-    height: 220px;
-    min-height: 220px;
+    height: 200px;
+    min-height: 200px;
+    flex-shrink: 0;
   }
 
   .dish-modal-info-col {
     padding: 20px;
+    max-height: none;
+    overflow-y: visible;
   }
 
   .dish-modal-title {
@@ -2153,13 +2169,16 @@ button {
 }
 
 .modal-scroll-body {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  touch-action: pan-y;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 /* Grupos de opciones */
@@ -2610,6 +2629,16 @@ button {
     height: 94dvh;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     overscroll-behavior: contain;
+    overflow: hidden;
+  }
+
+  .modal-scroll-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
   }
 
   .modal-backdrop {

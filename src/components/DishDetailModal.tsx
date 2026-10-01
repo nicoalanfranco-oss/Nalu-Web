@@ -28,6 +28,15 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  // Bloquear scroll del fondo mientras el modal de detalle esté abierto
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
   if (!item) return null;
 
   const isElaborado = item.tipo === 'elaborado';
