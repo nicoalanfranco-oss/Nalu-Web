@@ -10,17 +10,17 @@ import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
 import { ToastNotification, ToastData } from './components/ToastNotification';
 import { ProductoElaborado, ProductoReventa, GrupoOpciones, CartItem, TenantInfo, MarcaInfo } from './types/food';
-import { fetchNaluCatalogo, TENANT_INFO, MARCA_INFO } from './services/api';
+import { fetchNaluCatalogo, TENANT_INFO, MARCA_INFO, REAL_PLATOS, REAL_REVENTA, REAL_GRUPOS } from './services/api';
 import { useStructuredData } from './hooks/useStructuredData';
 import { CheckCircle2, Sparkles, MessageCircle, ArrowRight, WifiOff } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [tenant, setTenant] = useState<TenantInfo>(TENANT_INFO);
   const [marca, setMarca] = useState<MarcaInfo>(MARCA_INFO);
-  const [platos, setPlatos] = useState<ProductoElaborado[]>([]);
-  const [reventa, setReventa] = useState<ProductoReventa[]>([]);
-  const [grupos, setGrupos] = useState<GrupoOpciones[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [platos, setPlatos] = useState<ProductoElaborado[]>(REAL_PLATOS);
+  const [reventa, setReventa] = useState<ProductoReventa[]>(REAL_REVENTA);
+  const [grupos, setGrupos] = useState<GrupoOpciones[]>(REAL_GRUPOS);
+  const [loading, setLoading] = useState<boolean>(false);
   const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
   // Notificación flotante Toast

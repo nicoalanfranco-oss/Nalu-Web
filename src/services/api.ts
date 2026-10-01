@@ -19,7 +19,7 @@ export const MARCA_INFO: MarcaInfo = {
   permite_salon: Boolean(realData.marca?.permite_salon),
   permite_delivery: realData.marca?.permite_delivery !== false,
   permite_takeaway: realData.marca?.permite_takeaway !== false,
-  logo_url: '/Logo_nalu-sinfondo.png',
+  logo_url: realData.marca?.logo_url || '/Logo_nalu-sinfondo.png',
 };
 
 // Imagen fallback genérica para platos sin foto
@@ -97,25 +97,24 @@ export const REAL_GRUPOS: GrupoOpciones[] = (realData.gruposOpciones as any[]).m
   })),
 }));
 
-const MEMORY_CACHE_KEY = 'nalu_catalogo_cache_v2';
-const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutos en el navegador del cliente
-
-/**
- * Detecta si estamos en un hosting estático (GitHub Pages) donde NO hay backend.
- * En ese caso, las llamadas a /api/ siempre dan 404 → usamos catálogo estático.
- */
-const isStaticHosting = (() => {
+// Base URL del backend de Food:
+// - En local (localhost/127.0.0.1) usa el proxy de Vite ('')
+// - En producción (nalu.nico-family.com, nalu.uy, github pages) llama directo al Cloud Run de Food con CORS (igual que Lorena Web)
+export const FOOD_BACKEND_URL = (() => {
   try {
     const host = window.location.hostname;
-    // GitHub Pages, custom domain de GitHub Pages, o cualquier hosting estático sin proxy
-    return !host.includes('localhost') && !host.includes('127.0.0.1');
-  } catch {
-    return true;
-  }
+    if (host.includes('localhost') || host.includes('127.0.0.1')) {
+      return '';
+    }
+  } catch {}
+  return 'https://food--studio-4748759464-52942.us-east4.hosted.app';
 })();
 
-/** Catálogo estático empaquetado en el build (siempre disponible, 0ms) */
-function getStaticCatalog() {
+const MEMORY_CACHE_KEY = 'nalu_catalogo_cache_v3';
+const CACHE_TTL_MS = 60 * 1000; // 1 minuto de caché para navegación rápida sin esperas
+
+/** Catálogo estático empaquetado en el build (siempre disponible de respaldo) */
+export function getStaticCatalog() {
   return {
     elaborados: REAL_PLATOS,
     reventa: REAL_REVENTA,
@@ -132,13 +131,7 @@ export async function fetchNaluCatalogo(): Promise<{
   tenant: TenantInfo;
   marca: MarcaInfo;
 }> {
-  // ── En hosting estático (GitHub Pages / producción) → catálogo empaquetado directo, sin fetch ──
-  if (isStaticHosting) {
-    return getStaticCatalog();
-  }
-
-  // ── En desarrollo local → intentar Vite proxy al backend de Food ──
-  // 1. Verificar caché en sessionStorage para respuesta instantánea (0ms)
+  // 1. Revisar si hay datos en caché de sesión recientes (< 1 min)
   try {
     const rawCache = sessionStorage.getItem(MEMORY_CACHE_KEY);
     if (rawCache) {
@@ -147,59 +140,67 @@ export async function fetchNaluCatalogo(): Promise<{
         return parsed.data;
       }
     }
-  } catch {
-    // sessionStorage falló silenciosamente
-  }
+  } catch {}
 
+  // 2. Llamada directa a la API en vivo (idéntico a Lorena Web)
   try {
-    const res = await fetch('/api/public/catalogo?tenant_id=1&marca_id=1');
+    const url = `${FOOD_BACKEND_URL}/api/public/catalogo?tenant_id=1&marca_id=1`;
+    const res = await fetch(url, {
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
 
     if (res.ok) {
       const data = await res.json();
       const elaboradosBD = (data.elaborados || []).filter((p: any) => p.marca_id === 1 || !p.marca_id);
-      if (elaboradosBD.length > 0) {
-        const finalCatalog = {
-          elaborados: elaboradosBD.map((p: any) => ({
-            ...p,
-            precio_venta: Number(p.precio_venta),
-            imagen_url: p.imagen_url || FALLBACK_PLATO_IMG,
-          })),
-          reventa: (data.reventa && data.reventa.length > 0)
-            ? data.reventa.map((r: any) => ({
-                ...r,
-                precio_venta: Number(r.precio_venta),
-                imagen_url: r.imagen_url || `/ingredients/reventa_${r.producto_reventa_id}.jpg`,
-              }))
-            : REAL_REVENTA,
-          gruposOpciones: (data.gruposOpciones && data.gruposOpciones.length > 0)
-            ? (data.gruposOpciones as any[]).map(g => ({
-                grupo_id: g.grupo_id,
-                producto_elaborado_id: g.producto_elaborado_id,
-                nombre: g.nombre,
-                paso_orden: g.paso_orden,
-                min_opciones: g.min_opciones,
-                max_opciones: g.max_opciones,
-                opciones: (g.opciones || []).map((o: any) => ({
-                  opcion_id: o.opcion_id,
-                  nombre: o.nombre,
-                  precio_extra: Number(o.precio_extra || 0),
-                  imagen_url: o.imagen_url || `/ingredients/opt_${o.opcion_id}.jpg`,
-                })),
-              }))
-            : REAL_GRUPOS,
-          tenant: parseTenantFromBackend(data.tenant),
-          marca: parseMarcaFromBackend(data.marca),
-        };
-        try {
-          sessionStorage.setItem(MEMORY_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: finalCatalog }));
-        } catch {}
-        return finalCatalog;
-      }
+
+      const finalCatalog = {
+        elaborados: elaboradosBD.length > 0
+          ? elaboradosBD.map((p: any) => ({
+              ...p,
+              precio_venta: Number(p.precio_venta),
+              imagen_url: p.imagen_url || FALLBACK_PLATO_IMG,
+            }))
+          : REAL_PLATOS,
+        reventa: (data.reventa && data.reventa.length > 0)
+          ? data.reventa.map((r: any) => ({
+              ...r,
+              precio_venta: Number(r.precio_venta),
+              imagen_url: r.imagen_url || `/ingredients/reventa_${r.producto_reventa_id}.jpg`,
+            }))
+          : REAL_REVENTA,
+        gruposOpciones: (data.gruposOpciones && data.gruposOpciones.length > 0)
+          ? (data.gruposOpciones as any[]).map(g => ({
+              grupo_id: g.grupo_id,
+              producto_elaborado_id: g.producto_elaborado_id,
+              nombre: g.nombre,
+              paso_orden: g.paso_orden,
+              min_opciones: g.min_opciones,
+              max_opciones: g.max_opciones,
+              opciones: (g.opciones || []).map((o: any) => ({
+                opcion_id: o.opcion_id,
+                nombre: o.nombre,
+                precio_extra: Number(o.precio_extra || 0),
+                imagen_url: o.imagen_url || `/ingredients/opt_${o.opcion_id}.jpg`,
+              })),
+            }))
+          : REAL_GRUPOS,
+        tenant: parseTenantFromBackend(data.tenant),
+        marca: parseMarcaFromBackend(data.marca),
+      };
+
+      try {
+        sessionStorage.setItem(MEMORY_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: finalCatalog }));
+      } catch {}
+
+      return finalCatalog;
     }
-  } catch {
-    // En dev sin backend activo, usar catálogo estático
+  } catch (error) {
+    console.warn('No se pudo conectar al backend en vivo, usando catálogo empaquetado de respaldo:', error);
   }
 
+  // 3. Fallback seguro si no hay internet o el backend no responde
   return getStaticCatalog();
 }
 
@@ -209,29 +210,28 @@ export async function sendOrderToFood(orderPayload: any): Promise<{ success: boo
     enviar_a_cocina: true,
   };
 
-  // En hosting estático no hay backend → fallback directo
-  if (!isStaticHosting) {
-    try {
-      const res = await fetch('/api/admin/pedidos/pos/guardar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payloadConCocina),
-      });
+  try {
+    const res = await fetch(`${FOOD_BACKEND_URL}/api/public/pedidos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payloadConCocina),
+    });
 
-      if (res.ok) {
-        const data = await res.json();
-        return {
-          success: true,
-          numero_orden: data.numero_orden,
-          pedido_id: data.pedido_id,
-        };
-      }
-    } catch {
-      // Backend no disponible en dev
+    if (res.ok) {
+      const data = await res.json();
+      return {
+        success: true,
+        numero_orden: data.numero_orden,
+        pedido_id: data.pedido_id,
+      };
+    } else {
+      console.warn('Respuesta no exitosa al enviar pedido a Food:', res.status);
     }
+  } catch (err) {
+    console.warn('Error de red al enviar pedido a Food backend:', err);
   }
 
-  // Fallback seguro en caso de desconexión o hosting estático
+  // Fallback seguro en caso de desconexión para no trabar el checkout ni WhatsApp
   return {
     success: true,
     numero_orden: Math.floor(1000 + Math.random() * 9000),
