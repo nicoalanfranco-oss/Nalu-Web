@@ -81,6 +81,19 @@ export const OrderStatusBanner: React.FC = () => {
     }
   }, []);
 
+  // Obtener primer nombre del usuario
+  const getFirstName = useCallback((): string | null => {
+    try {
+      const g = localStorage.getItem('nalu_google_user');
+      if (!g) return null;
+      const parsed = JSON.parse(g);
+      const fullName: string = parsed?.name || parsed?.given_name || '';
+      return fullName.split(' ')[0] || null;
+    } catch {
+      return null;
+    }
+  }, [])
+
   const fetchEstado = useCallback(async () => {
     const email = getEmail();
     if (!email) return;
@@ -242,7 +255,7 @@ export const OrderStatusBanner: React.FC = () => {
           </div>
           <div className="osb-texts">
             <div className="osb-header-meta">
-              <span className="osb-orden">Pedido #{currentPedido.numero_orden}</span>
+              <span className="osb-orden">#{currentPedido.numero_orden}{getFirstName() ? ` · ${getFirstName()}` : ''}</span>
               <span className="osb-tipo-badge">
                 {currentPedido.tipo_pedido === 'delivery' ? 'Delivery 🛵' : 'Take Away 🛍️'}
               </span>
