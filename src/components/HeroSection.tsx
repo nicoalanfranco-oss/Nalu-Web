@@ -44,7 +44,7 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
         <div className="hero-photo-wrapper">
           <div className={`hero-visual-card ${isLoaded ? 'hero-visual-animate' : ''}`}>
             <img
-              src="./hero_bandejas_nalu.jpg"
+              src="./hero_nalu_nueva.jpg"
               alt="Presentación Nalú Poke"
               className="hero-image-main hero-image-main--cover"
             />
