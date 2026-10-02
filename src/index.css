@@ -5370,3 +5370,248 @@ button {
   box-shadow: 0 2px 8px rgba(249, 81, 51, 0.25);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   ORDER STATUS BANNER (OSB) — Seguimiento de pedido en tiempo real
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes osb-slide-in-kf {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+@keyframes osb-slide-out-kf {
+  from { transform: translateY(0);     opacity: 1; }
+  to   { transform: translateY(-100%); opacity: 0; }
+}
+@keyframes osb-pulse-ring {
+  0%   { box-shadow: 0 0 0 0 currentColor; opacity: 0.7; }
+  70%  { box-shadow: 0 0 0 8px transparent; opacity: 0; }
+  100% { box-shadow: 0 0 0 0 transparent; opacity: 0; }
+}
+@keyframes osb-dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.5); opacity: 0.6; }
+}
+@keyframes osb-progress-shine {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.osb-wrapper {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  border-bottom: 1.5px solid rgba(0,0,0,0.08);
+  transition: background 0.4s ease;
+}
+.osb-slide-in  { animation: osb-slide-in-kf  0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.osb-slide-out { animation: osb-slide-out-kf 0.4s cubic-bezier(0.55, 0, 1, 0.45) both; }
+
+/* Estados — paleta */
+.osb-estado-abierto { background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%); }
+.osb-estado-cocina  { background: linear-gradient(90deg, #fff7ed 0%, #ffedd5 100%); }
+.osb-estado-listo   { background: linear-gradient(90deg, #f0fdf4 0%, #dcfce7 100%); }
+.osb-estado-camino  { background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 100%); }
+
+.osb-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ── Ícono ── */
+.osb-icon-pulse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+}
+.osb-estado-cocina .osb-icon-pulse  { background: rgba(234, 88, 12, 0.12);  color: #ea580c; }
+.osb-estado-listo .osb-icon-pulse   { background: rgba(22, 163, 74, 0.12);   color: #16a34a; }
+.osb-estado-camino .osb-icon-pulse  { background: rgba(37, 99, 235, 0.12);   color: #2563eb; }
+.osb-estado-abierto .osb-icon-pulse { background: rgba(100, 116, 139, 0.12); color: #64748b; }
+
+/* Pulso del ring */
+.osb-estado-cocina .osb-icon-pulse::after,
+.osb-estado-listo .osb-icon-pulse::after,
+.osb-estado-camino .osb-icon-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: osb-pulse-ring 2s ease-out infinite;
+}
+.osb-estado-cocina .osb-icon-pulse::after  { color: rgba(234, 88, 12, 0.5); }
+.osb-estado-listo .osb-icon-pulse::after   { color: rgba(22, 163, 74, 0.5); }
+.osb-estado-camino .osb-icon-pulse::after  { color: rgba(37, 99, 235, 0.5); }
+
+/* ── Textos ── */
+.osb-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.osb-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.osb-orden {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+.osb-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.2;
+}
+.osb-sublabel {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* ── Barra de progreso ── */
+.osb-progress-container {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.osb-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.osb-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+}
+.osb-step-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: #94a3b8;
+  font-size: 10px;
+}
+.osb-step-done .osb-step-dot {
+  background: var(--osb-accent, #16a34a);
+  border-color: var(--osb-accent, #16a34a);
+  color: #fff;
+}
+.osb-step-active .osb-step-dot {
+  border-color: var(--osb-accent, #16a34a);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+  position: relative;
+}
+.osb-step-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--osb-accent, #16a34a);
+  animation: osb-dot-pulse 1.5s ease-in-out infinite;
+}
+.osb-estado-cocina  { --osb-accent: #ea580c; }
+.osb-estado-listo   { --osb-accent: #16a34a; }
+.osb-estado-camino  { --osb-accent: #2563eb; }
+.osb-estado-abierto { --osb-accent: #64748b; }
+
+.osb-step-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-align: center;
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+.osb-step-done .osb-step-label,
+.osb-step-active .osb-step-label {
+  color: #475569;
+}
+
+.osb-progress-bar-track {
+  height: 4px;
+  background: rgba(0,0,0,0.07);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.osb-progress-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--osb-accent, #16a34a) 0%, color-mix(in srgb, var(--osb-accent, #16a34a) 70%, white) 100%);
+  background-size: 200% 100%;
+  transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: osb-progress-shine 2s linear infinite;
+}
+
+/* ── Botón cerrar ── */
+.osb-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.7);
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+}
+.osb-close:hover {
+  background: rgba(0,0,0,0.08);
+  color: #1e293b;
+  transform: scale(1.1);
+}
+
+/* ── Responsive mobile ── */
+@media (max-width: 600px) {
+  .osb-inner {
+    padding: 8px 14px;
+    gap: 10px;
+  }
+  .osb-sublabel {
+    display: none;
+  }
+  .osb-step-label {
+    font-size: 0.55rem;
+  }
+  .osb-icon-pulse {
+    width: 32px;
+    height: 32px;
+  }
+  .osb-label {
+    font-size: 0.82rem;
+  }
+}
+
+

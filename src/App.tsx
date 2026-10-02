@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
+import { OrderStatusBanner } from './components/OrderStatusBanner';
 import { HeroSection } from './components/HeroSection';
 import { MenuSection } from './components/MenuSection';
 import { PokeCustomizerModal } from './components/PokeCustomizerModal';
@@ -265,6 +266,9 @@ export const App: React.FC = () => {
         onOpenCart={() => setIsCartOpen(true)}
         onOpenCustomizer={handleOpenGeneralCustomizer}
       />
+
+      {/* Banner de seguimiento de pedido en tiempo real */}
+      <OrderStatusBanner />
 
       {/* Contenido Principal */}
       <main>

@@ -185,6 +185,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   if (decoded.email) setEmail(decoded.email);
                   if (decoded.name) setNombre(decoded.name);
                   localStorage.setItem('nalu_google_user', JSON.stringify(decoded));
+                  // Notificar al OrderStatusBanner (misma pestaña)
+                  window.dispatchEvent(new Event('nalu:google-login'));
                 }
               }
             },
