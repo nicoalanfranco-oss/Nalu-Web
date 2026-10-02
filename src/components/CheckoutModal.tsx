@@ -139,6 +139,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [enviando, setEnviando] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Validar método de pago permitido según la marca
+  useEffect(() => {
+    const allowed = [
+      marca?.permite_efectivo !== false ? 'efectivo' : null,
+      marca?.permite_tarjeta !== false ? 'tarjeta' : null,
+      marca?.permite_transferencia !== false ? 'transferencia' : null,
+    ].filter(Boolean) as Array<'efectivo' | 'tarjeta' | 'transferencia'>;
+
+    if (allowed.length > 0 && !allowed.includes(metodoPago)) {
+      setMetodoPago(allowed[0]);
+    }
+  }, [marca?.permite_efectivo, marca?.permite_tarjeta, marca?.permite_transferencia, metodoPago]);
+
   // Estado de sesión Google
   const [googleUser, setGoogleUser] = useState<GoogleUserData | null>(() => {
     try {
@@ -959,38 +972,46 @@ ${lineasItems}
               <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '8px', display: 'block' }}>
                 Método de Pago *
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                {[
-                  { id: 'efectivo', label: 'Efectivo', icon: <Banknote size={16} /> },
-                  { id: 'tarjeta', label: 'Tarjeta (POS)', icon: <CreditCard size={16} /> },
-                  { id: 'transferencia', label: 'Transferencia', icon: <Smartphone size={16} /> },
-                ].map(p => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => setMetodoPago(p.id as any)}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '10px 6px',
-                      borderRadius: 'var(--radius-md)',
-                      border: '1.5px solid',
-                      borderColor: metodoPago === p.id ? 'var(--primary)' : 'var(--border-light)',
-                      background: metodoPago === p.id ? 'var(--primary-light)' : 'var(--bg-card)',
-                      color: metodoPago === p.id ? 'var(--primary)' : 'var(--text-body)',
-                      fontWeight: 700,
-                      fontSize: '0.78rem',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    {p.icon}
-                    <span>{p.label}</span>
-                  </button>
-                ))}
-              </div>
+              {(() => {
+                const paymentOptions = [
+                  marca?.permite_efectivo !== false ? { id: 'efectivo', label: 'Efectivo', icon: <Banknote size={16} /> } : null,
+                  marca?.permite_tarjeta !== false ? { id: 'tarjeta', label: 'Tarjeta (POS)', icon: <CreditCard size={16} /> } : null,
+                  marca?.permite_transferencia !== false ? { id: 'transferencia', label: 'Transferencia', icon: <Smartphone size={16} /> } : null,
+                ].filter(Boolean) as Array<{ id: 'efectivo' | 'tarjeta' | 'transferencia'; label: string; icon: React.ReactNode }>;
+
+                const cols = Math.max(1, paymentOptions.length);
+
+                return (
+                  <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '8px' }}>
+                    {paymentOptions.map(p => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setMetodoPago(p.id)}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '4px',
+                          padding: '10px 6px',
+                          borderRadius: 'var(--radius-md)',
+                          border: '1.5px solid',
+                          borderColor: metodoPago === p.id ? 'var(--primary)' : 'var(--border-light)',
+                          background: metodoPago === p.id ? 'var(--primary-light)' : 'var(--bg-card)',
+                          color: metodoPago === p.id ? 'var(--primary)' : 'var(--text-body)',
+                          fontWeight: 700,
+                          fontSize: '0.78rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        {p.icon}
+                        <span>{p.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })()}
 
               {metodoPago === 'efectivo' && (
                 <div style={{ marginTop: '10px' }}>

@@ -17,6 +17,9 @@ export interface MarcaInfo {
   permite_salon: boolean;
   permite_delivery: boolean;
   permite_takeaway: boolean;
+  permite_efectivo?: boolean;
+  permite_tarjeta?: boolean;
+  permite_transferencia?: boolean;
   costo_delivery?: number;
   logo_url?: string;
 }

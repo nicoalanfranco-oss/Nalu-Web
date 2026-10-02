@@ -19,6 +19,9 @@ export const MARCA_INFO: MarcaInfo = {
   permite_salon: Boolean(realData.marca?.permite_salon),
   permite_delivery: realData.marca?.permite_delivery !== false,
   permite_takeaway: realData.marca?.permite_takeaway !== false,
+  permite_efectivo: (realData.marca as any)?.permite_efectivo !== false,
+  permite_tarjeta: (realData.marca as any)?.permite_tarjeta !== false,
+  permite_transferencia: (realData.marca as any)?.permite_transferencia !== false,
   logo_url: realData.marca?.logo_url || '/Logo_nalu-sinfondo.png',
 };
 
@@ -48,6 +51,9 @@ function parseMarcaFromBackend(m: any): MarcaInfo {
     permite_salon: Boolean(m.permite_salon),
     permite_delivery: m.permite_delivery !== false,
     permite_takeaway: m.permite_takeaway !== false,
+    permite_efectivo: m.permite_efectivo !== false,
+    permite_tarjeta: m.permite_tarjeta !== false,
+    permite_transferencia: m.permite_transferencia !== false,
     costo_delivery: m.costo_delivery !== undefined ? Number(m.costo_delivery) : 0,
     logo_url: m.logo_url || MARCA_INFO.logo_url,
   };

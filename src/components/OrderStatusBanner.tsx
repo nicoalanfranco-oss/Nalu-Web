@@ -32,7 +32,7 @@ const ESTADOS_CONFIG: Record<
   en_cocina: {
     label: 'En cocina 🔥',
     shortLabel: 'Cocina 🔥',
-    sublabel: 'Nuestro equipo está preparando tu pedido con ingredientes frescos.',
+    sublabel: 'Nuestro equipo está preparando tu pedido',
     icon: <ChefHat size={18} />,
     colorClass: 'osb-estado-cocina',
     step: 1,
