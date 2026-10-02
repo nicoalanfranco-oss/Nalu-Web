@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ChefHat, Bike, CheckCircle2, Package, X, Loader2 } from 'lucide-react';
+import { ChefHat, Bike, CheckCircle2, Package, X } from 'lucide-react';
 import { FOOD_BACKEND_URL } from '../services/api';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
@@ -19,10 +19,11 @@ interface PedidoActivo {
 
 const ESTADOS_CONFIG: Record<
   EstadoPedido,
-  { label: string; sublabel: string; icon: React.ReactNode; colorClass: string; step: number }
+  { label: string; shortLabel: string; sublabel: string; icon: React.ReactNode; colorClass: string; step: number }
 > = {
   abierto: {
     label: 'Pedido recibido',
+    shortLabel: 'Recibido 📦',
     sublabel: 'Estamos preparando tu orden…',
     icon: <Package size={18} />,
     colorClass: 'osb-estado-abierto',
@@ -30,6 +31,7 @@ const ESTADOS_CONFIG: Record<
   },
   en_cocina: {
     label: 'En cocina 🔥',
+    shortLabel: 'Cocina 🔥',
     sublabel: 'Nuestro equipo está preparando tu pedido con ingredientes frescos.',
     icon: <ChefHat size={18} />,
     colorClass: 'osb-estado-cocina',
@@ -37,6 +39,7 @@ const ESTADOS_CONFIG: Record<
   },
   listo: {
     label: '¡Tu pedido está listo! 🎉',
+    shortLabel: 'Listo 🎉',
     sublabel: 'Ya terminamos de preparar tu orden. ¡Saliendo para vos!',
     icon: <CheckCircle2 size={18} />,
     colorClass: 'osb-estado-listo',
@@ -44,6 +47,7 @@ const ESTADOS_CONFIG: Record<
   },
   en_camino: {
     label: '¡Tu pedido está en camino! 🛵',
+    shortLabel: 'En camino 🛵',
     sublabel: 'Ya salió para tu dirección. ¡Llegamos pronto!',
     icon: <Bike size={18} />,
     colorClass: 'osb-estado-camino',
@@ -56,13 +60,14 @@ const POLL_INTERVAL_MS = 30_000; // 30 segundos
 // ─── Componente principal ─────────────────────────────────────────────────────
 
 export const OrderStatusBanner: React.FC = () => {
-  const [pedido, setPedido] = useState<PedidoActivo | null>(null);
+  const [pedidos, setPedidos] = useState<PedidoActivo[]>([]);
+  const [selectedPedidoId, setSelectedPedidoId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [visible, setVisible] = useState(false);
   const [animatingOut, setAnimatingOut] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const lastPedidoIdRef = useRef<number | null>(null);
+  const prevCountRef = useRef<number>(0);
 
   // Obtener email del usuario logueado con Google
   const getEmail = useCallback((): string | null => {
@@ -86,13 +91,15 @@ export const OrderStatusBanner: React.FC = () => {
       if (!res.ok) return;
 
       const data = await res.json();
+      const lista: PedidoActivo[] = data.pedidos || (data.pedido ? [data.pedido] : []);
 
-      if (!data.pedido) {
-        // No hay pedido activo → ocultar con animación suave
-        if (pedido) {
+      if (lista.length === 0) {
+        // No hay pedidos activos → ocultar con animación suave
+        if (pedidos.length > 0) {
           setAnimatingOut(true);
           setTimeout(() => {
-            setPedido(null);
+            setPedidos([]);
+            setSelectedPedidoId(null);
             setVisible(false);
             setAnimatingOut(false);
           }, 500);
@@ -100,23 +107,28 @@ export const OrderStatusBanner: React.FC = () => {
         return;
       }
 
-      const nuevoPedido: PedidoActivo = data.pedido;
-
-      // Si es un pedido diferente, resetear dismissed
-      if (nuevoPedido.pedido_id !== lastPedidoIdRef.current) {
-        lastPedidoIdRef.current = nuevoPedido.pedido_id;
+      // Si entró un nuevo pedido, des-descartar y seleccionar el más reciente
+      if (lista.length !== prevCountRef.current) {
+        prevCountRef.current = lista.length;
         setDismissed(false);
         setAnimatingOut(false);
       }
 
-      setPedido(nuevoPedido);
+      setPedidos(lista);
+      setSelectedPedidoId(prev => {
+        // Mantener el seleccionado si aún existe en la lista, sino el primero
+        if (prev && lista.some(p => p.pedido_id === prev)) {
+          return prev;
+        }
+        return lista[0].pedido_id;
+      });
       setVisible(true);
     } catch (err) {
-      // Silencioso — no queremos errores de red visibles al usuario
+      // Silencioso
     } finally {
       setLoading(false);
     }
-  }, [getEmail, pedido]);
+  }, [getEmail, pedidos.length]);
 
   // Polling
   useEffect(() => {
@@ -130,9 +142,9 @@ export const OrderStatusBanner: React.FC = () => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []); // solo al montar
+  }, []); // eslint-disable-line
 
-  // Escuchar cambios en localStorage (el usuario se loguea mientras la web está abierta)
+  // Escuchar cambios en localStorage (el usuario se loguea en otra pestaña)
   useEffect(() => {
     const handler = (e: StorageEvent) => {
       if (e.key === 'nalu_google_user') {
@@ -144,7 +156,8 @@ export const OrderStatusBanner: React.FC = () => {
           }
         } else {
           // Logout: ocultar banner
-          setPedido(null);
+          setPedidos([]);
+          setSelectedPedidoId(null);
           setVisible(false);
           if (intervalRef.current) clearInterval(intervalRef.current);
         }
@@ -154,7 +167,7 @@ export const OrderStatusBanner: React.FC = () => {
     return () => window.removeEventListener('storage', handler);
   }, [fetchEstado]);
 
-  // También escuchar evento personalizado cuando el login ocurre en la misma pestaña
+  // Escuchar evento de login en la misma pestaña
   useEffect(() => {
     const handler = () => {
       setLoading(true);
@@ -175,21 +188,19 @@ export const OrderStatusBanner: React.FC = () => {
     }, 400);
   };
 
-  // No mostrar si: no hay email, no hay pedido, fue descartado, no es visible
-  if (!getEmail() || !pedido || dismissed || !visible) {
-    if (loading && getEmail()) {
-      // Skeleton muy pequeño mientras carga la primera vez
-      return null; // mejor silencioso que un flash de loading
-    }
+  // No mostrar si: no hay email, no hay pedidos, fue descartado, no es visible
+  if (!getEmail() || pedidos.length === 0 || dismissed || !visible) {
     return null;
   }
 
-  const config = ESTADOS_CONFIG[pedido.estado] ?? ESTADOS_CONFIG.en_cocina;
-  const totalSteps = pedido.tipo_pedido === 'delivery' ? 3 : 2;
+  // Pedido actualmente enfocado
+  const currentPedido = pedidos.find(p => p.pedido_id === selectedPedidoId) || pedidos[0];
+  const config = ESTADOS_CONFIG[currentPedido.estado] ?? ESTADOS_CONFIG.en_cocina;
+  const totalSteps = currentPedido.tipo_pedido === 'delivery' ? 3 : 2;
   const currentStep = Math.min(config.step, totalSteps);
 
   const stepLabels =
-    pedido.tipo_pedido === 'delivery'
+    currentPedido.tipo_pedido === 'delivery'
       ? ['Recibido', 'En cocina', 'Listo', 'En camino']
       : ['Recibido', 'En cocina', 'Listo'];
 
@@ -199,6 +210,30 @@ export const OrderStatusBanner: React.FC = () => {
       role="status"
       aria-live="polite"
     >
+      {/* Selector de pedidos si hay 2 o más */}
+      {pedidos.length > 1 && (
+        <div className="osb-multi-header">
+          <span className="osb-multi-title">Tus pedidos en curso ({pedidos.length}):</span>
+          <div className="osb-multi-chips">
+            {pedidos.map(p => {
+              const pCfg = ESTADOS_CONFIG[p.estado] ?? ESTADOS_CONFIG.en_cocina;
+              const isSelected = p.pedido_id === currentPedido.pedido_id;
+              return (
+                <button
+                  key={p.pedido_id}
+                  type="button"
+                  onClick={() => setSelectedPedidoId(p.pedido_id)}
+                  className={`osb-chip ${isSelected ? 'osb-chip-active' : ''} ${pCfg.colorClass}`}
+                >
+                  <span className="osb-chip-order">#{p.numero_orden}</span>
+                  <span className="osb-chip-status">{pCfg.shortLabel}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="osb-inner">
         {/* Ícono + textos */}
         <div className="osb-left">
@@ -206,7 +241,12 @@ export const OrderStatusBanner: React.FC = () => {
             {config.icon}
           </div>
           <div className="osb-texts">
-            <span className="osb-orden">Pedido #{pedido.numero_orden}</span>
+            <div className="osb-header-meta">
+              <span className="osb-orden">Pedido #{currentPedido.numero_orden}</span>
+              <span className="osb-tipo-badge">
+                {currentPedido.tipo_pedido === 'delivery' ? 'Delivery 🛵' : 'Take Away 🛍️'}
+              </span>
+            </div>
             <span className="osb-label">{config.label}</span>
             <span className="osb-sublabel">{config.sublabel}</span>
           </div>

@@ -5585,6 +5585,7 @@ button {
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.2s;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 .osb-close:hover {
@@ -5593,8 +5594,92 @@ button {
   transform: scale(1.1);
 }
 
+/* ── Selector Multi-Pedidos (Chips) ── */
+.osb-multi-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 20px;
+  background: rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.osb-multi-header::-webkit-scrollbar {
+  display: none;
+}
+.osb-multi-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.osb-multi-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+.osb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.osb-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.osb-chip-active {
+  border-color: #1e293b;
+  background: #1e293b;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(30, 41, 59, 0.2);
+}
+.osb-chip-order {
+  font-weight: 800;
+}
+.osb-chip-status {
+  font-size: 0.7rem;
+  opacity: 0.9;
+}
+.osb-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.osb-tipo-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.06);
+  color: #475569;
+}
+
 /* ── Responsive mobile ── */
 @media (max-width: 600px) {
+  .osb-multi-header {
+    padding: 6px 12px;
+  }
+  .osb-multi-title {
+    font-size: 0.68rem;
+  }
+  .osb-chip {
+    padding: 3px 8px;
+    font-size: 0.68rem;
+  }
   .osb-inner {
     padding: 8px 14px;
     gap: 10px;
@@ -5613,5 +5698,6 @@ button {
     font-size: 0.82rem;
   }
 }
+
 
 
