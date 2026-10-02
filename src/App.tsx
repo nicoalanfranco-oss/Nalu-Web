@@ -12,7 +12,24 @@ import { ToastNotification, ToastData } from './components/ToastNotification';
 import { ProductoElaborado, ProductoReventa, GrupoOpciones, CartItem, TenantInfo, MarcaInfo } from './types/food';
 import { fetchNaluCatalogo, TENANT_INFO, MARCA_INFO, REAL_PLATOS, REAL_REVENTA, REAL_GRUPOS } from './services/api';
 import { useStructuredData } from './hooks/useStructuredData';
-import { CheckCircle2, Sparkles, MessageCircle, ArrowRight, WifiOff } from 'lucide-react';
+import { CheckCircle2, Sparkles, Bell, ArrowRight, WifiOff } from 'lucide-react';
+
+const InstagramIcon: React.FC<{ size?: number }> = ({ size = 20 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+  </svg>
+);
 
 export const App: React.FC = () => {
   const [tenant, setTenant] = useState<TenantInfo>(TENANT_INFO);
@@ -341,55 +358,166 @@ export const App: React.FC = () => {
         <div className="modal-backdrop" onClick={() => setOrderSuccessNumber(null)}>
           <div
             className="modal-container"
-            style={{ maxWidth: '440px', padding: '36px 24px', textAlign: 'center', alignItems: 'center' }}
+            style={{
+              maxWidth: '460px',
+              padding: '32px 24px 26px',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              background: '#FAF8F5',
+              borderRadius: '28px',
+              border: '1.5px solid rgba(120, 140, 80, 0.18)',
+              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.22)',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
             onClick={e => e.stopPropagation()}
           >
+            {/* 1) Encabezado: Logo de Nalú destacado */}
+            <div style={{ marginBottom: '14px', display: 'flex', justifyContent: 'center' }}>
+              <img
+                src="./Logo_nalu-sinfondo.png"
+                alt="Nalú Poke"
+                style={{
+                  height: '52px',
+                  width: 'auto',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 3px 8px rgba(0, 0, 0, 0.08))',
+                }}
+              />
+            </div>
+
+            {/* Tick de confirmación verde */}
             <div
               style={{
-                width: '72px',
-                height: '72px',
-                borderRadius: 'var(--radius-full)',
-                background: 'var(--secondary-light)',
-                color: 'var(--secondary)',
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                background: 'rgba(31, 157, 85, 0.12)',
+                color: '#1F9D55',
+                border: '2px solid rgba(31, 157, 85, 0.28)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '16px',
+                marginBottom: '14px',
+                boxShadow: '0 6px 18px rgba(31, 157, 85, 0.15)',
               }}
             >
-              <CheckCircle2 size={40} />
+              <CheckCircle2 size={36} strokeWidth={2.4} />
             </div>
 
-            <span className="badge-tag green" style={{ marginBottom: '10px' }}>
-              <Sparkles size={14} /> ¡ORDEN RECIBIDA EN COCINA!
-            </span>
+            {/* 3) Badge aumentado: Tu orden ya fue recibida en la cocina */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'rgba(31, 157, 85, 0.12)',
+                color: '#15803d',
+                padding: '8px 18px',
+                borderRadius: '999px',
+                fontSize: '0.98rem',
+                fontWeight: 700,
+                letterSpacing: '0.01em',
+                marginBottom: '14px',
+                border: '1px solid rgba(31, 157, 85, 0.22)',
+              }}
+            >
+              <Sparkles size={16} />
+              <span>Tu orden ya fue recibida en la cocina</span>
+            </div>
 
-            <h3 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '6px' }}>
-              Pedido #{orderSuccessNumber}
-            </h3>
-
-            <p style={{ color: 'var(--text-body)', fontSize: '0.92rem', lineHeight: 1.5, marginBottom: '24px' }}>
-              Tu orden ha sido enviada exitosamente a la cocina de Nalú Poke. Nuestro equipo ya se encuentra preparando tus bowls con la máxima frescura.
+            {/* 4) Mensaje simplificado y mayor tamaño */}
+            <p
+              style={{
+                color: '#2D3748',
+                fontSize: '1.05rem',
+                lineHeight: 1.55,
+                fontWeight: 600,
+                margin: '0 0 18px',
+                maxWidth: '380px',
+              }}
+            >
+              Nuestro equipo ya está preparando tu pedido con ingredientes frescos y la máxima dedicación.
             </p>
 
+            {/* 6) Aviso de seguimiento del trayecto en la web */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                background: 'rgba(255, 90, 54, 0.07)',
+                border: '1px solid rgba(255, 90, 54, 0.2)',
+                borderRadius: '16px',
+                padding: '12px 16px',
+                marginBottom: '20px',
+                textAlign: 'left',
+                width: '100%',
+              }}
+            >
+              <div
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  background: '#FF5A36',
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <Bell size={18} />
+              </div>
+              <span style={{ fontSize: '0.92rem', color: '#334155', fontWeight: 600, lineHeight: 1.4 }}>
+                Podés seguir el trayecto de tu pedido en la web: te informamos cada paso.
+              </span>
+            </div>
+
+            {/* Acciones: Instagram y Volver al Menú */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+              {/* 5) Botón Instagram en lugar de WhatsApp */}
               <a
-                href={orderWhatsAppUrl || `https://api.whatsapp.com/send?text=${encodeURIComponent(
-                  `¡Hola Nalú Poke! Acabo de realizar el Pedido #${orderSuccessNumber} desde la web.`
-                )}`}
+                href="https://www.instagram.com/nalupoke.uy?stkn=ejVqMjd1dzhqZTVr&utm_source=qr"
                 target="_blank"
                 rel="noreferrer"
-                className="btn-primary"
-                style={{ background: '#25D366', boxShadow: '0 8px 24px rgba(37, 211, 102, 0.3)', width: '100%' }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  width: '100%',
+                  padding: '14px 18px',
+                  borderRadius: '16px',
+                  background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+                  color: '#FFFFFF',
+                  fontWeight: 700,
+                  fontSize: '0.95rem',
+                  textDecoration: 'none',
+                  boxShadow: '0 8px 24px rgba(220, 39, 67, 0.28)',
+                  transition: 'all 0.2s ease',
+                }}
               >
-                <MessageCircle size={18} />
-                <span>Enviar Pedido a WhatsApp</span>
+                <InstagramIcon size={20} />
+                <span>Cualquier consulta envianos un mensaje</span>
               </a>
 
               <button
                 onClick={() => setOrderSuccessNumber(null)}
                 className="btn-secondary"
-                style={{ width: '100%' }}
+                style={{
+                  width: '100%',
+                  padding: '13px 20px',
+                  borderRadius: '16px',
+                  fontWeight: 700,
+                  background: '#FFFFFF',
+                  border: '1.5px solid rgba(19, 25, 29, 0.12)',
+                  color: '#13191D',
+                  cursor: 'pointer',
+                }}
               >
                 Volver al Menú
               </button>
