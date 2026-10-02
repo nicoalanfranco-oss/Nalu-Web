@@ -32,6 +32,39 @@ const InstagramIcon: React.FC<{ size?: number }> = ({ size = 20 }) => (
   </svg>
 );
 
+const BANCOS_TRANSFERENCIA = [
+  {
+    nombre: 'BROU',
+    logo: './banks/brou.png',
+    url: 'https://ebanking.brou.com.uy/frontend/loginStep1',
+  },
+  {
+    nombre: 'Itaú',
+    logo: './banks/itau.png',
+    url: 'https://www.itau.com.uy/inst/',
+  },
+  {
+    nombre: 'Santander',
+    logo: './banks/santander.png',
+    url: 'https://www.santander.com.uy/',
+  },
+  {
+    nombre: 'BBVA',
+    logo: './banks/bbva.png',
+    url: 'https://bbvanet.bbva.com.uy/NetApp/Home/Index',
+  },
+  {
+    nombre: 'Scotiabank',
+    logo: './banks/scotiabank.png',
+    url: 'https://www1.scotiabank.com.uy/scotiaenlinea/?_gl=1*18fzaop*_gcl_au*MTY5NTgxMzEwMi4xNzkwOTYwMjMy*_ga*MTA2ODkxODY1MC4xNzkwOTYwMjMy*_ga_1M8W9J9C2H*czE3OTA5NjAyMzIkbzEkZzAkdDE3OTA5NjAyMzIkajYwJGwwJGgw',
+  },
+  {
+    nombre: 'Prex',
+    logo: './banks/prex.svg',
+    url: 'https://www.prexcard.com/login',
+  },
+];
+
 export const App: React.FC = () => {
   const [tenant, setTenant] = useState<TenantInfo>(TENANT_INFO);
   const [marca, setMarca] = useState<MarcaInfo>(MARCA_INFO);
@@ -51,6 +84,8 @@ export const App: React.FC = () => {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
   const [orderSuccessNumber, setOrderSuccessNumber] = useState<number | null>(null);
   const [orderWhatsAppUrl, setOrderWhatsAppUrl] = useState<string>('');
+  const [orderPaymentMethod, setOrderPaymentMethod] = useState<'efectivo' | 'tarjeta' | 'transferencia' | null>(null);
+  const [copiedPrex, setCopiedPrex] = useState<boolean>(false);
 
   // Estado del Carrito
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -212,12 +247,23 @@ export const App: React.FC = () => {
   };
 
   // Pedido completado con éxito
-  const handleOrderSuccess = (orderNumber: number, whatsappUrl?: string) => {
+  const handleOrderSuccess = (orderNumber: number, whatsappUrl?: string, paymentMethod?: 'efectivo' | 'tarjeta' | 'transferencia') => {
     setOrderSuccessNumber(orderNumber);
+    setOrderPaymentMethod(paymentMethod || null);
+    setCopiedPrex(false);
     if (whatsappUrl) setOrderWhatsAppUrl(whatsappUrl);
     setCart([]);
     setIsCheckoutOpen(false);
     setIsCartOpen(false);
+  };
+
+  // Copiar cuenta Prex al portapapeles
+  const handleCopyPrex = () => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText('1472492');
+      setCopiedPrex(true);
+      setTimeout(() => setCopiedPrex(false), 2500);
+    }
   };
 
   // Scroll a la sección del menú
@@ -480,6 +526,109 @@ export const App: React.FC = () => {
                 Podés seguir el trayecto de tu pedido en la web: te informamos cada paso.
               </span>
             </div>
+
+            {/* Si el usuario eligió Transferencia Bancaria */}
+            {orderPaymentMethod === 'transferencia' && (
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '16px' }}>
+                {/* Tarjeta de Cuenta Prex Copiable */}
+                <div
+                  onClick={handleCopyPrex}
+                  style={{
+                    background: '#FFFFFF',
+                    border: copiedPrex ? '2px solid #1F9D55' : '1.5px solid rgba(95, 37, 159, 0.25)',
+                    borderRadius: '20px',
+                    padding: '16px 20px',
+                    cursor: 'pointer',
+                    boxShadow: '0 6px 20px rgba(95, 37, 159, 0.08)',
+                    transition: 'all 0.2s ease',
+                    textAlign: 'center',
+                    position: 'relative',
+                  }}
+                  title="Toca para copiar el número de cuenta"
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#5F259F', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Cuenta Prex
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '0.74rem',
+                        fontWeight: 700,
+                        color: copiedPrex ? '#166534' : '#64748B',
+                        background: copiedPrex ? 'rgba(31, 157, 85, 0.14)' : 'rgba(0,0,0,0.05)',
+                        padding: '3px 10px',
+                        borderRadius: '10px',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      {copiedPrex ? '¡Copiado! ✓' : '(click en el nro para copiar)'}
+                    </span>
+                  </div>
+
+                  <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#13191D', letterSpacing: '1px', margin: '2px 0' }}>
+                    1472492
+                  </div>
+
+                  <div style={{ fontSize: '0.92rem', color: '#475569', fontWeight: 700 }}>
+                    Cinthia Bottero
+                  </div>
+                </div>
+
+                {/* Accesos directos a Bancos */}
+                <div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#64748B', textAlign: 'left', marginBottom: '8px', paddingLeft: '4px' }}>
+                    Acceso directo a tu banco:
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(3, 1fr)',
+                      gap: '8px',
+                      width: '100%',
+                    }}
+                  >
+                    {BANCOS_TRANSFERENCIA.map((banco) => (
+                      <a
+                        key={banco.nombre}
+                        href={banco.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          padding: '10px 6px',
+                          background: '#FFFFFF',
+                          borderRadius: '16px',
+                          border: '1.5px solid rgba(0, 0, 0, 0.08)',
+                          textDecoration: 'none',
+                          color: '#13191D',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                          transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                        }}
+                      >
+                        <img
+                          src={banco.logo}
+                          alt={banco.nombre}
+                          style={{
+                            width: '36px',
+                            height: '36px',
+                            objectFit: 'contain',
+                            borderRadius: '8px',
+                          }}
+                        />
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                          {banco.nombre}
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Acciones: Instagram y Volver al Menú */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
