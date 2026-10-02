@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ChefHat, Bike, CheckCircle2, Package, X } from 'lucide-react';
-import { FOOD_BACKEND_URL } from '../services/api';
+import { ChefHat, Bike, CheckCircle2, Package, X, Paperclip, Loader2 } from 'lucide-react';
+import { FOOD_BACKEND_URL, uploadComprobanteTransferencia } from '../services/api';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -13,6 +13,10 @@ interface PedidoActivo {
   estado: EstadoPedido;
   created_at: string;
   listo_cocina_at: string | null;
+  metodo_pago?: string;
+  pagado?: boolean;
+  comprobante_url?: string | null;
+  estado_pago?: string;
 }
 
 // ─── Configuración de estados ─────────────────────────────────────────────────
@@ -66,6 +70,8 @@ export const OrderStatusBanner: React.FC = () => {
   const [dismissed, setDismissed] = useState(false);
   const [visible, setVisible] = useState(false);
   const [animatingOut, setAnimatingOut] = useState(false);
+  const [uploadingComprobante, setUploadingComprobante] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevCountRef = useRef<number>(0);
 
@@ -201,6 +207,25 @@ export const OrderStatusBanner: React.FC = () => {
     }, 400);
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentPedido) return;
+
+    setUploadingComprobante(true);
+    const res = await uploadComprobanteTransferencia(currentPedido.pedido_id, file);
+    setUploadingComprobante(false);
+
+    if (res.success && res.comprobante_url) {
+      setPedidos(prev =>
+        prev.map(p =>
+          p.pedido_id === currentPedido.pedido_id
+            ? { ...p, comprobante_url: res.comprobante_url }
+            : p
+        )
+      );
+    }
+  };
+
   // No mostrar si: no hay email, no hay pedidos, fue descartado, no es visible
   if (!getEmail() || pedidos.length === 0 || dismissed || !visible) {
     return null;
@@ -259,6 +284,53 @@ export const OrderStatusBanner: React.FC = () => {
               <span className="osb-tipo-badge">
                 {currentPedido.tipo_pedido === 'delivery' ? 'Delivery 🛵' : 'Take Away 🛍️'}
               </span>
+              {currentPedido.metodo_pago === 'transferencia' && (
+                <div className="osb-comprobante-wrapper">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*,.pdf"
+                    style={{ display: 'none' }}
+                    onChange={handleFileChange}
+                  />
+                  {uploadingComprobante ? (
+                    <span className="osb-comprobante-loading">
+                      <Loader2 size={12} className="osb-spin" /> Subiendo...
+                    </span>
+                  ) : currentPedido.comprobante_url ? (
+                    <div className="osb-comprobante-ok">
+                      <a
+                        href={currentPedido.comprobante_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="osb-comprobante-link"
+                        title="Ver comprobante adjuntado"
+                      >
+                        <Paperclip size={12} />
+                        <span>Comprobante ✓</span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="osb-comprobante-change"
+                        title="Cambiar archivo"
+                      >
+                        Cambiar
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="osb-comprobante-btn"
+                      title="Adjuntar comprobante de transferencia (foto o PDF)"
+                    >
+                      <Paperclip size={12} />
+                      <span>Adjuntar comprobante</span>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
             <span className="osb-label">{config.label}</span>
             <span className="osb-sublabel">{config.sublabel}</span>

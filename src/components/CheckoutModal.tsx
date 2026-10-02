@@ -13,7 +13,7 @@ interface CheckoutModalProps {
   isOpen: boolean;
   items: CartItem[];
   onClose: () => void;
-  onOrderSuccess: (orderNumber: number, whatsappUrl: string, metodoPago?: 'efectivo' | 'tarjeta' | 'transferencia') => void;
+  onOrderSuccess: (orderNumber: number, whatsappUrl: string, metodoPago?: 'efectivo' | 'tarjeta' | 'transferencia', pedidoId?: number) => void;
   marca?: MarcaInfo;
 }
 
@@ -468,6 +468,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           metodo_pago: metodoPago,
           paga_con: pagaCon.trim(),
         },
+        metodo_pago: metodoPago,
         notas: notas.trim(),
         items: items.map(it => ({
           tipo_item: it.tipo,
@@ -534,7 +535,7 @@ ${lineasItems}
 
       const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoWhatsApp)}`;
 
-      onOrderSuccess(numOrden, whatsappUrl, metodoPago);
+      onOrderSuccess(numOrden, whatsappUrl, metodoPago, res.pedido_id);
     } catch (err: any) {
       console.error('Error enviando pedido:', err);
       setErrorMsg('Error de conexión al enviar el pedido. Intenta nuevamente o contactanos directamente.');

@@ -11,9 +11,9 @@ import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
 import { ToastNotification, ToastData } from './components/ToastNotification';
 import { ProductoElaborado, ProductoReventa, GrupoOpciones, CartItem, TenantInfo, MarcaInfo } from './types/food';
-import { fetchNaluCatalogo, TENANT_INFO, MARCA_INFO, REAL_PLATOS, REAL_REVENTA, REAL_GRUPOS } from './services/api';
+import { fetchNaluCatalogo, uploadComprobanteTransferencia, TENANT_INFO, MARCA_INFO, REAL_PLATOS, REAL_REVENTA, REAL_GRUPOS } from './services/api';
 import { useStructuredData } from './hooks/useStructuredData';
-import { CheckCircle2, Sparkles, Bell, ArrowRight, WifiOff } from 'lucide-react';
+import { CheckCircle2, Sparkles, Bell, ArrowRight, WifiOff, Paperclip } from 'lucide-react';
 
 const InstagramIcon: React.FC<{ size?: number }> = ({ size = 20 }) => (
   <svg
@@ -83,6 +83,9 @@ export const App: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
   const [orderSuccessNumber, setOrderSuccessNumber] = useState<number | null>(null);
+  const [orderSuccessPedidoId, setOrderSuccessPedidoId] = useState<number | null>(null);
+  const [comprobanteUrlSuccess, setComprobanteUrlSuccess] = useState<string | null>(null);
+  const [uploadingComprobanteSuccess, setUploadingComprobanteSuccess] = useState<boolean>(false);
   const [orderWhatsAppUrl, setOrderWhatsAppUrl] = useState<string>('');
   const [orderPaymentMethod, setOrderPaymentMethod] = useState<'efectivo' | 'tarjeta' | 'transferencia' | null>(null);
   const [copiedPrex, setCopiedPrex] = useState<boolean>(false);
@@ -247,8 +250,10 @@ export const App: React.FC = () => {
   };
 
   // Pedido completado con éxito
-  const handleOrderSuccess = (orderNumber: number, whatsappUrl?: string, paymentMethod?: 'efectivo' | 'tarjeta' | 'transferencia') => {
+  const handleOrderSuccess = (orderNumber: number, whatsappUrl?: string, paymentMethod?: 'efectivo' | 'tarjeta' | 'transferencia', pedidoId?: number) => {
     setOrderSuccessNumber(orderNumber);
+    setOrderSuccessPedidoId(pedidoId || null);
+    setComprobanteUrlSuccess(null);
     setOrderPaymentMethod(paymentMethod || null);
     if (whatsappUrl) setOrderWhatsAppUrl(whatsappUrl);
     setCart([]);
@@ -666,6 +671,57 @@ export const App: React.FC = () => {
                       </a>
                     ))}
                   </div>
+                </div>
+
+                {/* Adjuntar comprobante de pago */}
+                <div style={{ marginTop: '4px', padding: '10px 12px', background: '#F8FAFC', borderRadius: '14px', border: '1.5px dashed #CBD5E1', textAlign: 'center' }}>
+                  <input
+                    id="input-comprobante-success"
+                    type="file"
+                    accept="image/*,.pdf"
+                    style={{ display: 'none' }}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !orderSuccessPedidoId) return;
+                      setUploadingComprobanteSuccess(true);
+                      const res = await uploadComprobanteTransferencia(orderSuccessPedidoId, file);
+                      setUploadingComprobanteSuccess(false);
+                      if (res.success && res.comprobante_url) {
+                        setComprobanteUrlSuccess(res.comprobante_url);
+                      }
+                    }}
+                  />
+                  {comprobanteUrlSuccess ? (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#166534', fontWeight: 800, fontSize: '0.82rem' }}>
+                      <span>✓ Comprobante enviado</span>
+                      <a href={comprobanteUrlSuccess} target="_blank" rel="noopener noreferrer" style={{ color: '#5F259F', textDecoration: 'underline', fontSize: '0.76rem' }}>Ver ↗</a>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={uploadingComprobanteSuccess}
+                      onClick={() => document.getElementById('input-comprobante-success')?.click()}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        width: '100%',
+                        padding: '8px 12px',
+                        background: '#5F259F',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: '10px',
+                        fontWeight: 800,
+                        fontSize: '0.82rem',
+                        cursor: uploadingComprobanteSuccess ? 'wait' : 'pointer',
+                        boxShadow: '0 2px 8px rgba(95, 37, 159, 0.25)',
+                      }}
+                    >
+                      <Paperclip size={14} />
+                      <span>{uploadingComprobanteSuccess ? 'Subiendo comprobante...' : 'Adjuntar comprobante de pago'}</span>
+                    </button>
+                  )}
                 </div>
               </div>
             )}

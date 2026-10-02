@@ -260,3 +260,39 @@ export async function sendOrderToFood(orderPayload: any): Promise<{ success: boo
     pedido_id: Date.now(),
   };
 }
+
+export async function uploadComprobanteTransferencia(
+  pedidoId: number,
+  file: File
+): Promise<{ success: boolean; comprobante_url?: string; error?: string }> {
+  try {
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    const res = await fetch(`${FOOD_BACKEND_URL}/api/public/pedidos/${pedidoId}/comprobante`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        base64,
+        filename: file.name,
+        mimeType: file.type || 'image/jpeg',
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      return { success: false, error: err.error || 'Error subiendo comprobante' };
+    }
+
+    const data = await res.json();
+    return { success: true, comprobante_url: data.comprobante_url };
+  } catch (err: any) {
+    console.error('Error al subir comprobante a Food backend:', err);
+    return { success: false, error: err.message || 'Error de red' };
+  }
+}
+
