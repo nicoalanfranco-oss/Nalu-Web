@@ -250,19 +250,30 @@ export const App: React.FC = () => {
   const handleOrderSuccess = (orderNumber: number, whatsappUrl?: string, paymentMethod?: 'efectivo' | 'tarjeta' | 'transferencia') => {
     setOrderSuccessNumber(orderNumber);
     setOrderPaymentMethod(paymentMethod || null);
-    setCopiedPrex(false);
     if (whatsappUrl) setOrderWhatsAppUrl(whatsappUrl);
     setCart([]);
     setIsCheckoutOpen(false);
     setIsCartOpen(false);
+
+    // Auto-copiar nro de cuenta Prex si es transferencia
+    if (paymentMethod === 'transferencia') {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        navigator.clipboard.writeText('1472492').then(() => {
+          setCopiedPrex(true);
+        }).catch(() => {});
+      } else {
+        setCopiedPrex(true);
+      }
+    } else {
+      setCopiedPrex(false);
+    }
   };
 
-  // Copiar cuenta Prex al portapapeles
+  // Copiar cuenta Prex al portapapeles manual
   const handleCopyPrex = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText('1472492');
       setCopiedPrex(true);
-      setTimeout(() => setCopiedPrex(false), 2500);
     }
   };
 
@@ -409,108 +420,134 @@ export const App: React.FC = () => {
           <div
             className="modal-container"
             style={{
-              maxWidth: '460px',
-              padding: '32px 24px 26px',
+              maxWidth: '450px',
+              width: '92%',
+              padding: '18px 18px 16px',
               textAlign: 'center',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               background: '#FAF8F5',
-              borderRadius: '28px',
+              borderRadius: '24px',
               border: '1.5px solid rgba(120, 140, 80, 0.18)',
-              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.22)',
+              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.25)',
               position: 'relative',
               overflow: 'hidden',
+              maxHeight: '92vh',
             }}
             onClick={e => e.stopPropagation()}
           >
-            {/* 1) Encabezado: Logo de Nalú destacado */}
-            <div style={{ marginBottom: '14px', display: 'flex', justifyContent: 'center' }}>
-              <img
-                src="./Logo_nalu-sinfondo.png"
-                alt="Nalú Poke"
-                style={{
-                  height: '52px',
-                  width: 'auto',
-                  objectFit: 'contain',
-                  filter: 'drop-shadow(0 3px 8px rgba(0, 0, 0, 0.08))',
-                }}
-              />
-            </div>
-
-            {/* Tick de confirmación verde */}
+            {/* 1 y 2) Fila de Cabecera: Logo Nalú grande a la izquierda, Tick + Badge a la derecha */}
             <div
               style={{
-                width: '64px',
-                height: '64px',
-                borderRadius: '50%',
-                background: 'rgba(31, 157, 85, 0.12)',
-                color: '#1F9D55',
-                border: '2px solid rgba(31, 157, 85, 0.28)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '14px',
-                boxShadow: '0 6px 18px rgba(31, 157, 85, 0.15)',
+                justifyContent: 'space-between',
+                gap: '12px',
+                width: '100%',
+                marginBottom: '8px',
+                paddingBottom: '8px',
+                borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
               }}
             >
-              <CheckCircle2 size={36} strokeWidth={2.4} />
+              {/* Logo Nalú contra la izquierda */}
+              <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+                <img
+                  src="./Logo_nalu-sinfondo.png"
+                  alt="Nalú Poke"
+                  style={{
+                    height: '68px',
+                    width: 'auto',
+                    maxWidth: '125px',
+                    objectFit: 'contain',
+                    filter: 'drop-shadow(0 3px 8px rgba(0, 0, 0, 0.08))',
+                  }}
+                />
+              </div>
+
+              {/* Tick de confirmación arriba y Badge abajo en la misma fila */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '4px',
+                  flex: 1,
+                }}
+              >
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: 'rgba(31, 157, 85, 0.12)',
+                    color: '#1F9D55',
+                    border: '1.5px solid rgba(31, 157, 85, 0.28)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 3px 10px rgba(31, 157, 85, 0.15)',
+                  }}
+                >
+                  <CheckCircle2 size={20} strokeWidth={2.5} />
+                </div>
+
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    background: 'rgba(31, 157, 85, 0.12)',
+                    color: '#15803d',
+                    padding: '4px 10px',
+                    borderRadius: '999px',
+                    fontSize: '0.76rem',
+                    fontWeight: 700,
+                    border: '1px solid rgba(31, 157, 85, 0.22)',
+                    lineHeight: 1.2,
+                    textAlign: 'center',
+                  }}
+                >
+                  <Sparkles size={12} />
+                  <span>Tu orden ya fue recibida en la cocina</span>
+                </div>
+              </div>
             </div>
 
-            {/* 3) Badge aumentado: Tu orden ya fue recibida en la cocina */}
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                background: 'rgba(31, 157, 85, 0.12)',
-                color: '#15803d',
-                padding: '8px 18px',
-                borderRadius: '999px',
-                fontSize: '0.98rem',
-                fontWeight: 700,
-                letterSpacing: '0.01em',
-                marginBottom: '14px',
-                border: '1px solid rgba(31, 157, 85, 0.22)',
-              }}
-            >
-              <Sparkles size={16} />
-              <span>Tu orden ya fue recibida en la cocina</span>
-            </div>
-
-            {/* 4) Mensaje simplificado y mayor tamaño */}
+            {/* Mensaje de preparación */}
             <p
               style={{
                 color: '#2D3748',
-                fontSize: '1.05rem',
-                lineHeight: 1.55,
+                fontSize: '0.88rem',
+                lineHeight: 1.35,
                 fontWeight: 600,
-                margin: '0 0 18px',
-                maxWidth: '380px',
+                margin: '0 0 8px',
+                maxWidth: '100%',
               }}
             >
-              Nuestro equipo ya está preparando tu pedido con ingredientes frescos y la máxima dedicación.
+              Nuestro equipo está preparando tu comida
             </p>
 
-            {/* 6) Aviso de seguimiento del trayecto en la web */}
+            {/* Aviso de seguimiento del trayecto en la web */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
+                gap: '8px',
                 background: 'rgba(255, 90, 54, 0.07)',
-                border: '1px solid rgba(255, 90, 54, 0.2)',
-                borderRadius: '16px',
-                padding: '12px 16px',
-                marginBottom: '20px',
+                border: '1px solid rgba(255, 90, 54, 0.18)',
+                borderRadius: '12px',
+                padding: '6px 10px',
+                marginBottom: '10px',
                 textAlign: 'left',
                 width: '100%',
               }}
             >
               <div
                 style={{
-                  width: '36px',
-                  height: '36px',
+                  width: '24px',
+                  height: '24px',
                   borderRadius: '50%',
                   background: '#FF5A36',
                   color: '#FFFFFF',
@@ -520,63 +557,66 @@ export const App: React.FC = () => {
                   flexShrink: 0,
                 }}
               >
-                <Bell size={18} />
+                <Bell size={13} />
               </div>
-              <span style={{ fontSize: '0.92rem', color: '#334155', fontWeight: 600, lineHeight: 1.4 }}>
+              <span style={{ fontSize: '0.78rem', color: '#334155', fontWeight: 600, lineHeight: 1.3 }}>
                 Podés seguir el trayecto de tu pedido en la web: te informamos cada paso.
               </span>
             </div>
 
             {/* Si el usuario eligió Transferencia Bancaria */}
             {orderPaymentMethod === 'transferencia' && (
-              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '16px' }}>
-                {/* Tarjeta de Cuenta Prex Copiable */}
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
+                {/* 3, 4, 5) Tarjeta de Cuenta Prex con cuenta arriba y mensaje en renglones */}
                 <div
                   onClick={handleCopyPrex}
                   style={{
                     background: '#FFFFFF',
-                    border: copiedPrex ? '2px solid #1F9D55' : '1.5px solid rgba(95, 37, 159, 0.25)',
-                    borderRadius: '20px',
-                    padding: '16px 20px',
+                    border: '1.5px solid rgba(95, 37, 159, 0.25)',
+                    borderRadius: '16px',
+                    padding: '10px 14px',
                     cursor: 'pointer',
-                    boxShadow: '0 6px 20px rgba(95, 37, 159, 0.08)',
-                    transition: 'all 0.2s ease',
-                    textAlign: 'center',
-                    position: 'relative',
+                    boxShadow: '0 4px 14px rgba(95, 37, 159, 0.08)',
+                    textAlign: 'left',
+                    width: '100%',
                   }}
-                  title="Toca para copiar el número de cuenta"
+                  title="Toca para volver a copiar el número de cuenta"
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  {/* Fila superior: CUENTA PREX en línea con el número */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
                     <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#5F259F', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      Cuenta Prex
+                      Cuenta Prex:
                     </span>
-                    <span
-                      style={{
-                        fontSize: '0.74rem',
-                        fontWeight: 700,
-                        color: copiedPrex ? '#166534' : '#64748B',
-                        background: copiedPrex ? 'rgba(31, 157, 85, 0.14)' : 'rgba(0,0,0,0.05)',
-                        padding: '3px 10px',
-                        borderRadius: '10px',
-                        transition: 'all 0.2s ease',
-                      }}
-                    >
-                      {copiedPrex ? '¡Copiado! ✓' : '(click en el nro para copiar)'}
+                    <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#13191D', letterSpacing: '1px' }}>
+                      1472492
                     </span>
                   </div>
 
-                  <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#13191D', letterSpacing: '1px', margin: '2px 0' }}>
-                    1472492
+                  <div style={{ fontSize: '0.84rem', color: '#475569', fontWeight: 700, marginBottom: '6px' }}>
+                    Titular: Cinthia Bottero
                   </div>
 
-                  <div style={{ fontSize: '0.92rem', color: '#475569', fontWeight: 700 }}>
-                    Cinthia Bottero
+                  {/* Mensaje en varios renglones a lo largo del cuadro */}
+                  <div
+                    style={{
+                      background: 'rgba(31, 157, 85, 0.1)',
+                      border: '1px solid rgba(31, 157, 85, 0.25)',
+                      borderRadius: '10px',
+                      padding: '6px 10px',
+                      color: '#166534',
+                      fontSize: '0.76rem',
+                      fontWeight: 700,
+                      lineHeight: 1.35,
+                    }}
+                  >
+                    <div>✓ Número de cuenta copiado al portapapeles.</div>
+                    <div style={{ color: '#2b5329', fontWeight: 600 }}>Pegá el número en el formulario de tu banco para realizar la transferencia.</div>
                   </div>
                 </div>
 
                 {/* Accesos directos a Bancos */}
                 <div>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#64748B', textAlign: 'left', marginBottom: '8px', paddingLeft: '4px' }}>
+                  <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#64748B', textAlign: 'left', marginBottom: '5px', paddingLeft: '2px' }}>
                     Acceso directo a tu banco:
                   </div>
 
@@ -584,7 +624,7 @@ export const App: React.FC = () => {
                     style={{
                       display: 'grid',
                       gridTemplateColumns: 'repeat(3, 1fr)',
-                      gap: '8px',
+                      gap: '6px',
                       width: '100%',
                     }}
                   >
@@ -599,28 +639,28 @@ export const App: React.FC = () => {
                           flexDirection: 'column',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          gap: '6px',
-                          padding: '10px 6px',
+                          gap: '3px',
+                          padding: '7px 4px',
                           background: '#FFFFFF',
-                          borderRadius: '16px',
+                          borderRadius: '12px',
                           border: '1.5px solid rgba(0, 0, 0, 0.08)',
                           textDecoration: 'none',
                           color: '#13191D',
-                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
-                          transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.03)',
+                          transition: 'transform 0.15s ease',
                         }}
                       >
                         <img
                           src={banco.logo}
                           alt={banco.nombre}
                           style={{
-                            width: '36px',
-                            height: '36px',
+                            width: '30px',
+                            height: '30px',
                             objectFit: 'contain',
-                            borderRadius: '8px',
+                            borderRadius: '6px',
                           }}
                         />
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                        <span style={{ fontSize: '0.7rem', fontWeight: 700 }}>
                           {banco.nombre}
                         </span>
                       </a>
@@ -631,8 +671,8 @@ export const App: React.FC = () => {
             )}
 
             {/* Acciones: Instagram y Volver al Menú */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
-              {/* 5) Botón Instagram en lugar de WhatsApp */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', marginTop: '2px' }}>
+              {/* Botón Instagram */}
               <a
                 href="https://www.instagram.com/nalupoke.uy?stkn=ejVqMjd1dzhqZTVr&utm_source=qr"
                 target="_blank"
@@ -641,20 +681,20 @@ export const App: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '10px',
+                  gap: '8px',
                   width: '100%',
-                  padding: '14px 18px',
-                  borderRadius: '16px',
+                  padding: '11px 16px',
+                  borderRadius: '14px',
                   background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
                   color: '#FFFFFF',
                   fontWeight: 700,
-                  fontSize: '0.95rem',
+                  fontSize: '0.88rem',
                   textDecoration: 'none',
-                  boxShadow: '0 8px 24px rgba(220, 39, 67, 0.28)',
+                  boxShadow: '0 6px 18px rgba(220, 39, 67, 0.25)',
                   transition: 'all 0.2s ease',
                 }}
               >
-                <InstagramIcon size={20} />
+                <InstagramIcon size={18} />
                 <span>Cualquier consulta envianos un mensaje</span>
               </a>
 
@@ -663,9 +703,10 @@ export const App: React.FC = () => {
                 className="btn-secondary"
                 style={{
                   width: '100%',
-                  padding: '13px 20px',
-                  borderRadius: '16px',
+                  padding: '10px 16px',
+                  borderRadius: '14px',
                   fontWeight: 700,
+                  fontSize: '0.86rem',
                   background: '#FFFFFF',
                   border: '1.5px solid rgba(19, 25, 29, 0.12)',
                   color: '#13191D',
