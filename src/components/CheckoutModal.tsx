@@ -1039,11 +1039,7 @@ ${lineasItems}
                 </div>
               )}
 
-              {metodoPago === 'transferencia' && (
-                <div style={{ marginTop: '8px', fontSize: '0.75rem', color: 'var(--text-muted)', background: 'var(--bg-sand)', padding: '8px 12px', borderRadius: 'var(--radius-sm)' }}>
-                  📲 Te enviaremos los datos de cuenta (BROU / Prex / Santander) al WhatsApp para transferir.
-                </div>
-              )}
+
             </div>
 
             {/* Notas adicionales */}
