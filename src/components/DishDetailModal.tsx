@@ -51,6 +51,12 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({
   const imagenUrl = (plato ? plato.imagen_url : reventa?.imagen_url) || '/hero_bandejas_nalu.jpg';
   const isCustomizable = plato?.es_personalizable ?? false;
 
+  // Filtrar grupos de personalización que corresponden SOLO al plato actual
+  // Sin este filtro se muestran los grupos de todos los bowls y aparecen pasos duplicados
+  const dishGroups = (grupos || []).filter(
+    g => g.producto_elaborado_id === plato?.producto_elaborado_id
+  );
+
   // Pasos estándar de Nalú si no vienen grupos específicos
   const defaultPasos = [
     { orden: 1, titulo: 'Base Nutritiva', desc: 'Arroz sushi, Quinoa, Fideo integral o Mix de hojas verdes' },
@@ -138,8 +144,8 @@ export const DishDetailModal: React.FC<DishDetailModalProps> = ({
                     <Sparkles size={16} /> Pasos para personalizar este Bowl
                   </h4>
                   <div className="dish-modal-steps-list">
-                    {grupos && grupos.length > 0 ? (
-                      grupos.map((grp, idx) => (
+                    {dishGroups.length > 0 ? (
+                      dishGroups.map((grp, idx) => (
                         <div key={grp.grupo_id || idx} className="dish-step-item">
                           <div className="dish-step-badge-number">{idx + 1}</div>
                           <div className="dish-step-info">
