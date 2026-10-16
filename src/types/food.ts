@@ -8,6 +8,23 @@ export interface TenantInfo {
   email?: string;
 }
 
+export interface EstadoAtencion {
+  abierto_ahora: boolean;
+  delivery_abierto_ahora: boolean;
+  salon_takeaway_abierto_ahora: boolean;
+  mensaje_estado: string;
+  proxima_apertura?: string | null;
+  dia_especial?: {
+    es_especial: boolean;
+    motivo: string | null;
+    cerrado: boolean;
+  } | null;
+  dia_semana_actual?: number;
+  nombre_dia_actual?: string;
+  fecha_actual?: string;
+  hora_actual?: string;
+}
+
 export interface MarcaInfo {
   marca_id: number;
   nombre: string;
@@ -22,6 +39,7 @@ export interface MarcaInfo {
   permite_transferencia?: boolean;
   costo_delivery?: number;
   logo_url?: string;
+  estado_atencion?: EstadoAtencion;
 }
 
 export interface InsumoReceta {

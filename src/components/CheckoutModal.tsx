@@ -650,63 +650,111 @@ ${lineasItems}
             </div>
           )}
 
+          {/* ── Alerta Estado de Atención / Horarios ── */}
+          {marca?.estado_atencion && !marca.estado_atencion.abierto_ahora && (
+            <div style={{
+              background: '#FEF2F2',
+              border: '1px solid #FCA5A5',
+              borderRadius: 'var(--radius-md)',
+              padding: '10px 14px',
+              fontSize: '0.82rem',
+              color: '#991B1B',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              lineHeight: 1.4
+            }}>
+              <AlertCircle size={18} style={{ flexShrink: 0, color: '#DC2626' }} />
+              <div>
+                <strong>Local cerrado en este momento</strong> ({marca.estado_atencion.mensaje_estado}). Podés adelantar tu pedido para que comience a elaborarse en la próxima apertura.
+              </div>
+            </div>
+          )}
+
           {/* ── 2. Tipo de Entrega ── */}
           {(permiteDelivery || permiteTakeaway) && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: (permiteDelivery && permiteTakeaway) ? '1fr 1fr' : '1fr',
-              gap: '12px'
-            }}>
-              {permiteDelivery && (
-                <button
-                  type="button"
-                  onClick={() => setTipoEntrega('delivery')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    padding: '12px',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1.5px solid',
-                    borderColor: tipoEntrega === 'delivery' ? 'var(--primary)' : 'var(--border-light)',
-                    background: tipoEntrega === 'delivery' ? 'var(--primary-light)' : 'var(--bg-card)',
-                    color: tipoEntrega === 'delivery' ? 'var(--primary)' : 'var(--text-main)',
-                    fontWeight: 700,
-                    fontSize: '0.9rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <Bike size={18} />
-                  <span>Delivery{costoEnvio > 0 ? ` ($${costoEnvio})` : ''}</span>
-                </button>
-              )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: (permiteDelivery && permiteTakeaway) ? '1fr 1fr' : '1fr',
+                gap: '12px'
+              }}>
+                {permiteDelivery && (
+                  <button
+                    type="button"
+                    onClick={() => setTipoEntrega('delivery')}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      padding: '10px',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1.5px solid',
+                      borderColor: tipoEntrega === 'delivery' ? 'var(--primary)' : 'var(--border-light)',
+                      background: tipoEntrega === 'delivery' ? 'var(--primary-light)' : 'var(--bg-card)',
+                      color: tipoEntrega === 'delivery' ? 'var(--primary)' : 'var(--text-main)',
+                      fontWeight: 700,
+                      fontSize: '0.9rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Bike size={18} />
+                      <span>Delivery{costoEnvio > 0 ? ` ($${costoEnvio})` : ''}</span>
+                    </div>
+                    {marca?.estado_atencion && !marca.estado_atencion.delivery_abierto_ahora && (
+                      <span style={{ fontSize: '0.68rem', color: '#D97706', fontWeight: 600 }}>Fuera de horario</span>
+                    )}
+                  </button>
+                )}
 
-              {permiteTakeaway && (
-                <button
-                  type="button"
-                  onClick={() => setTipoEntrega('takeaway')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    padding: '12px',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1.5px solid',
-                    borderColor: tipoEntrega === 'takeaway' ? 'var(--primary)' : 'var(--border-light)',
-                    background: tipoEntrega === 'takeaway' ? 'var(--primary-light)' : 'var(--bg-card)',
-                    color: tipoEntrega === 'takeaway' ? 'var(--primary)' : 'var(--text-main)',
-                    fontWeight: 700,
-                    fontSize: '0.9rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <Store size={18} />
-                  <span>Retiro en Local</span>
-                </button>
+                {permiteTakeaway && (
+                  <button
+                    type="button"
+                    onClick={() => setTipoEntrega('takeaway')}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '12px',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1.5px solid',
+                      borderColor: tipoEntrega === 'takeaway' ? 'var(--primary)' : 'var(--border-light)',
+                      background: tipoEntrega === 'takeaway' ? 'var(--primary-light)' : 'var(--bg-card)',
+                      color: tipoEntrega === 'takeaway' ? 'var(--primary)' : 'var(--text-main)',
+                      fontWeight: 700,
+                      fontSize: '0.9rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    <Store size={18} />
+                    <span>Retiro en Local</span>
+                  </button>
+                )}
+              </div>
+
+              {marca?.estado_atencion?.abierto_ahora && !marca.estado_atencion.delivery_abierto_ahora && tipoEntrega === 'delivery' && (
+                <div style={{
+                  background: '#FFFBEB',
+                  border: '1px solid #FCD34D',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '8px 12px',
+                  fontSize: '0.78rem',
+                  color: '#92400E',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <AlertCircle size={15} style={{ flexShrink: 0, color: '#D97706' }} />
+                  <span>
+                    El reparto por <strong>Delivery</strong> está fuera de turno ahora. Si confirmás, tu pedido quedará registrado para despachar cuando comience el reparto o podés optar por <strong>Retiro en Local</strong>.
+                  </span>
+                </div>
               )}
             </div>
           )}

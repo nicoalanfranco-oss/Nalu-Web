@@ -40,7 +40,7 @@ function parseTenantFromBackend(t: any): TenantInfo {
   };
 }
 
-function parseMarcaFromBackend(m: any): MarcaInfo {
+function parseMarcaFromBackend(m: any, estadoAtencion?: any): MarcaInfo {
   if (!m) return MARCA_INFO;
   return {
     marca_id: Number(m.marca_id) || MARCA_INFO.marca_id,
@@ -56,6 +56,7 @@ function parseMarcaFromBackend(m: any): MarcaInfo {
     permite_transferencia: m.permite_transferencia !== false,
     costo_delivery: m.costo_delivery !== undefined ? Number(m.costo_delivery) : 0,
     logo_url: m.logo_url || MARCA_INFO.logo_url,
+    estado_atencion: estadoAtencion || m.estado_atencion,
   };
 }
 
@@ -209,7 +210,7 @@ export async function fetchNaluCatalogo(): Promise<{
             }))
           : REAL_GRUPOS,
         tenant: parseTenantFromBackend(data.tenant),
-        marca: parseMarcaFromBackend(data.marca),
+        marca: parseMarcaFromBackend(data.marca, data.estado_atencion),
       };
 
       try {

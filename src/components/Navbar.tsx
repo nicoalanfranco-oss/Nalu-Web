@@ -74,9 +74,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="navbar-location-badge">
                 <MapPin size={11} /> Tacuarembó
               </span>
-              <span className="navbar-schedule-badge">
-                <Clock size={11} />
-                <span className="schedule-days-text">{marca.dias_atencion}: </span>{marca.horario_atencion}
+              <span className={`navbar-schedule-badge ${marca.estado_atencion ? (marca.estado_atencion.abierto_ahora ? 'navbar-schedule-open' : 'navbar-schedule-closed') : ''}`}>
+                {marca.estado_atencion ? (
+                  <>
+                    <span className={`navbar-status-indicator ${marca.estado_atencion.abierto_ahora ? 'indicator-open' : 'indicator-closed'}`} />
+                    <span className={`navbar-status-pill ${marca.estado_atencion.abierto_ahora ? 'open' : 'closed'}`}>
+                      {marca.estado_atencion.abierto_ahora ? 'Abierto' : 'Cerrado'}
+                    </span>
+                    <span className="schedule-days-text">· {marca.estado_atencion.mensaje_estado}</span>
+                  </>
+                ) : (
+                  <>
+                    <Clock size={11} />
+                    <span className="schedule-days-text">{marca.dias_atencion}: </span>{marca.horario_atencion}
+                  </>
+                )}
               </span>
             </div>
           </div>
