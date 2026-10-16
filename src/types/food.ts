@@ -38,6 +38,7 @@ export interface MarcaInfo {
   permite_tarjeta?: boolean;
   permite_transferencia?: boolean;
   costo_delivery?: number;
+  tiempo_espera_delivery?: string;
   logo_url?: string;
   estado_atencion?: EstadoAtencion;
 }

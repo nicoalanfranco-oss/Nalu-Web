@@ -3,7 +3,7 @@ import {
   X, Plus, Minus, Trash2, Sparkles,
   ArrowRight, ChevronRight, ShoppingBag, Clock
 } from 'lucide-react';
-import { ProductoElaborado, ProductoReventa, CartItem } from '../types/food';
+import { ProductoElaborado, ProductoReventa, CartItem, MarcaInfo } from '../types/food';
 import { triggerHaptic } from '../utils/haptics';
 
 interface NaluPOSViewProps {
@@ -11,6 +11,7 @@ interface NaluPOSViewProps {
   platos: ProductoElaborado[];
   reventa: ProductoReventa[];
   cart: CartItem[];
+  marca?: MarcaInfo;
   onClose: () => void;
   onUpdateQty: (id: string, delta: number) => void;
   onRemoveItem: (id: string) => void;
@@ -35,6 +36,7 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
   platos,
   reventa,
   cart,
+  marca,
   onClose,
   onUpdateQty,
   onRemoveItem,
@@ -111,7 +113,7 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
               </div>
               <div className="pos-header-delivery">
                 <Clock size={12} />
-                <span>Entrega en Tacuarembó · 30–45 min</span>
+                <span>Entrega en Tacuarembó · {marca?.tiempo_espera_delivery || '30–45 min'}</span>
               </div>
             </div>
           </div>
@@ -513,7 +515,7 @@ export const NaluPOSView: React.FC<NaluPOSViewProps> = ({
                 </div>
                 <div className="mcart-summary-row mcart-summary-row--note">
                   <span>Envío</span>
-                  <span>Se calcula al confirmar</span>
+                  <span>{marca?.costo_delivery !== undefined ? (Number(marca.costo_delivery) === 0 ? 'Envío gratis' : `+$${marca.costo_delivery}`) : 'Se calcula al confirmar'}</span>
                 </div>
                 <div className="mcart-summary-divider" />
                 <div className="mcart-summary-row mcart-summary-total">
