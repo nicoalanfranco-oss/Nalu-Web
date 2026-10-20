@@ -13,7 +13,7 @@ import { ToastNotification, ToastData } from './components/ToastNotification';
 import { ProductoElaborado, ProductoReventa, GrupoOpciones, CartItem, TenantInfo, MarcaInfo } from './types/food';
 import { fetchNaluCatalogo, uploadComprobanteTransferencia, TENANT_INFO, MARCA_INFO, REAL_PLATOS, REAL_REVENTA, REAL_GRUPOS } from './services/api';
 import { useStructuredData } from './hooks/useStructuredData';
-import { CheckCircle2, Sparkles, Bell, ArrowRight, WifiOff, Paperclip } from 'lucide-react';
+import { CheckCircle2, Sparkles, Bell, ArrowRight, WifiOff, Paperclip, Clock } from 'lucide-react';
 
 const InstagramIcon: React.FC<{ size?: number }> = ({ size = 20 }) => (
   <svg
@@ -504,24 +504,28 @@ export const App: React.FC = () => {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '5px',
-                    background: 'rgba(31, 157, 85, 0.12)',
-                    color: '#15803d',
+                    background: marca?.estado_atencion && !marca.estado_atencion.abierto_ahora ? 'rgba(245, 158, 11, 0.12)' : 'rgba(31, 157, 85, 0.12)',
+                    color: marca?.estado_atencion && !marca.estado_atencion.abierto_ahora ? '#b45309' : '#15803d',
                     padding: '4px 10px',
                     borderRadius: '999px',
                     fontSize: '0.76rem',
                     fontWeight: 700,
-                    border: '1px solid rgba(31, 157, 85, 0.22)',
+                    border: `1px solid ${marca?.estado_atencion && !marca.estado_atencion.abierto_ahora ? 'rgba(245, 158, 11, 0.25)' : 'rgba(31, 157, 85, 0.22)'}`,
                     lineHeight: 1.2,
                     textAlign: 'center',
                   }}
                 >
                   <Sparkles size={12} />
-                  <span>Tu orden ya fue recibida en la cocina</span>
+                  <span>
+                    {marca?.estado_atencion && !marca.estado_atencion.abierto_ahora
+                      ? 'Pedido anticipado confirmado'
+                      : 'Tu orden ya fue recibida en la cocina'}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Mensaje de preparación */}
+            {/* Mensaje de preparación o aviso de programado */}
             <p
               style={{
                 color: '#2D3748',
@@ -532,8 +536,59 @@ export const App: React.FC = () => {
                 maxWidth: '100%',
               }}
             >
-              Nuestro equipo está preparando tu comida
+              {marca?.estado_atencion && !marca.estado_atencion.abierto_ahora
+                ? 'El local está cerrado en este momento. Tu pedido quedó agendado y comenzará su preparación en el horario de apertura.'
+                : 'Nuestro equipo está preparando tu comida'}
             </p>
+
+            {/* Banner de horario si está cerrado */}
+            {marca?.estado_atencion && !marca.estado_atencion.abierto_ahora && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  background: 'rgba(245, 158, 11, 0.1)',
+                  border: '1px solid rgba(245, 158, 11, 0.28)',
+                  borderRadius: '12px',
+                  padding: '10px 12px',
+                  marginBottom: '10px',
+                  textAlign: 'left',
+                  width: '100%',
+                }}
+              >
+                <div
+                  style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%',
+                    background: '#F59E0B',
+                    color: '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Clock size={15} />
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#B45309', lineHeight: 1.35 }}>
+                  <strong style={{ display: 'block', color: '#92400E' }}>Entrada a cocina programada:</strong>
+                  <span>
+                    {marca.estado_atencion.proxima_apertura_fecha_hora ? (
+                      (() => {
+                        const d = new Date(marca.estado_atencion.proxima_apertura_fecha_hora);
+                        const dia = d.toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric', month: 'numeric' });
+                        const hora = d.toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' });
+                        return `${dia.charAt(0).toUpperCase() + dia.slice(1)} a las ${hora} hs`;
+                      })()
+                    ) : (
+                      marca.estado_atencion.proxima_apertura || 'Próxima apertura del local'
+                    )}
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Aviso de seguimiento del trayecto en la web */}
             <div

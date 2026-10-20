@@ -14,6 +14,9 @@ export interface EstadoAtencion {
   salon_takeaway_abierto_ahora: boolean;
   mensaje_estado: string;
   proxima_apertura?: string | null;
+  proxima_apertura_fecha_hora?: string | null;
+  proxima_apertura_delivery_fecha_hora?: string | null;
+  proxima_apertura_salon_fecha_hora?: string | null;
   dia_especial?: {
     es_especial: boolean;
     motivo: string | null;

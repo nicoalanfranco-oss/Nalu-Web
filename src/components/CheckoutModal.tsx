@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   X, CheckCircle, Bike, Store, ArrowRight, ShieldCheck, Send,
   MapPin, Navigation, ExternalLink, CreditCard, Banknote, Smartphone,
-  Search, Loader2, Check, UserCheck, AlertCircle, Sparkles
+  Search, Loader2, Check, UserCheck, AlertCircle, Sparkles, Clock
 } from 'lucide-react';
 import { CartItem, MarcaInfo } from '../types/food';
 import { sendOrderToFood } from '../services/api';
@@ -656,17 +656,33 @@ ${lineasItems}
               background: '#FEF2F2',
               border: '1px solid #FCA5A5',
               borderRadius: 'var(--radius-md)',
-              padding: '10px 14px',
+              padding: '12px 14px',
               fontSize: '0.82rem',
               color: '#991B1B',
               display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
+              flexDirection: 'column',
+              gap: '6px',
               lineHeight: 1.4
             }}>
-              <AlertCircle size={18} style={{ flexShrink: 0, color: '#DC2626' }} />
-              <div>
-                <strong>Local cerrado en este momento</strong> ({marca.estado_atencion.mensaje_estado}). Podés adelantar tu pedido para que comience a elaborarse en la próxima apertura.
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <AlertCircle size={18} style={{ flexShrink: 0, color: '#DC2626' }} />
+                <div>
+                  <strong>🔴 Local cerrado en este momento</strong>
+                  <span style={{ opacity: 0.7 }}> · {marca.estado_atencion.mensaje_estado}</span>
+                </div>
+              </div>
+              <div style={{
+                background: '#FFFBEB',
+                border: '1px solid #FDE68A',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                fontSize: '0.78rem',
+                color: '#92400E',
+                lineHeight: 1.5
+              }}>
+                ⏰ Estamos tomando pedidos anticipados. Si confirmás tu pedido ahora, <strong>entrará a la cocina en la próxima apertura</strong>
+                {marca.estado_atencion.proxima_apertura ? ` (${marca.estado_atencion.proxima_apertura})` : ''}.
+                Tu orden quedará confirmada y lista para prepararse.
               </div>
             </div>
           )}
@@ -1142,7 +1158,12 @@ ${lineasItems}
             {enviando ? (
               <>
                 <Loader2 size={18} className="spin" />
-                <span>Enviando pedido a cocina...</span>
+                <span>{marca?.estado_atencion && !marca.estado_atencion.abierto_ahora ? 'Registrando pedido anticipado...' : 'Enviando pedido a cocina...'}</span>
+              </>
+            ) : marca?.estado_atencion && !marca.estado_atencion.abierto_ahora ? (
+              <>
+                <Clock size={18} />
+                <span>Confirmar Pedido Anticipado</span>
               </>
             ) : (
               <>

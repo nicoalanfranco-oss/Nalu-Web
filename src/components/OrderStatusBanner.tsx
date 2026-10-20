@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ChefHat, Bike, CheckCircle2, Package, X, Paperclip, Loader2 } from 'lucide-react';
+import { ChefHat, Bike, CheckCircle2, Package, X, Paperclip, Loader2, Clock } from 'lucide-react';
 import { FOOD_BACKEND_URL, uploadComprobanteTransferencia } from '../services/api';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
@@ -12,6 +12,7 @@ interface PedidoActivo {
   tipo_pedido: 'delivery' | 'takeaway' | 'salon';
   estado: EstadoPedido;
   created_at: string;
+  enviado_cocina_at: string | null;
   listo_cocina_at: string | null;
   metodo_pago?: string;
   pagado?: boolean;
@@ -237,10 +238,31 @@ export const OrderStatusBanner: React.FC = () => {
   const totalSteps = currentPedido.tipo_pedido === 'delivery' ? 3 : 2;
   const currentStep = Math.min(config.step, totalSteps);
 
+  // Detect if the order is scheduled for a future kitchen entry (store was closed)
+  const enviadoCocinaDate = currentPedido.enviado_cocina_at ? new Date(currentPedido.enviado_cocina_at) : null;
+  const isProgramado = enviadoCocinaDate && enviadoCocinaDate.getTime() > Date.now() + 60_000;
+
+  const formatFechaHora = (d: Date): string => {
+    const hoy = new Date();
+    const esHoy = d.toDateString() === hoy.toDateString();
+    const manana = new Date(hoy);
+    manana.setDate(manana.getDate() + 1);
+    const esManana = d.toDateString() === manana.toDateString();
+    const hora = d.toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit', hour12: false });
+    if (esHoy) return `hoy a las ${hora} hs`;
+    if (esManana) return `mañana a las ${hora} hs`;
+    const dia = d.toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric', month: 'short' });
+    return `${dia} a las ${hora} hs`;
+  };
+
+  const sublabelFinal = isProgramado && enviadoCocinaDate
+    ? `🕐 Programado para entrar a cocina ${formatFechaHora(enviadoCocinaDate)}`
+    : config.sublabel;
+
   const stepLabels =
     currentPedido.tipo_pedido === 'delivery'
-      ? ['Recibido', 'En cocina', 'Listo', 'En camino']
-      : ['Recibido', 'En cocina', 'Listo'];
+      ? [isProgramado ? '⏰ Programado' : 'Recibido', 'En cocina', 'Listo', 'En camino']
+      : [isProgramado ? '⏰ Programado' : 'Recibido', 'En cocina', 'Listo'];
 
   return (
     <div
@@ -332,8 +354,14 @@ export const OrderStatusBanner: React.FC = () => {
                 </div>
               )}
             </div>
-            <span className="osb-label">{config.label}</span>
-            <span className="osb-sublabel">{config.sublabel}</span>
+            <span className="osb-label">{isProgramado ? 'Pedido programado ⏰' : config.label}</span>
+            <span className="osb-sublabel">{sublabelFinal}</span>
+            {isProgramado && enviadoCocinaDate && (
+              <span className="osb-programado-badge">
+                <Clock size={11} />
+                Entra a cocina {formatFechaHora(enviadoCocinaDate)}
+              </span>
+            )}
           </div>
         </div>
 
