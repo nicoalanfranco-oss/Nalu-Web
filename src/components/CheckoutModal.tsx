@@ -307,47 +307,20 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   const handleSelectSuggestion = (s: AddressSuggestion) => {
-    setDireccion(s.direccion);
+    const trailingMatch = direccion.trim().match(/^(.*?)\s+(\d{1,5}(?:\s*(?:bis|a|b|c))?)$/i);
+    const userDoorNumber = trailingMatch ? trailingMatch[2].trim() : '';
+
+    let finalDir = s.direccion;
+    if (userDoorNumber && !new RegExp(`\\b${userDoorNumber}$`, 'i').test(finalDir)) {
+      finalDir = `${finalDir} ${userDoorNumber}`;
+    }
+
+    setDireccion(finalDir);
     setLatitud(s.latitud);
     setLongitud(s.longitud);
-    setGoogleMapsUrl(s.google_maps_url);
+    setGoogleMapsUrl(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${finalDir}, ${s.ciudad || 'Tacuarembó'}, Uruguay`)}`);
     setSugerencias([]);
     setMostrarSugerencias(false);
-  };
-
-  // Obtener ubicación GPS con 1 clic (rápido y sin intermediarios)
-  const handleGetGPS = () => {
-    if (!navigator.geolocation) {
-      setErrorMsg('Geolocalización no soportada en este navegador.');
-      return;
-    }
-    setBuscandoGps(true);
-    setErrorMsg('');
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        setLatitud(lat);
-        setLongitud(lon);
-        const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-        setGoogleMapsUrl(mapsUrl);
-        if (!direccion.trim()) {
-          setDireccion(`Ubicación GPS (${lat.toFixed(5)}, ${lon.toFixed(5)})`);
-        }
-        setBuscandoGps(false);
-      },
-      (err) => {
-        console.warn('Error GPS:', err);
-        setBuscandoGps(false);
-        if (err.code === err.PERMISSION_DENIED) {
-          setErrorMsg('Permiso de ubicación denegado. Podés ingresar tu dirección de entrega manualmente.');
-        } else {
-          setErrorMsg('No pudimos obtener tu ubicación GPS precisa. Podés ingresar tu calle y número manualmente.');
-        }
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-    );
   };
 
   // Enviar pedido a POS Food y luego abrir WhatsApp
@@ -865,30 +838,9 @@ ${lineasItems}
             {tipoEntrega === 'delivery' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>
-                      Dirección en Tacuarembó *
-                    </label>
-                    <button
-                      type="button"
-                      onClick={handleGetGPS}
-                      disabled={buscandoGps}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontSize: '0.72rem',
-                        fontWeight: 700,
-                        color: 'var(--primary)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {buscandoGps ? <Loader2 size={12} className="spin" /> : <Navigation size={12} />}
-                      <span>{buscandoGps ? 'Obteniendo GPS...' : '📍 Usar mi ubicación GPS'}</span>
-                    </button>
-                  </div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '6px', display: 'block' }}>
+                    Dirección de Entrega en Tacuarembó *
+                  </label>
 
                   <div style={{ position: 'relative' }}>
                     <input
