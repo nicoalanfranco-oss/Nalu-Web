@@ -271,6 +271,114 @@ export async function sendOrderToFood(orderPayload: any): Promise<{ success: boo
   };
 }
 
+// Buscar sugerencias de dirección (autocompletado tipo Google Maps) biased a la ciudad del tenant
+export interface AddressSuggestion {
+  display_name: string;
+  direccion: string;
+  ciudad: string;
+  departamento: string;
+  pais: string;
+  latitud: number;
+  longitud: number;
+  google_maps_url: string;
+}
+
+export async function searchAddress(query: string, tenantId = 1, ciudadBias = 'Tacuarembó'): Promise<AddressSuggestion[]> {
+  if (!query || query.trim().length < 3) return [];
+  const cleanQ = query.trim();
+
+  // 1. Intentar endpoint backend de Food
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+    const params = new URLSearchParams({
+      q: cleanQ,
+      tenant_id: String(tenantId),
+      ciudad: ciudadBias,
+    });
+
+    const res = await fetch(`${FOOD_BACKEND_URL}/api/public/geocode?${params.toString()}`, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    const contentType = res.headers.get('content-type') || '';
+    if (res.ok && contentType.includes('application/json')) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch (err) {
+    // Backend no disponible o en cold start, pasar inmediatamente a fallback OSM
+  }
+
+  // 2. Fallback resiliente directo con Photon (OpenStreetMap Autocomplete para Tacuarembó / Uruguay)
+  try {
+    const pController = new AbortController();
+    const pTimeout = setTimeout(() => pController.abort(), 3500);
+
+    const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(cleanQ)}&lat=-31.71&lon=-55.98&limit=8`;
+    const pRes = await fetch(photonUrl, { signal: pController.signal });
+    clearTimeout(pTimeout);
+
+    if (pRes.ok) {
+      const pData = await pRes.json();
+      const features = pData.features || [];
+      const userNumberMatch = cleanQ.match(/\b\d{1,5}\b/);
+      const userNumber = userNumberMatch ? userNumberMatch[0] : '';
+      const list: AddressSuggestion[] = [];
+      const seen = new Set<string>();
+
+      for (const f of features) {
+        const p = f.properties || {};
+        const coords = f.geometry?.coordinates || [];
+        const lon = coords[0];
+        const lat = coords[1];
+        if (!lat || !lon) continue;
+
+        const isUy = !p.countrycode || p.countrycode.toUpperCase() === 'UY';
+        const isCity = [p.city, p.town, p.state, p.county, p.district]
+          .filter(Boolean)
+          .some((s: string) => s.toLowerCase().includes(ciudadBias.toLowerCase()));
+
+        if (!isUy && !isCity) continue;
+
+        const street = p.street || p.name || cleanQ;
+        const houseNumber = p.housenumber || userNumber;
+        const direccion = houseNumber ? `${street} ${houseNumber}` : street;
+        const ciudad = p.city || p.town || ciudadBias;
+        const departamento = p.state || ciudadBias;
+        const pais = p.country || 'Uruguay';
+
+        const key = `${direccion}|${ciudad}`.toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        list.push({
+          display_name: [direccion, ciudad, departamento, pais].filter(Boolean).join(', '),
+          direccion,
+          ciudad,
+          departamento,
+          pais,
+          latitud: lat,
+          longitud: lon,
+          google_maps_url: `https://www.google.com/maps?q=${lat},${lon}`,
+        });
+      }
+
+      if (list.length > 0) {
+        return list.slice(0, 5);
+      }
+    }
+  } catch (err) {
+    console.warn('Error en fallback de búsqueda de dirección:', err);
+  }
+
+  return [];
+}
+
 export async function uploadComprobanteTransferencia(
   pedidoId: number,
   file: File

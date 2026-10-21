@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X, CheckCircle, Bike, Store, ArrowRight, ShieldCheck, Send,
   MapPin, Navigation, ExternalLink, CreditCard, Banknote, Smartphone,
   Search, Loader2, Check, UserCheck, AlertCircle, Sparkles, Clock
 } from 'lucide-react';
 import { CartItem, MarcaInfo } from '../types/food';
-import { sendOrderToFood } from '../services/api';
+import { sendOrderToFood, searchAddress, AddressSuggestion } from '../services/api';
 
 const GOOGLE_CLIENT_ID = '713780303554-41bctfqdhvu5nc81sctj1qci2mvekviu.apps.googleusercontent.com';
 
@@ -139,6 +139,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [enviando, setEnviando] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Autocompletado de dirección tipo Google Maps
+  const [sugerencias, setSugerencias] = useState<AddressSuggestion[]>([]);
+  const [buscandoDireccion, setBuscandoDireccion] = useState(false);
+  const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const sugerenciasRef = useRef<HTMLDivElement | null>(null);
+
   // Validar método de pago permitido según la marca
   useEffect(() => {
     const allowed = [
@@ -237,7 +244,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const costoEnvio = (tipoEntrega === 'delivery' && permiteDelivery) ? Number(marca?.costo_delivery || 0) : 0;
   const total = subtotal + costoEnvio;
 
-  // Manejo directo de la dirección y detección de links o coordenadas de Google Maps
+  // Manejo directo de la dirección y autocompletado tipo Google Maps biased a Tacuarembó
   const handleAddressChange = (text: string) => {
     setDireccion(text);
 
@@ -253,6 +260,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setLatitud(lat);
       setLongitud(lon);
       setGoogleMapsUrl(`https://www.google.com/maps?q=${lat},${lon}`);
+      setSugerencias([]);
+      setMostrarSugerencias(false);
       return;
     }
 
@@ -263,12 +272,47 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setLatitud(lat);
       setLongitud(lon);
       setGoogleMapsUrl(`https://www.google.com/maps?q=${lat},${lon}`);
+      setSugerencias([]);
+      setMostrarSugerencias(false);
       return;
     }
 
     if (text.includes('maps.google.') || text.includes('goo.gl') || text.includes('google.com/maps')) {
       setGoogleMapsUrl(text.trim());
+      setSugerencias([]);
+      setMostrarSugerencias(false);
+      return;
     }
+
+    // Buscar sugerencias con debounce (350ms)
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (text.trim().length >= 3) {
+      setBuscandoDireccion(true);
+      debounceRef.current = setTimeout(async () => {
+        try {
+          const results = await searchAddress(text.trim(), 1, 'Tacuarembó');
+          setSugerencias(results);
+          setMostrarSugerencias(results.length > 0);
+        } catch {
+          setSugerencias([]);
+        } finally {
+          setBuscandoDireccion(false);
+        }
+      }, 350);
+    } else {
+      setSugerencias([]);
+      setMostrarSugerencias(false);
+      setBuscandoDireccion(false);
+    }
+  };
+
+  const handleSelectSuggestion = (s: AddressSuggestion) => {
+    setDireccion(s.direccion);
+    setLatitud(s.latitud);
+    setLongitud(s.longitud);
+    setGoogleMapsUrl(s.google_maps_url);
+    setSugerencias([]);
+    setMostrarSugerencias(false);
   };
 
   // Obtener ubicación GPS con 1 clic (rápido y sin intermediarios)
@@ -321,7 +365,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       scrollToTop();
       return;
     }
-    const cleanTel = telefonoLimpio.replace(/[\s\-\(\)]/g, '');
+    const cleanTel = telefonoLimpio.replace(/\D/g, '');
     if (!cleanTel || cleanTel.length < 8) {
       setErrorMsg('Por favor ingresa un número de teléfono / WhatsApp válido (mínimo 8 dígitos).');
       scrollToTop();
@@ -851,18 +895,77 @@ ${lineasItems}
                       type="text"
                       value={direccion}
                       onChange={e => handleAddressChange(e.target.value)}
+                      onFocus={() => { if (sugerencias.length > 0) setMostrarSugerencias(true); }}
+                      onBlur={() => { setTimeout(() => setMostrarSugerencias(false), 200); }}
                       placeholder="Calle y número de puerta (Ej: 18 de Julio 240)"
                       name="street-address"
-                      autoComplete="street-address"
+                      autoComplete="off"
                       style={{
                         width: '100%',
                         padding: '10px 14px',
+                        paddingRight: buscandoDireccion ? '36px' : '14px',
                         borderRadius: 'var(--radius-md)',
                         border: '1.5px solid var(--border-light)',
                         outline: 'none',
                         fontSize: '0.9rem',
                       }}
                     />
+                    {buscandoDireccion && (
+                      <Loader2 size={15} className="spin" style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    )}
+
+                    {/* Dropdown de sugerencias tipo Google Maps */}
+                    {mostrarSugerencias && sugerencias.length > 0 && (
+                      <div
+                        ref={sugerenciasRef}
+                        style={{
+                          position: 'absolute',
+                          top: 'calc(100% + 4px)',
+                          left: 0,
+                          right: 0,
+                          zIndex: 100,
+                          background: '#ffffff',
+                          border: '1.5px solid var(--border-light)',
+                          borderRadius: 'var(--radius-md)',
+                          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                          maxHeight: '220px',
+                          overflowY: 'auto',
+                        }}
+                      >
+                        {sugerencias.map((s, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onMouseDown={(e) => { e.preventDefault(); handleSelectSuggestion(s); }}
+                            style={{
+                              width: '100%',
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              gap: '10px',
+                              padding: '10px 14px',
+                              background: 'transparent',
+                              border: 'none',
+                              borderBottom: i < sugerencias.length - 1 ? '1px solid var(--border-light)' : 'none',
+                              cursor: 'pointer',
+                              textAlign: 'left',
+                              transition: 'background 0.15s',
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-sand)')}
+                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                          >
+                            <MapPin size={16} style={{ flexShrink: 0, marginTop: '2px', color: 'var(--primary)' }} />
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {s.direccion}
+                              </div>
+                              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {[s.ciudad, s.departamento, s.pais].filter(Boolean).join(', ')}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {googleMapsUrl && (
@@ -1023,12 +1126,20 @@ ${lineasItems}
             </div>
           </div>
 
+          {/* Alerta de error visible justo arriba del botón para móviles / iPhone */}
+          {errorMsg && (
+            <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '10px 14px', borderRadius: 'var(--radius-md)', fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle size={16} style={{ flexShrink: 0 }} />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
           {/* ── 7. Botón de Confirmación ── */}
           <button
             type="submit"
             disabled={enviando}
             className="btn-primary"
-            style={{ width: '100%', padding: '14px', fontSize: '1.02rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            style={{ width: '100%', padding: '14px', fontSize: '1.02rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', cursor: enviando ? 'not-allowed' : 'pointer' }}
           >
             {enviando ? (
               <>
