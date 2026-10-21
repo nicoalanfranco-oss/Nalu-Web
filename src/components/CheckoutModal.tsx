@@ -162,12 +162,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     }
   });
 
-  // Estado búsqueda de dirección Google Maps
-  const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
-  const [searchingAddress, setSearchingAddress] = useState(false);
   const [buscandoGps, setBuscandoGps] = useState(false);
-  const [showAddressDropdown, setShowAddressDropdown] = useState(false);
-  const [requiresReference, setRequiresReference] = useState(false);
+  const formRef = React.useRef<HTMLFormElement>(null);
+
+  const scrollToTop = () => {
+    formRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Solicitar inicio con Google One Tap
   const handleGoogleSignInPrompt = () => {
@@ -197,8 +197,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   setGoogleUser(decoded);
                   if (decoded.email) setEmail(decoded.email);
                   if (decoded.name) setNombre(decoded.name);
-                  localStorage.setItem('nalu_google_user', JSON.stringify(decoded));
-                  // Notificar al OrderStatusBanner (misma pestaña)
+                  try {
+                    localStorage.setItem('nalu_google_user', JSON.stringify(decoded));
+                  } catch {}
                   window.dispatchEvent(new Event('nalu:google-login'));
                 }
               }
@@ -206,7 +207,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             auto_select: true,
             cancel_on_tap_outside: false,
           });
-          // One Tap silencioso
           g.accounts.id.prompt();
         } catch (e) {
           console.warn('Error inicializando Google One Tap:', e);
@@ -231,208 +231,129 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     }
   }, [googleUser]);
 
-  // Si el componente no está abierto, no renderizar nada
   if (!isOpen) return null;
 
   const subtotal = items.reduce((acc, it) => acc + it.precio_unitario * it.cantidad, 0);
   const costoEnvio = (tipoEntrega === 'delivery' && permiteDelivery) ? Number(marca?.costo_delivery || 0) : 0;
   const total = subtotal + costoEnvio;
 
-  // Búsqueda inteligente de direcciones con Nominatim / Coordenadas / Links de Google Maps
-  const handleSearchAddress = async (text: string) => {
+  // Manejo directo de la dirección y detección de links o coordenadas de Google Maps
+  const handleAddressChange = (text: string) => {
     setDireccion(text);
 
-    // Detección 1: ¿Pegó un link o coordenadas de Google Maps?
-    const mapsCoordRegex = /@(-?d+.d+),(-?d+.d+)/;
-    const qCoordRegex = /q=(-?d+.d+),(-?d+.d+)/;
-    const match = text.match(mapsCoordRegex) || text.match(qCoordRegex);
+    // Detección de link o coordenadas de Google Maps
+    const mapsCoordRegex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const qCoordRegex = /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const directCoordRegex = /^(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)$/;
 
+    const match = text.match(mapsCoordRegex) || text.match(qCoordRegex);
     if (match) {
       const lat = parseFloat(match[1]);
       const lon = parseFloat(match[2]);
       setLatitud(lat);
       setLongitud(lon);
-      setGoogleMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
-      setShowAddressDropdown(false);
+      setGoogleMapsUrl(`https://www.google.com/maps?q=${lat},${lon}`);
       return;
     }
 
-    if (text.trim().length < 3) {
-      setAddressSuggestions([]);
-      setShowAddressDropdown(false);
+    const directMatch = text.trim().match(directCoordRegex);
+    if (directMatch) {
+      const lat = parseFloat(directMatch[1]);
+      const lon = parseFloat(directMatch[2]);
+      setLatitud(lat);
+      setLongitud(lon);
+      setGoogleMapsUrl(`https://www.google.com/maps?q=${lat},${lon}`);
       return;
     }
 
-    setSearchingAddress(true);
-    try {
-      const qQuery = text.toLowerCase().includes('tacuaremb') ? text : `${text}, Tacuarembó`;
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(qQuery)}&countrycodes=uy&limit=5&addressdetails=1`
-      );
-      if (res.ok) {
-        const data = await res.json();
-        setAddressSuggestions(data);
-        setShowAddressDropdown(data.length > 0);
-      }
-    } catch (err) {
-      console.warn('Error buscando sugerencias de dirección:', err);
-    } finally {
-      setSearchingAddress(false);
+    if (text.includes('maps.google.') || text.includes('goo.gl') || text.includes('google.com/maps')) {
+      setGoogleMapsUrl(text.trim());
     }
   };
 
-  const handleSelectSuggestion = (sug: any) => {
-    const lat = parseFloat(sug.lat);
-    const lon = parseFloat(sug.lon);
-
-    // Construir dirección completa desde los datos estructurados de Nominatim
-    const addr = sug.address || {};
-    const road = addr.road || addr.pedestrian || addr.footway || '';
-    const houseNumber = addr.house_number || '';
-    const suburb = addr.suburb || addr.neighbourhood || '';
-    const city = addr.city || addr.town || addr.village || 'Tacuarembó';
-    const state = addr.state || addr.county || 'Tacuarembó';
-    const country = addr.country || 'Uruguay';
-
-    // Calle con o sin número
-    const streetPart = [road, houseNumber].filter(Boolean).join(' ');
-    // Dirección completa: "Domingo Catalina 210, Tacuarembó, Tacuarembó, Uruguay"
-    const fullAddress = [streetPart, suburb, city, state, country]
-      .filter((v, i, arr) => v && arr.indexOf(v) === i) // Deduplicar valores repetidos
-      .join(', ');
-
-    setDireccion(fullAddress);
-    setLatitud(lat);
-    setLongitud(lon);
-    setGoogleMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
-    setShowAddressDropdown(false);
-
-    // Si no tiene número de casa, marcar que se requiere referencia
-    setRequiresReference(!houseNumber);
-  };
-
-  // Obtener ubicación GPS con 1 clic
+  // Obtener ubicación GPS con 1 clic (rápido y sin intermediarios)
   const handleGetGPS = () => {
     if (!navigator.geolocation) {
-      setErrorMsg('Geolocalización no soportada en este navegador');
+      setErrorMsg('Geolocalización no soportada en este navegador.');
       return;
     }
     setBuscandoGps(true);
     setErrorMsg('');
 
-    const processPosition = async (pos: GeolocationPosition) => {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-      setLatitud(lat);
-      setLongitud(lon);
-      setGoogleMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
-
-      // Reverse geocoding para obtener la dirección completa
-      try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`);
-        if (res.ok) {
-          const data = await res.json();
-          const addr = data.address || {};
-          const road = addr.road || addr.pedestrian || addr.footway || '';
-          const houseNumber = addr.house_number || '';
-          const suburb = addr.suburb || addr.neighbourhood || '';
-          const city = addr.city || addr.town || addr.village || 'Tacuarembó';
-          const state = addr.state || addr.county || 'Tacuarembó';
-          const country = addr.country || 'Uruguay';
-
-          const streetPart = [road, houseNumber].filter(Boolean).join(' ');
-          const fullAddress = [streetPart, suburb, city, state, country]
-            .filter((v, i, arr) => v && arr.indexOf(v) === i)
-            .join(', ');
-
-          setDireccion(fullAddress || `Ubicación GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
-          setRequiresReference(!houseNumber);
-        } else {
-          setDireccion(`Ubicación GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
-          setRequiresReference(true);
-        }
-      } catch {
-        setDireccion(`Ubicación GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
-        setRequiresReference(true);
-      }
-      setBuscandoGps(false);
-    };
-
-    const handleGPSError = (err: GeolocationPositionError) => {
-      // Si falla con alta precisión, reintentar con baja precisión
-      if (err.code === err.TIMEOUT) {
-        navigator.geolocation.getCurrentPosition(
-          processPosition,
-          (retryErr) => {
-            console.warn('Error GPS (retry):', retryErr);
-            setBuscandoGps(false);
-            if (retryErr.code === retryErr.PERMISSION_DENIED) {
-              setErrorMsg('Permiso de ubicación denegado. Habilitá la ubicación en tu navegador o ingresá la dirección manualmente.');
-            } else {
-              setErrorMsg('No pudimos obtener tu ubicación. Ingresá la calle manualmente o pegá un link de Google Maps.');
-            }
-          },
-          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
-        );
-        return;
-      }
-
-      console.warn('Error GPS:', err);
-      setBuscandoGps(false);
-      if (err.code === err.PERMISSION_DENIED) {
-        setErrorMsg('Permiso de ubicación denegado. Habilitá la ubicación en tu navegador o ingresá la dirección manualmente.');
-      } else {
-        setErrorMsg('No pudimos obtener tu ubicación. Ingresá la calle manualmente o pegá un link de Google Maps.');
-      }
-    };
-
     navigator.geolocation.getCurrentPosition(
-      processPosition,
-      handleGPSError,
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        setLatitud(lat);
+        setLongitud(lon);
+        const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+        setGoogleMapsUrl(mapsUrl);
+        if (!direccion.trim()) {
+          setDireccion(`Ubicación GPS (${lat.toFixed(5)}, ${lon.toFixed(5)})`);
+        }
+        setBuscandoGps(false);
+      },
+      (err) => {
+        console.warn('Error GPS:', err);
+        setBuscandoGps(false);
+        if (err.code === err.PERMISSION_DENIED) {
+          setErrorMsg('Permiso de ubicación denegado. Podés ingresar tu dirección de entrega manualmente.');
+        } else {
+          setErrorMsg('No pudimos obtener tu ubicación GPS precisa. Podés ingresar tu calle y número manualmente.');
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   };
 
   // Enviar pedido a POS Food y luego abrir WhatsApp
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (enviando) return; // Prevenir doble-tap en iOS
 
-    if (!nombre.trim()) {
-      setErrorMsg('Por favor ingresa tu nombre');
+    // Limpiar espacios en campos clave (iOS Safari autocorrect puede agregar espacios)
+    const nombreLimpio = nombre.trim();
+    const emailLimpio = email.trim();
+    const telefonoLimpio = telefono.trim();
+
+    if (!nombreLimpio) {
+      setErrorMsg('Por favor ingresa tu nombre y apellido.');
+      scrollToTop();
       return;
     }
-    if (!email.trim() || !email.includes('@')) {
-      setErrorMsg('Por favor ingresa un email válido');
+    const cleanTel = telefonoLimpio.replace(/[\s\-\(\)]/g, '');
+    if (!cleanTel || cleanTel.length < 8) {
+      setErrorMsg('Por favor ingresa un número de teléfono / WhatsApp válido (mínimo 8 dígitos).');
+      scrollToTop();
       return;
     }
-    if (!telefono.trim()) {
-      setErrorMsg('Por favor ingresa tu número de teléfono / WhatsApp');
+    if (emailLimpio && !emailLimpio.includes('@')) {
+      setErrorMsg('Si ingresas un email, por favor verifica que sea válido.');
+      scrollToTop();
       return;
     }
     if (tipoEntrega === 'delivery' && !direccion.trim()) {
-      setErrorMsg('Por favor ingresa tu dirección de entrega');
-      return;
-    }
-    if (tipoEntrega === 'delivery' && requiresReference && !apartamento.trim()) {
-      setErrorMsg('Tu dirección no tiene número de puerta. Por favor completá el campo de Referencia para que podamos encontrarte.');
+      setErrorMsg('Por favor ingresa tu dirección de entrega en Tacuarembó.');
+      scrollToTop();
       return;
     }
 
+    // Deshabilitar botón inmediatamente después de validaciones
     setEnviando(true);
     setErrorMsg('');
 
-    // Guardar datos en el perfil local del cliente
+    // Guardar datos en el perfil local del cliente (protegido contra Safari Private Browsing)
     try {
       localStorage.setItem(
         'nalu_customer_profile',
         JSON.stringify({
-          nombre: nombre.trim(),
-          email: email.trim(),
-          telefono: telefono.trim(),
+          nombre: nombreLimpio,
+          email: emailLimpio,
+          telefono: telefonoLimpio,
           fecha_nacimiento: parseFlexibleDate(fechaNacimiento).iso || fechaNacimiento.trim(),
           direccion: direccion.trim(),
           apartamento: apartamento.trim(),
-          google_maps_url: googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', Tacuarembó')}`,
+          google_maps_url: googleMapsUrl || (direccion.trim() ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', Tacuarembó')}` : ''),
           latitud,
           longitud,
         })
@@ -450,20 +371,20 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         marca_id: 1,
         tipo_pedido: tipoEntrega === 'delivery' ? 'delivery' : 'mostrador',
         canal: tipoEntrega === 'delivery' ? 'delivery' : 'take_away',
-        nombre_cliente_rapido: nombre.trim(),
-        email: email.trim(),
+        nombre_cliente_rapido: nombreLimpio,
+        email: emailLimpio || undefined,
         fecha_nacimiento: parseFlexibleDate(fechaNacimiento).iso || fechaNacimiento.trim() || null,
         comensales: 1,
         datos_delivery: {
-          nombre: nombre.trim(),
-          telefono: telefono.trim(),
-          email: email.trim(),
+          nombre: nombreLimpio,
+          telefono: telefonoLimpio,
+          email: emailLimpio || undefined,
           fecha_nacimiento: parseFlexibleDate(fechaNacimiento).iso || fechaNacimiento.trim() || null,
           direccion: direccion.trim(),
           apartamento: apartamento.trim(),
-          google_maps_url: resolvedGmapsUrl,
-          latitud,
-          longitud,
+          google_maps_url: resolvedGmapsUrl || undefined,
+          latitud: latitud || undefined,
+          longitud: longitud || undefined,
           costo_envio: costoEnvio,
           metodo_pago: metodoPago,
           paga_con: pagaCon.trim(),
@@ -516,7 +437,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           : 'Transferencia Bancaria';
 
       const parsedBday = parseFlexibleDate(fechaNacimiento);
-    const cumpleTxt = (parsedBday.display || fechaNacimiento.trim()) ? `\n🎂 *Cumpleaños:* ${parsedBday.display || fechaNacimiento.trim()}` : '';
+      const cumpleTxt = (parsedBday.display || fechaNacimiento.trim()) ? `\n🎂 *Cumpleaños:* ${parsedBday.display || fechaNacimiento.trim()}` : '';
+      const emailTxt = email.trim() ? `\n✉️ *Email:* ${email.trim()}` : '';
 
       const textoWhatsApp = `*¡Hola Nalú Poke Bowls Tacuarembó!* 🥗🌊
 Acabo de realizar mi pedido desde la web oficial.
@@ -524,8 +446,7 @@ Acabo de realizar mi pedido desde la web oficial.
 📋 *Pedido #N${numOrden}*
 ${canalTxt}${dirTxt}
 👤 *Cliente:* ${nombre.trim()}
-📱 *Teléfono:* ${telefono.trim()}
-✉️ *Email:* ${email.trim()}${cumpleTxt}
+📱 *Teléfono:* ${telefono.trim()}${emailTxt}${cumpleTxt}
 💳 *Método de Pago:* ${pagoTxt}
 
 🛍️ *Detalle del Pedido:*
@@ -539,6 +460,7 @@ ${lineasItems}
     } catch (err: any) {
       console.error('Error enviando pedido:', err);
       setErrorMsg('Error de conexión al enviar el pedido. Intenta nuevamente o contactanos directamente.');
+      scrollToTop();
     } finally {
       setEnviando(false);
     }
@@ -566,7 +488,12 @@ ${lineasItems}
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: 'calc(90vh - 80px)' }}>
+        <form
+          ref={formRef}
+          noValidate
+          onSubmit={handleSubmit}
+          style={{ overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: 'calc(90vh - 80px)' }}
+        >
           {errorMsg && (
             <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '10px 14px', borderRadius: 'var(--radius-md)', fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
               <AlertCircle size={16} />
@@ -605,7 +532,12 @@ ${lineasItems}
               </div>
               <button
                 type="button"
-                onClick={() => { setGoogleUser(null); localStorage.removeItem('nalu_google_user'); }}
+                onClick={() => {
+                  setGoogleUser(null);
+                  try {
+                    localStorage.removeItem('nalu_google_user');
+                  } catch {}
+                }}
                 style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '4px', flexShrink: 0 }}
                 title="Desvincular cuenta de Google"
               >
@@ -784,7 +716,6 @@ ${lineasItems}
               </label>
               <input
                 type="text"
-                required
                 value={nombre}
                 onChange={e => setNombre(e.target.value)}
                 name="name"
@@ -803,17 +734,18 @@ ${lineasItems}
 
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
-                <span>Email de Contacto *</span>
+                <span>Email (opcional, para avisos de estado)</span>
                 {googleUser && <span style={{ color: 'var(--secondary)', fontSize: '0.72rem', fontWeight: 600 }}>Desde tu cuenta de Google</span>}
               </label>
               <input
                 type="email"
-                required
                 value={email}
                 onChange={e => setEmail(e.target.value)}
+                onBlur={e => setEmail(e.target.value.trim())}
                 name="email"
                 autoComplete="email"
-                placeholder="ejemplo@gmail.com"
+                inputMode="email"
+                placeholder="ejemplo@gmail.com (Opcional)"
                 style={{
                   width: '100%',
                   padding: '10px 14px',
@@ -833,7 +765,6 @@ ${lineasItems}
                 </label>
                 <input
                   type="tel"
-                  required
                   value={telefono}
                   onChange={e => setTelefono(e.target.value)}
                   name="tel"
@@ -892,7 +823,7 @@ ${lineasItems}
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
                     <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>
-                      Dirección en Tacuarembó / Google Maps *
+                      Dirección en Tacuarembó *
                     </label>
                     <button
                       type="button"
@@ -911,76 +842,27 @@ ${lineasItems}
                       }}
                     >
                       {buscandoGps ? <Loader2 size={12} className="spin" /> : <Navigation size={12} />}
-                      <span>{buscandoGps ? 'Obteniendo GPS...' : '📍 Mi Ubicación'}</span>
+                      <span>{buscandoGps ? 'Obteniendo GPS...' : '📍 Usar mi ubicación GPS'}</span>
                     </button>
                   </div>
 
                   <div style={{ position: 'relative' }}>
                     <input
                       type="text"
-                      required
                       value={direccion}
-                      onChange={e => handleSearchAddress(e.target.value)}
-                      placeholder="Calle y número, o pegá enlace de Google Maps..."
+                      onChange={e => handleAddressChange(e.target.value)}
+                      placeholder="Calle y número de puerta (Ej: 18 de Julio 240)"
                       name="street-address"
                       autoComplete="street-address"
                       style={{
                         width: '100%',
                         padding: '10px 14px',
-                        paddingRight: '36px',
                         borderRadius: 'var(--radius-md)',
                         border: '1.5px solid var(--border-light)',
                         outline: 'none',
                         fontSize: '0.9rem',
                       }}
                     />
-                    <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
-                      {searchingAddress ? <Loader2 size={16} className="spin" /> : <MapPin size={16} />}
-                    </div>
-
-                    {/* Desplegable de sugerencias de dirección */}
-                    {showAddressDropdown && addressSuggestions.length > 0 && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: '100%',
-                          left: 0,
-                          right: 0,
-                          zIndex: 20,
-                          background: 'var(--bg-card)',
-                          borderRadius: 'var(--radius-md)',
-                          border: '1.5px solid var(--border-light)',
-                          marginTop: '4px',
-                          boxShadow: 'var(--shadow-lg)',
-                          maxHeight: '180px',
-                          overflowY: 'auto',
-                        }}
-                      >
-                        {addressSuggestions.map((sug, i) => (
-                          <div
-                            key={i}
-                            onClick={() => handleSelectSuggestion(sug)}
-                            style={{
-                              padding: '10px 14px',
-                              fontSize: '0.8rem',
-                              cursor: 'pointer',
-                              borderBottom: i < addressSuggestions.length - 1 ? '1px solid var(--border-light)' : 'none',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              color: 'var(--text-main)',
-                            }}
-                            onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-sand)')}
-                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                          >
-                            <MapPin size={14} style={{ flexShrink: 0, color: 'var(--primary)' }} />
-                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              {sug.display_name}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
                   {googleMapsUrl && (
@@ -1003,27 +885,20 @@ ${lineasItems}
 
                 <div>
                   <label style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '4px', display: 'block' }}>
-                    Apartamento / Timbre / Referencia {requiresReference && <span style={{ color: '#DC2626' }}>* (obligatorio)</span>}
+                    Apartamento, esquina o referencia (Opcional)
                   </label>
-                  {requiresReference && (
-                    <div style={{ fontSize: '0.72rem', color: '#B45309', background: '#FEF3C7', padding: '6px 10px', borderRadius: 'var(--radius-sm)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <AlertCircle size={13} />
-                      <span>Tu dirección no tiene número. Indicá una referencia para encontrarte (ej: casa azul frente a la plaza).</span>
-                    </div>
-                  )}
                   <input
                     type="text"
                     value={apartamento}
                     onChange={e => setApartamento(e.target.value)}
-                    required={requiresReference}
-                    placeholder={requiresReference ? '⚠️ Obligatorio: describí cómo llegar (ej: casa azul, portón rojo)' : 'Ej: Apto 204, portón negro, timbre 2'}
+                    placeholder="Ej: Apto 204, esquina Gral. Flores, portón negro..."
                     name="address-line2"
                     autoComplete="address-line2"
                     style={{
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: 'var(--radius-md)',
-                      border: `1.5px solid ${requiresReference && !apartamento.trim() ? '#DC2626' : 'var(--border-light)'}`,
+                      border: '1.5px solid var(--border-light)',
                       outline: 'none',
                       fontSize: '0.9rem',
                     }}

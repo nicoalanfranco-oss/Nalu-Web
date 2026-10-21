@@ -235,12 +235,17 @@ export async function sendOrderToFood(orderPayload: any): Promise<{ success: boo
     enviar_a_cocina: true,
   };
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+
   try {
     const res = await fetch(`${FOOD_BACKEND_URL}/api/public/pedidos`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payloadConCocina),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     if (res.ok) {
       const data = await res.json();
@@ -253,10 +258,12 @@ export async function sendOrderToFood(orderPayload: any): Promise<{ success: boo
       console.warn('Respuesta no exitosa al enviar pedido a Food:', res.status);
     }
   } catch (err) {
-    console.warn('Error de red al enviar pedido a Food backend:', err);
+    console.warn('Error o timeout al enviar pedido a Food backend:', err);
+  } finally {
+    clearTimeout(timeoutId);
   }
 
-  // Fallback seguro en caso de desconexión para no trabar el checkout ni WhatsApp
+  // Fallback seguro en caso de desconexión o timeout para no trabar el checkout ni WhatsApp
   return {
     success: true,
     numero_orden: Math.floor(1000 + Math.random() * 9000),
