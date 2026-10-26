@@ -229,46 +229,101 @@ export async function fetchNaluCatalogo(): Promise<{
   return getStaticCatalog();
 }
 
-export async function sendOrderToFood(orderPayload: any): Promise<{ success: boolean; numero_orden?: number; pedido_id?: number }> {
+export async function sendOrderToFood(orderPayload: any): Promise<{ success: boolean; numero_orden?: number; pedido_id?: number; error?: string }> {
   const payloadConCocina = {
     ...orderPayload,
     enviar_a_cocina: true,
   };
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000);
+  const MAX_RETRIES = 2;
+  const TIMEOUT_MS = 15000;
 
-  try {
-    const res = await fetch(`${FOOD_BACKEND_URL}/api/public/pedidos`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payloadConCocina),
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-    if (res.ok) {
-      const data = await res.json();
-      return {
-        success: true,
-        numero_orden: data.numero_orden,
-        pedido_id: data.pedido_id,
-      };
-    } else {
-      console.warn('Respuesta no exitosa al enviar pedido a Food:', res.status);
+    try {
+      const res = await fetch(`${FOOD_BACKEND_URL}/api/public/pedidos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payloadConCocina),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        return {
+          success: true,
+          numero_orden: data.numero_orden,
+          pedido_id: data.pedido_id,
+        };
+      } else {
+        console.error(`[sendOrderToFood] Intento ${attempt}/${MAX_RETRIES} — HTTP ${res.status}`, await res.text().catch(() => ''));
+      }
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      const isTimeout = err?.name === 'AbortError';
+      console.error(`[sendOrderToFood] Intento ${attempt}/${MAX_RETRIES} — ${isTimeout ? 'TIMEOUT' : 'ERROR'}:`, err?.message || err);
     }
-  } catch (err) {
-    console.warn('Error o timeout al enviar pedido a Food backend:', err);
-  } finally {
-    clearTimeout(timeoutId);
+
+    // Esperar antes de reintentar (backoff exponencial: 2s, 4s)
+    if (attempt < MAX_RETRIES) {
+      await new Promise(resolve => setTimeout(resolve, attempt * 2000));
+    }
   }
 
-  // Fallback seguro en caso de desconexión o timeout para no trabar el checkout ni WhatsApp
+  // Todos los intentos fallaron — NO mentir al usuario
+  console.error('[sendOrderToFood] Todos los intentos fallaron. El pedido NO fue registrado.');
   return {
-    success: true,
-    numero_orden: Math.floor(1000 + Math.random() * 9000),
-    pedido_id: Date.now(),
+    success: false,
+    error: 'No pudimos registrar tu pedido en este momento. Por favor intentá nuevamente.',
   };
+}
+
+// Obtener el detalle (items) de un pedido activo del cliente
+export interface PedidoDetalleItem {
+  nombre_producto: string;
+  cantidad: number;
+  precio_unitario: number;
+  subtotal: number;
+  notas_cocina: string | null;
+  estado_cocina: string | null;
+  modificadores: { nombre: string; precio_extra: number }[];
+}
+
+export interface PedidoDetalle {
+  pedido_id: number;
+  numero_orden: number;
+  tipo_pedido: string;
+  estado: string;
+  total: number;
+  subtotal: number;
+  costo_envio: number;
+  metodo_pago: string;
+  created_at: string;
+  notas: string | null;
+  comprobante_url?: string | null;
+  pagado?: boolean;
+  estado_pago?: string;
+  items: PedidoDetalleItem[];
+}
+
+export async function fetchPedidoDetalle(pedidoId: number, email: string): Promise<PedidoDetalle | null> {
+  try {
+    const params = new URLSearchParams({
+      pedido_id: String(pedidoId),
+      email,
+      tenant_id: '1',
+    });
+    const res = await fetch(`${FOOD_BACKEND_URL}/api/public/pedido-detalle?${params.toString()}`, {
+      headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
 }
 
 // Buscar sugerencias de dirección (autocompletado tipo Google Maps) biased a la ciudad del tenant

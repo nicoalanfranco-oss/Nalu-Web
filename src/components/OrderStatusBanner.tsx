@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ChefHat, Bike, CheckCircle2, Package, X, Paperclip, Loader2, Clock } from 'lucide-react';
+import { ChefHat, Bike, CheckCircle2, Package, X, Paperclip, Loader2, Clock, ChevronRight } from 'lucide-react';
 import { FOOD_BACKEND_URL, uploadComprobanteTransferencia } from '../services/api';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
-type EstadoPedido = 'en_cocina' | 'listo' | 'en_camino' | 'abierto';
+// ─── Tipos ────────────────────────────────────────────────────────────────────
 
-interface PedidoActivo {
+export type EstadoPedido = 'en_cocina' | 'listo' | 'en_camino' | 'abierto';
+
+export interface PedidoActivo {
   pedido_id: number;
   numero_orden: number;
   tipo_pedido: 'delivery' | 'takeaway' | 'salon';
@@ -64,7 +66,12 @@ const POLL_INTERVAL_MS = 30_000; // 30 segundos
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 
-export const OrderStatusBanner: React.FC = () => {
+interface OrderStatusBannerProps {
+  onOpenMisPedidos?: () => void;
+  onPedidosChange?: (pedidos: PedidoActivo[]) => void;
+}
+
+export const OrderStatusBanner: React.FC<OrderStatusBannerProps> = ({ onOpenMisPedidos, onPedidosChange }) => {
   const [pedidos, setPedidos] = useState<PedidoActivo[]>([]);
   const [selectedPedidoId, setSelectedPedidoId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -76,13 +83,20 @@ export const OrderStatusBanner: React.FC = () => {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevCountRef = useRef<number>(0);
 
-  // Obtener email del usuario logueado con Google
+  // Obtener email del usuario logueado con Google o de datos de perfil
   const getEmail = useCallback((): string | null => {
     try {
       const g = localStorage.getItem('nalu_google_user');
-      if (!g) return null;
-      const parsed = JSON.parse(g);
-      return parsed?.email || null;
+      if (g) {
+        const parsed = JSON.parse(g);
+        if (parsed?.email) return parsed.email;
+      }
+      const p = localStorage.getItem('nalu_customer_profile');
+      if (p) {
+        const parsed = JSON.parse(p);
+        if (parsed?.email) return parsed.email;
+      }
+      return null;
     } catch {
       return null;
     }
@@ -92,18 +106,28 @@ export const OrderStatusBanner: React.FC = () => {
   const getFirstName = useCallback((): string | null => {
     try {
       const g = localStorage.getItem('nalu_google_user');
-      if (!g) return null;
-      const parsed = JSON.parse(g);
-      const fullName: string = parsed?.name || parsed?.given_name || '';
-      return fullName.split(' ')[0] || null;
+      if (g) {
+        const parsed = JSON.parse(g);
+        const fullName: string = parsed?.name || parsed?.given_name || '';
+        if (fullName) return fullName.split(' ')[0] || null;
+      }
+      const p = localStorage.getItem('nalu_customer_profile');
+      if (p) {
+        const parsed = JSON.parse(p);
+        if (parsed?.nombre) return parsed.nombre.split(' ')[0] || null;
+      }
+      return null;
     } catch {
       return null;
     }
-  }, [])
+  }, []);
 
   const fetchEstado = useCallback(async () => {
     const email = getEmail();
-    if (!email) return;
+    if (!email) {
+      onPedidosChange?.([]);
+      return;
+    }
 
     try {
       const url = `${FOOD_BACKEND_URL}/api/public/pedido-estado?email=${encodeURIComponent(email)}&tenant_id=1`;
@@ -112,6 +136,8 @@ export const OrderStatusBanner: React.FC = () => {
 
       const data = await res.json();
       const lista: PedidoActivo[] = data.pedidos || (data.pedido ? [data.pedido] : []);
+
+      onPedidosChange?.(lista);
 
       if (lista.length === 0) {
         // No hay pedidos activos → ocultar con animación suave
@@ -148,7 +174,7 @@ export const OrderStatusBanner: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [getEmail, pedidos.length]);
+  }, [getEmail, onPedidosChange, pedidos.length]);
 
   // Polling
   useEffect(() => {
@@ -294,7 +320,7 @@ export const OrderStatusBanner: React.FC = () => {
         </div>
       )}
 
-      <div className="osb-inner">
+      <div className="osb-inner" onClick={(e) => { if (onOpenMisPedidos && !(e.target as HTMLElement).closest('button, a, input')) { onOpenMisPedidos(); } }} style={onOpenMisPedidos ? { cursor: 'pointer' } : undefined}>
         {/* Ícono + textos */}
         <div className="osb-left">
           <div className="osb-icon-pulse">
@@ -385,6 +411,13 @@ export const OrderStatusBanner: React.FC = () => {
             />
           </div>
         </div>
+
+        {onOpenMisPedidos && (
+          <div className="osb-ver-detalle" onClick={onOpenMisPedidos}>
+            <span>Ver detalle</span>
+            <ChevronRight size={14} />
+          </div>
+        )}
 
         {/* Botón cerrar */}
         <button
