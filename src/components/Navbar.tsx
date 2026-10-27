@@ -34,26 +34,29 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
     window.addEventListener('beforeinstallprompt', handler);
 
-    // Si ya pasaron 2 segundos y es móvil/desktop sin standalone, mostrar por defecto si no fue rechazado
-    const timer = setTimeout(() => {
-      setShowInstall(true);
-    }, 1500);
+    const installedHandler = () => {
+      setShowInstall(false);
+      setDeferredPrompt(null);
+    };
+    window.addEventListener('appinstalled', installedHandler);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
-      clearTimeout(timer);
+      window.removeEventListener('appinstalled', installedHandler);
     };
   }, []);
 
   const handleInstall = async () => {
-    if (deferredPrompt) {
+    if (!deferredPrompt) return;
+    try {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') setShowInstall(false);
+      if (outcome === 'accepted') {
+        setShowInstall(false);
+      }
       setDeferredPrompt(null);
-    } else {
-      // Fallback para navegadores donde beforeinstallprompt no esté disponible directamente
-      alert('Para instalar Nalú Poke, toca el menú de tu navegador (⋮ o Compartir) y elige "Instalar aplicación" o "Agregar a la pantalla de inicio".');
+    } catch (err) {
+      console.warn('Install error:', err);
     }
   };
 
