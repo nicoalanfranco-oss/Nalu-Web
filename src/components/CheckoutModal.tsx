@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   X, CheckCircle, Bike, Store, ArrowRight, ShieldCheck, Send,
   MapPin, Navigation, ExternalLink, CreditCard, Banknote, Smartphone,
-  Search, Loader2, Check, UserCheck, AlertCircle, Sparkles, Clock
+  Search, Loader2, Check, UserCheck, AlertCircle, Sparkles, Clock, MessageCircle
 } from 'lucide-react';
 import { CartItem, MarcaInfo } from '../types/food';
 import { sendOrderToFood, searchAddress, AddressSuggestion } from '../services/api';
@@ -184,6 +184,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [notas, setNotas] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [errorRef, setErrorRef] = useState('');
+  const [errorFallbackWa, setErrorFallbackWa] = useState('');
 
   // Autocompletado de dirección tipo Google Maps
   const [sugerencias, setSugerencias] = useState<AddressSuggestion[]>([]);
@@ -404,6 +406,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     // Deshabilitar botón inmediatamente después de validaciones
     setEnviando(true);
     setErrorMsg('');
+    setErrorRef('');
+    setErrorFallbackWa('');
 
     const parsedBday = parseFlexibleDate(fechaNacimiento);
     const cleanIsoBday = parsedBday.iso || null;
@@ -475,48 +479,39 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         })),
       };
 
-      const res = await sendOrderToFood(payload);
+      // Función helper para construir el mensaje estructurado de WhatsApp
+      const generarTextoWhatsApp = (etiquetaPedido: string, introCustom?: string) => {
+        const lineasItems = items.map(it => {
+          let mods = '';
+          if (it.modificadores && it.modificadores.length > 0) {
+            mods = '\n' + it.modificadores.map(m => `   • ${m.nombre}${m.precio_extra > 0 ? ` (+$${m.precio_extra})` : ''}`).join('\n');
+          }
+          const notasItem = it.notas ? `\n   📝 Nota: ${it.notas}` : '';
+          return `*${it.cantidad}x ${it.nombre}* ($${it.precio_unitario * it.cantidad})${mods}${notasItem}`;
+        }).join('\n\n');
 
-      // Si el pedido no se pudo registrar, mostrar error y NO vaciar el carrito
-      if (!res.success) {
-        setErrorMsg(res.error || 'No pudimos registrar tu pedido. Probá nuevamente o contactanos por WhatsApp.');
-        scrollToTop();
-        return;
-      }
+        const canalTxt = tipoEntrega === 'delivery' 
+          ? (costoEnvio > 0 ? `🛵 Delivery ($${costoEnvio})` : '🛵 Delivery (Sin costo)') 
+          : '🏪 Retiro en Mostrador (Take Away)';
+        const dirTxt = tipoEntrega === 'delivery'
+          ? `\n📍 *Dirección:* ${direccion.trim()}${apartamento.trim() ? ` (${apartamento.trim()})` : ''}${resolvedGmapsUrl ? `\n🗺️ *Ubicación Maps:* ${resolvedGmapsUrl}` : ''}`
+          : '';
 
-      // Generar mensaje estructurado de WhatsApp
-      const numOrden = res.numero_orden || Math.floor(1000 + Math.random() * 9000);
-      const lineasItems = items.map(it => {
-        let mods = '';
-        if (it.modificadores && it.modificadores.length > 0) {
-          mods = '\n' + it.modificadores.map(m => `   • ${m.nombre}${m.precio_extra > 0 ? ` (+$${m.precio_extra})` : ''}`).join('\n');
-        }
-        const notasItem = it.notas ? `\n   📝 Nota: ${it.notas}` : '';
-        return `*${it.cantidad}x ${it.nombre}* ($${it.precio_unitario * it.cantidad})${mods}${notasItem}`;
-      }).join('\n\n');
+        const pagoTxt =
+          metodoPago === 'efectivo'
+            ? `Efectivo${pagaCon.trim() ? ` (Paga con $${pagaCon.trim()})` : ''}`
+            : metodoPago === 'tarjeta'
+            ? 'POS Tarjeta (Débito/Crédito)'
+            : 'Transferencia Bancaria';
 
-      const canalTxt = tipoEntrega === 'delivery' 
-        ? (costoEnvio > 0 ? `🛵 Delivery ($${costoEnvio})` : '🛵 Delivery (Sin costo)') 
-        : '🏪 Retiro en Mostrador (Take Away)';
-      const dirTxt = tipoEntrega === 'delivery'
-        ? `\n📍 *Dirección:* ${direccion.trim()}${apartamento.trim() ? ` (${apartamento.trim()})` : ''}${resolvedGmapsUrl ? `\n🗺️ *Ubicación Maps:* ${resolvedGmapsUrl}` : ''}`
-        : '';
+        const parsedBday = parseFlexibleDate(fechaNacimiento);
+        const cumpleTxt = (parsedBday.display || fechaNacimiento.trim()) ? `\n🎂 *Cumpleaños:* ${parsedBday.display || fechaNacimiento.trim()}` : '';
+        const emailTxt = email.trim() ? `\n✉️ *Email:* ${email.trim()}` : '';
 
-      const pagoTxt =
-        metodoPago === 'efectivo'
-          ? `Efectivo${pagaCon.trim() ? ` (Paga con $${pagaCon.trim()})` : ''}`
-          : metodoPago === 'tarjeta'
-          ? 'POS Tarjeta (Débito/Crédito)'
-          : 'Transferencia Bancaria';
+        return `*¡Hola Nalú Poke Bowls Tacuarembó!* 🥗🌊
+${introCustom || 'Acabo de realizar mi pedido desde la web oficial.'}
 
-      const parsedBday = parseFlexibleDate(fechaNacimiento);
-      const cumpleTxt = (parsedBday.display || fechaNacimiento.trim()) ? `\n🎂 *Cumpleaños:* ${parsedBday.display || fechaNacimiento.trim()}` : '';
-      const emailTxt = email.trim() ? `\n✉️ *Email:* ${email.trim()}` : '';
-
-      const textoWhatsApp = `*¡Hola Nalú Poke Bowls Tacuarembó!* 🥗🌊
-Acabo de realizar mi pedido desde la web oficial.
-
-📋 *Pedido #N${numOrden}*
+📋 *${etiquetaPedido}*
 ${canalTxt}${dirTxt}
 👤 *Cliente:* ${nombre.trim()}
 📱 *Teléfono:* ${telefono.trim()}${emailTxt}${cumpleTxt}
@@ -526,17 +521,104 @@ ${canalTxt}${dirTxt}
 ${lineasItems}
 
 💰 *TOTAL A PAGAR: $${total} UYU*${notas.trim() ? `\n\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
+      };
 
+      const res = await sendOrderToFood(payload);
+
+      // Si el pedido no se pudo registrar, mostrar error y NO vaciar el carrito
+      if (!res.success) {
+        const refCode = res.error_ref || ('NALU-' + Math.random().toString(36).substring(2, 7).toUpperCase());
+        setErrorRef(refCode);
+        const fallbackMsg = generarTextoWhatsApp(
+          `Pedido Web (Ref: #${refCode})`,
+          `Intenté confirmar mi pedido en la web pero ocurrió una demora en el servidor (Ref: #${refCode}). Les paso mi pedido por acá para tomarlo enseguida:`
+        );
+        setErrorFallbackWa(`https://api.whatsapp.com/send?phone=59899127786&text=${encodeURIComponent(fallbackMsg)}`);
+        setErrorMsg(res.error || 'No pudimos registrar tu pedido en el sistema en este momento.');
+        scrollToTop();
+        return;
+      }
+
+      // Generar mensaje estructurado de WhatsApp
+      const numOrden = res.numero_orden || Math.floor(1000 + Math.random() * 9000);
+      const textoWhatsApp = generarTextoWhatsApp(`Pedido #N${numOrden}`);
       const whatsappUrl = `https://api.whatsapp.com/send?phone=59899127786&text=${encodeURIComponent(textoWhatsApp)}`;
 
       onOrderSuccess(numOrden, whatsappUrl, metodoPago, res.pedido_id);
     } catch (err: any) {
       console.error('Error enviando pedido:', err);
-      setErrorMsg('Error de conexión al enviar el pedido. Intenta nuevamente o contactanos directamente.');
+      const refCode = 'ERR-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+      setErrorRef(refCode);
+      const fallbackMsg = `*¡Hola Nalú Poke Bowls Tacuarembó!* 🥗🌊\nIntenté confirmar mi pedido en la web pero ocurrió un error de conexión (Ref: #${refCode}). Por favor contáctenme para tomarlo. Mi teléfono es ${telefono.trim()}.`;
+      setErrorFallbackWa(`https://api.whatsapp.com/send?phone=59899127786&text=${encodeURIComponent(fallbackMsg)}`);
+      setErrorMsg('Error de conexión al enviar el pedido. Podés tocar abajo para enviárnoslo por WhatsApp directamente.');
       scrollToTop();
     } finally {
       setEnviando(false);
     }
+  };
+
+  const renderErrorBanner = () => {
+    if (!errorMsg) return null;
+    return (
+      <div
+        style={{
+          background: '#FEF2F2',
+          border: '1.5px solid #FCA5A5',
+          color: '#991B1B',
+          padding: '12px 14px',
+          borderRadius: 'var(--radius-md)',
+          fontSize: '0.85rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+          <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px', color: '#DC2626' }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: '0.88rem', marginBottom: '2px', color: '#991B1B' }}>
+              No pudimos registrar tu pedido en el sistema
+            </div>
+            <div style={{ color: '#4B5563', fontSize: '0.82rem', lineHeight: '1.35' }}>
+              {errorMsg}
+            </div>
+            {errorRef && (
+              <div style={{ marginTop: '6px', display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#FEE2E2', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700, color: '#991B1B', border: '1px solid #FECACA' }}>
+                <span>Código de seguimiento:</span>
+                <code style={{ fontFamily: 'monospace' }}>#{errorRef}</code>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {errorFallbackWa && (
+          <a
+            href={errorFallbackWa}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              background: '#25D366',
+              color: '#FFFFFF',
+              padding: '10px 14px',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              fontWeight: 700,
+              fontSize: '0.86rem',
+              boxShadow: '0 2px 6px rgba(37, 211, 102, 0.35)',
+              textAlign: 'center',
+            }}
+          >
+            <MessageCircle size={17} />
+            <span>📲 Confirmar este pedido directo por WhatsApp</span>
+          </a>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -567,12 +649,7 @@ ${lineasItems}
           onSubmit={handleSubmit}
           style={{ overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: 'calc(90vh - 80px)' }}
         >
-          {errorMsg && (
-            <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '10px 14px', borderRadius: 'var(--radius-md)', fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <AlertCircle size={16} />
-              <span>{errorMsg}</span>
-            </div>
-          )}
+          {renderErrorBanner()}
 
           {/* ── 1. Datos pre-cargados desde Google ── */}
           {googleUser ? (
@@ -791,6 +868,7 @@ ${lineasItems}
                 type="text"
                 value={nombre}
                 onChange={e => setNombre(e.target.value)}
+                maxLength={100}
                 name="name"
                 autoComplete="name"
                 placeholder="Ej: Nicolás Franco"
@@ -815,6 +893,7 @@ ${lineasItems}
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 onBlur={e => setEmail(e.target.value.trim())}
+                maxLength={150}
                 name="email"
                 autoComplete="email"
                 inputMode="email"
@@ -840,6 +919,7 @@ ${lineasItems}
                   type="tel"
                   value={telefono}
                   onChange={e => setTelefono(e.target.value)}
+                  maxLength={30}
                   name="tel"
                   autoComplete="tel"
                   inputMode="tel"
@@ -1135,12 +1215,7 @@ ${lineasItems}
           </div>
 
           {/* Alerta de error visible justo arriba del botón para móviles / iPhone */}
-          {errorMsg && (
-            <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '10px 14px', borderRadius: 'var(--radius-md)', fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <AlertCircle size={16} style={{ flexShrink: 0 }} />
-              <span>{errorMsg}</span>
-            </div>
-          )}
+          {renderErrorBanner()}
 
           {/* ── 7. Botón de Confirmación ── */}
           <button

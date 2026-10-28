@@ -229,7 +229,13 @@ export async function fetchNaluCatalogo(): Promise<{
   return getStaticCatalog();
 }
 
-export async function sendOrderToFood(orderPayload: any): Promise<{ success: boolean; numero_orden?: number; pedido_id?: number; error?: string }> {
+export async function sendOrderToFood(orderPayload: any): Promise<{
+  success: boolean;
+  numero_orden?: number;
+  pedido_id?: number;
+  error?: string;
+  error_ref?: string;
+}> {
   const payloadConCocina = {
     ...orderPayload,
     enviar_a_cocina: true,
@@ -237,6 +243,8 @@ export async function sendOrderToFood(orderPayload: any): Promise<{ success: boo
 
   const MAX_RETRIES = 2;
   const TIMEOUT_MS = 15000;
+  let lastErrorDetail = '';
+  let lastErrorRef = '';
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     const controller = new AbortController();
@@ -259,25 +267,38 @@ export async function sendOrderToFood(orderPayload: any): Promise<{ success: boo
           pedido_id: data.pedido_id,
         };
       } else {
-        console.error(`[sendOrderToFood] Intento ${attempt}/${MAX_RETRIES} — HTTP ${res.status}`, await res.text().catch(() => ''));
+        const errJson = await res.json().catch(() => null);
+        const errText = !errJson ? await res.text().catch(() => '') : '';
+        lastErrorDetail = errJson?.error || errJson?.mensaje_ayuda || errText || `Error del servidor (HTTP ${res.status})`;
+        lastErrorRef = errJson?.error_ref || '';
+        console.error(`[sendOrderToFood] Intento ${attempt}/${MAX_RETRIES} — HTTP ${res.status}`, errJson || errText);
+
+        // Si fue un error de cliente (4xx), no tiene sentido reintentar con el mismo body
+        if (res.status >= 400 && res.status < 500) {
+          break;
+        }
       }
     } catch (err: any) {
       clearTimeout(timeoutId);
       const isTimeout = err?.name === 'AbortError';
+      lastErrorDetail = isTimeout ? 'El servidor demoró demasiado en responder (Tiempo de espera agotado)' : (err?.message || 'Error de conexión');
       console.error(`[sendOrderToFood] Intento ${attempt}/${MAX_RETRIES} — ${isTimeout ? 'TIMEOUT' : 'ERROR'}:`, err?.message || err);
     }
 
-    // Esperar antes de reintentar (backoff exponencial: 2s, 4s)
+    // Esperar antes de reintentar (backoff exponencial: 2s)
     if (attempt < MAX_RETRIES) {
       await new Promise(resolve => setTimeout(resolve, attempt * 2000));
     }
   }
 
-  // Todos los intentos fallaron — NO mentir al usuario
-  console.error('[sendOrderToFood] Todos los intentos fallaron. El pedido NO fue registrado.');
+  // Generar un código de rastreo claro si el backend no proporcionó uno
+  const finalErrorRef = lastErrorRef || ('NALU-' + Math.random().toString(36).substring(2, 7).toUpperCase());
+  console.error(`[sendOrderToFood] Fallaron los intentos. Ref de rastreo: ${finalErrorRef}`);
+
   return {
     success: false,
-    error: 'No pudimos registrar tu pedido en este momento. Por favor intentá nuevamente.',
+    error: lastErrorDetail || 'No pudimos registrar tu pedido en este momento.',
+    error_ref: finalErrorRef,
   };
 }
 
