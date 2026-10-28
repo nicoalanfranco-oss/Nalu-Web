@@ -176,11 +176,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                 alt="Nalú Poke"
                 style={{ width: '64px', height: '64px', objectFit: 'contain' }}
               />
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, color: 'var(--text-main)' }}>
-                Instalar App en tu {isIOS ? 'iPhone' : 'Dispositivo'}
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, color: 'var(--text-main)', textAlign: 'center' }}>
+                {isIOS 
+                  ? (isChromeIOS ? 'Instalar App en Chrome (iPhone)' : 'Instalar App en Safari (iPhone)') 
+                  : 'Instalar App en tu Dispositivo'}
               </h3>
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-                Guardá el acceso directo en tu pantalla de inicio para entrar directo y pedir más rápido:
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45, textAlign: 'center' }}>
+                {isIOS && !isChromeIOS ? (
+                  <>
+                    Estás usando <strong>Safari</strong>. En iPhone, por políticas de Apple, la única manera de instalar la app es agregándola a tu inicio con estos pasos:
+                  </>
+                ) : isChromeIOS ? (
+                  <>
+                    Estás usando <strong>Chrome</strong> en iPhone. Para tener el acceso directo a la app, seguí estos pasos:
+                  </>
+                ) : (
+                  'Guardá el acceso directo en tu pantalla de inicio para entrar directo y pedir más rápido:'
+                )}
               </p>
 
               <div
@@ -218,22 +230,27 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </>
                 ) : (
                   <>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.75rem', flexShrink: 0 }}>1</span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Share2 size={16} color="var(--primary)" />
-                        <span>Tocá el botón <strong>Compartir</strong> en la barra inferior 👇</span>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                      <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.75rem', flexShrink: 0, marginTop: '1px' }}>1</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <span>Tocá el botón</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'var(--bg-main)', padding: '2px 8px', borderRadius: '6px', border: '1px solid var(--border-light)', fontWeight: 600 }}>
+                          <Share2 size={15} color="var(--primary)" /> Compartir
+                        </span>
+                        <span>en la barra inferior de Safari 👇</span>
                       </span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.75rem', flexShrink: 0 }}>2</span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <PlusSquare size={16} color="var(--primary)" />
-                        <span>Deslizá y elegí <strong>"Agregar a inicio"</strong></span>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                      <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.75rem', flexShrink: 0, marginTop: '1px' }}>2</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <span>Deslizá y elegí</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'var(--bg-main)', padding: '2px 8px', borderRadius: '6px', border: '1px solid var(--border-light)', fontWeight: 600 }}>
+                          <PlusSquare size={15} color="var(--primary)" /> Agregar a inicio
+                        </span>
                       </span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.75rem', flexShrink: 0 }}>3</span>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                      <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.75rem', flexShrink: 0, marginTop: '1px' }}>3</span>
                       <span>Tocá <strong>"Agregar"</strong> arriba a la derecha. ¡Listo!</span>
                     </div>
                   </>
