@@ -137,6 +137,28 @@ export function parseFlexibleDate(val: string): { iso: string; display: string }
   return { iso: '', display: clean };
 }
 
+// Helper para estandarizar teléfonos uruguayos al formato 0XXXXXXXX (9 dígitos corridos con 0 adelante)
+export function normalizeUYPhone(raw: string): string {
+  if (!raw) return '';
+  let s = String(raw).trim().replace(/[\s\-().]/g, '');
+
+  if (s.startsWith('+598')) s = s.slice(4);
+  else if (s.startsWith('598') && s.length >= 11) s = s.slice(3);
+
+  const digits = s.replace(/\D/g, '');
+
+  // Ya tiene 9 dígitos empezando en 0 (ej: 099075509)
+  if (digits.length === 9 && digits.startsWith('0')) return digits;
+
+  // 8 dígitos empezando en 9x (celular UY sin el 0 inicial: 99075509) -> 099075509
+  if (digits.length === 8 && /^9[1-9]/.test(digits)) return '0' + digits;
+
+  // 8 dígitos de línea fija (ej: 4632XXXX o 2XXXXXXX) -> agregar 0
+  if (digits.length === 8 && /^[24]/.test(digits)) return '0' + digits;
+
+  return digits || String(raw).trim();
+}
+
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   isOpen,
   items,
@@ -177,7 +199,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const [nombre, setNombre] = useState(savedCustomer?.nombre || '');
   const [email, setEmail] = useState(savedCustomer?.email || '');
-  const [telefono, setTelefono] = useState(savedCustomer?.telefono || '');
+  const [telefono, setTelefono] = useState(() => normalizeUYPhone(savedCustomer?.telefono || ''));
   const [fechaNacimiento, setFechaNacimiento] = useState(() => {
     const raw = savedCustomer?.fecha_nacimiento || '';
     return parseFlexibleDate(raw).display || raw;
@@ -388,7 +410,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     // Limpiar espacios en campos clave (iOS Safari autocorrect puede agregar espacios)
     const nombreLimpio = nombre.trim();
     const emailLimpio = email.trim();
-    const telefonoLimpio = telefono.trim();
+    const telefonoLimpio = normalizeUYPhone(telefono);
+    if (telefonoLimpio !== telefono) {
+      setTelefono(telefonoLimpio);
+    }
 
     if (!nombreLimpio) {
       setErrorMsg('Por favor ingresa tu nombre y apellido.');
@@ -945,11 +970,14 @@ ${lineasItems}
                   type="tel"
                   value={telefono}
                   onChange={e => setTelefono(e.target.value)}
+                  onBlur={() => {
+                    if (telefono.trim()) setTelefono(normalizeUYPhone(telefono));
+                  }}
                   maxLength={30}
                   name="tel"
                   autoComplete="tel"
                   inputMode="tel"
-                  placeholder="Ej: 099 123 456"
+                  placeholder="Ej: 099123456"
                   style={{
                     width: '100%',
                     padding: '10px 12px',
