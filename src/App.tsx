@@ -278,6 +278,17 @@ export const App: React.FC = () => {
     }
   };
 
+  // Listener para sincronización silenciosa en segundo plano
+  useEffect(() => {
+    const handleOrderSynced = (e: any) => {
+      const { pedido_id, numero_orden } = e.detail || {};
+      if (pedido_id) setOrderSuccessPedidoId(pedido_id);
+      if (numero_orden) setOrderSuccessNumber(numero_orden);
+    };
+    window.addEventListener('nalu:order_synced', handleOrderSynced);
+    return () => window.removeEventListener('nalu:order_synced', handleOrderSynced);
+  }, []);
+
   // Copiar cuenta Prex al portapapeles manual
   const handleCopyPrex = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -759,9 +770,23 @@ export const App: React.FC = () => {
                     style={{ display: 'none' }}
                     onChange={async (e) => {
                       const file = e.target.files?.[0];
-                      if (!file || !orderSuccessPedidoId) return;
+                      if (!file) return;
                       setUploadingComprobanteSuccess(true);
-                      const res = await uploadComprobanteTransferencia(orderSuccessPedidoId, file);
+                      let targetId = orderSuccessPedidoId;
+                      if (!targetId) {
+                        for (let i = 0; i < 20; i++) {
+                          await new Promise(r => setTimeout(r, 500));
+                          if (orderSuccessPedidoId) {
+                            targetId = orderSuccessPedidoId;
+                            break;
+                          }
+                        }
+                      }
+                      if (!targetId) {
+                        setUploadingComprobanteSuccess(false);
+                        return;
+                      }
+                      const res = await uploadComprobanteTransferencia(targetId, file);
                       setUploadingComprobanteSuccess(false);
                       if (res.success && res.comprobante_url) {
                         setComprobanteUrlSuccess(res.comprobante_url);
