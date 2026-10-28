@@ -14,23 +14,7 @@ import { ProductoElaborado, ProductoReventa, GrupoOpciones, CartItem, TenantInfo
 import { fetchNaluCatalogo, uploadComprobanteTransferencia, TENANT_INFO, MARCA_INFO, REAL_PLATOS, REAL_REVENTA, REAL_GRUPOS } from './services/api';
 import { useStructuredData } from './hooks/useStructuredData';
 import { CheckCircle2, Sparkles, Bell, ArrowRight, WifiOff, Paperclip, Clock } from 'lucide-react';
-
-const InstagramIcon: React.FC<{ size?: number }> = ({ size = 20 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-  </svg>
-);
+import { InstagramIcon, WhatsAppIcon } from './components/SocialIcons';
 
 const BANCOS_TRANSFERENCIA = [
   {
@@ -474,7 +458,8 @@ export const App: React.FC = () => {
               border: '1.5px solid rgba(120, 140, 80, 0.18)',
               boxShadow: '0 24px 60px rgba(0, 0, 0, 0.25)',
               position: 'relative',
-              overflow: 'hidden',
+              overflowY: 'auto',
+              overflowX: 'hidden',
               maxHeight: '92vh',
             }}
             onClick={e => e.stopPropagation()}
@@ -818,33 +803,77 @@ export const App: React.FC = () => {
               </div>
             )}
 
-            {/* Acciones: Instagram y Volver al Menú */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', marginTop: '2px' }}>
-              {/* Botón Instagram */}
-              <a
-                href="https://www.instagram.com/nalupoke.uy?stkn=ejVqMjd1dzhqZTVr&utm_source=qr"
-                target="_blank"
-                rel="noreferrer"
+            {/* Acciones: Contacto (WhatsApp & Instagram) y Volver al Menú */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', marginTop: '4px' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748B', textAlign: 'center' }}>
+                ¿Dudas con tu pedido? Escribinos:
+              </div>
+
+              {/* Botones de contacto: WhatsApp y Instagram */}
+              <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
                   gap: '8px',
                   width: '100%',
-                  padding: '11px 16px',
-                  borderRadius: '14px',
-                  background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
-                  color: '#FFFFFF',
-                  fontWeight: 700,
-                  fontSize: '0.88rem',
-                  textDecoration: 'none',
-                  boxShadow: '0 6px 18px rgba(220, 39, 67, 0.25)',
-                  transition: 'all 0.2s ease',
                 }}
               >
-                <InstagramIcon size={18} />
-                <span>Cualquier consulta envianos un mensaje</span>
-              </a>
+                {/* Botón WhatsApp */}
+                <a
+                  href={`https://wa.me/59899127786?text=${encodeURIComponent(
+                    orderSuccessNumber
+                      ? `¡Hola Nalú! Consulta sobre mi pedido #N${orderSuccessNumber}.`
+                      : '¡Hola Nalú! Consulta sobre mi pedido.'
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    padding: '10px 12px',
+                    borderRadius: '14px',
+                    background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                    color: '#FFFFFF',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 14px rgba(37, 211, 102, 0.28)',
+                    transition: 'all 0.2s ease',
+                  }}
+                  title="Escribinos por WhatsApp al 099 127 786"
+                >
+                  <WhatsAppIcon size={20} />
+                  <span>099 127 786</span>
+                </a>
+
+                {/* Botón Instagram estilizado que redirecciona directamente al chat con Nalú */}
+                <a
+                  href="https://ig.me/m/nalupoke.uy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    padding: '10px 12px',
+                    borderRadius: '14px',
+                    background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+                    color: '#FFFFFF',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 14px rgba(220, 39, 67, 0.25)',
+                    transition: 'all 0.2s ease',
+                  }}
+                  title="Chatear con Nalú en Instagram (@nalupoke.uy)"
+                >
+                  <InstagramIcon size={20} />
+                  <span>Chat con Nalú</span>
+                </a>
+              </div>
 
               <button
                 onClick={() => setOrderSuccessNumber(null)}
@@ -859,6 +888,7 @@ export const App: React.FC = () => {
                   border: '1.5px solid rgba(19, 25, 29, 0.12)',
                   color: '#13191D',
                   cursor: 'pointer',
+                  marginTop: '2px',
                 }}
               >
                 Volver al Menú

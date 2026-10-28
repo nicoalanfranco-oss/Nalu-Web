@@ -527,7 +527,7 @@ ${lineasItems}
 
 💰 *TOTAL A PAGAR: $${total} UYU*${notas.trim() ? `\n\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
 
-      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoWhatsApp)}`;
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=59899127786&text=${encodeURIComponent(textoWhatsApp)}`;
 
       onOrderSuccess(numOrden, whatsappUrl, metodoPago, res.pedido_id);
     } catch (err: any) {

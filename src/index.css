@@ -2990,6 +2990,68 @@ button {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.footer-contact-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.footer-contact-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #94A3B8;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.footer-contact-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footer-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.footer-contact-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.footer-contact-btn--wa {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+}
+
+.footer-contact-btn--wa:hover {
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35);
+}
+
+.footer-contact-btn--ig {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  box-shadow: 0 4px 14px rgba(220, 39, 67, 0.25);
+}
+
+.footer-contact-btn--ig:hover {
+  box-shadow: 0 6px 18px rgba(220, 39, 67, 0.35);
+}
+
 .footer-nicolabs-container {
   display: flex;
   justify-content: center;
