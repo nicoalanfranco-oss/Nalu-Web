@@ -58,6 +58,8 @@ function parseMarcaFromBackend(m: any, estadoAtencion?: any): MarcaInfo {
     costo_delivery: m.costo_delivery !== undefined ? Number(m.costo_delivery) : 0,
     tiempo_espera_delivery: m.tiempo_espera_delivery || '30–45 min',
     logo_url: m.logo_url || MARCA_INFO.logo_url,
+    numero_cuenta: m.numero_cuenta || '1472492',
+    banco_nombre: m.banco_nombre || 'Prex',
     estado_atencion: estadoAtencion || m.estado_atencion,
   };
 }

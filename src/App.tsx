@@ -264,10 +264,11 @@ export const App: React.FC = () => {
     setIsCheckoutOpen(false);
     setIsCartOpen(false);
 
-    // Auto-copiar nro de cuenta Prex si es transferencia
+    // Auto-copiar nro de cuenta si es transferencia
     if (paymentMethod === 'transferencia') {
+      const cuentaNum = marca.numero_cuenta || '1472492';
       if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        navigator.clipboard.writeText('1472492').then(() => {
+        navigator.clipboard.writeText(cuentaNum).then(() => {
           setCopiedPrex(true);
         }).catch(() => {});
       } else {
@@ -289,10 +290,11 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('nalu:order_synced', handleOrderSynced);
   }, []);
 
-  // Copiar cuenta Prex al portapapeles manual
+  // Copiar cuenta al portapapeles manual
   const handleCopyPrex = () => {
+    const cuentaNum = marca.numero_cuenta || '1472492';
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText('1472492');
+      navigator.clipboard.writeText(cuentaNum);
       setCopiedPrex(true);
     }
   };
@@ -678,10 +680,10 @@ export const App: React.FC = () => {
                   {/* Fila superior: CUENTA PREX en línea con el número */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
                     <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#5F259F', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      Cuenta Prex:
+                      Cuenta {marca.banco_nombre || 'Prex'}:
                     </span>
                     <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#13191D', letterSpacing: '1px' }}>
-                      1472492
+                      {marca.numero_cuenta || '1472492'}
                     </span>
                   </div>
 

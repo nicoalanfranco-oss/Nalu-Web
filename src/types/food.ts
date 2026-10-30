@@ -44,6 +44,8 @@ export interface MarcaInfo {
   tiempo_espera_delivery?: string;
   logo_url?: string;
   estado_atencion?: EstadoAtencion;
+  numero_cuenta?: string;
+  banco_nombre?: string;
 }
 
 export interface InsumoReceta {
