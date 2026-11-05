@@ -443,6 +443,34 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setErrorRef('');
     setErrorFallbackWa('');
 
+    // Auto-geocodificar si el usuario escribió la dirección pero no seleccionó del autocompletado
+    // Esto garantiza que SIEMPRE tengamos coordenadas para el delivery
+    let resolvedLat = latitud;
+    let resolvedLon = longitud;
+    let resolvedGmapsUrl = googleMapsUrl;
+
+    if (tipoEntrega === 'delivery' && direccion.trim() && (!resolvedLat || !resolvedLon)) {
+      try {
+        const geoResults = await searchAddress(direccion.trim(), 1, 'Tacuarembó');
+        if (geoResults.length > 0) {
+          const best = geoResults[0];
+          resolvedLat = best.latitud;
+          resolvedLon = best.longitud;
+          resolvedGmapsUrl = best.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${best.latitud},${best.longitud}`;
+          // Actualizar el estado para el perfil guardado
+          setLatitud(resolvedLat);
+          setLongitud(resolvedLon);
+          setGoogleMapsUrl(resolvedGmapsUrl);
+        }
+      } catch {
+        // Si falla el geocode, continuar sin coordenadas — el pedido se envía igual con la dirección en texto
+      }
+    }
+
+    if (!resolvedGmapsUrl && direccion.trim()) {
+      resolvedGmapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', Tacuarembó')}`;
+    }
+
     const parsedBday = parseFlexibleDate(fechaNacimiento);
     const cleanIsoBday = parsedBday.iso || null;
 
@@ -457,16 +485,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           fecha_nacimiento: parsedBday.display || fechaNacimiento.trim(),
           direccion: direccion.trim(),
           apartamento: apartamento.trim(),
-          google_maps_url: googleMapsUrl || (direccion.trim() ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', Tacuarembó')}` : ''),
-          latitud,
-          longitud,
+          google_maps_url: resolvedGmapsUrl || '',
+          latitud: resolvedLat,
+          longitud: resolvedLon,
         })
       );
     } catch {}
-
-    const resolvedGmapsUrl =
-      googleMapsUrl ||
-      (direccion.trim() ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', Tacuarembó')}` : '');
 
     try {
       // Estructura completa adaptada al POS de Food (tenant_id: 1, marca_id: 1)
@@ -487,8 +511,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           direccion: direccion.trim(),
           apartamento: apartamento.trim(),
           google_maps_url: resolvedGmapsUrl || undefined,
-          latitud: latitud || undefined,
-          longitud: longitud || undefined,
+          latitud: resolvedLat || undefined,
+          longitud: resolvedLon || undefined,
           costo_envio: costoEnvio,
           metodo_pago: metodoPago,
           paga_con: pagaCon.trim(),
