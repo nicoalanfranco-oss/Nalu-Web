@@ -15,6 +15,7 @@ import { fetchNaluCatalogo, uploadComprobanteTransferencia, TENANT_INFO, MARCA_I
 import { useStructuredData } from './hooks/useStructuredData';
 import { CheckCircle2, Sparkles, Bell, ArrowRight, WifiOff, Paperclip, Clock } from 'lucide-react';
 import { InstagramIcon, WhatsAppIcon } from './components/SocialIcons';
+import { launchConfetti } from './utils/confetti';
 
 const BANCOS_TRANSFERENCIA = [
   {
@@ -255,6 +256,7 @@ export const App: React.FC = () => {
 
   // Pedido completado con éxito
   const handleOrderSuccess = (orderNumber: number, whatsappUrl?: string, paymentMethod?: 'efectivo' | 'tarjeta' | 'transferencia', pedidoId?: number) => {
+    launchConfetti(1600);
     setOrderSuccessNumber(orderNumber);
     setOrderSuccessPedidoId(pedidoId || null);
     setComprobanteUrlSuccess(null);
@@ -336,6 +338,15 @@ export const App: React.FC = () => {
 
       {/* Banner de instalación PWA: ahora integrado dentro de Navbar */}
 
+      {/* Banner de seguimiento de pedido en tiempo real (Pantalla Superior en 0ms) */}
+      <OrderStatusBanner
+        onOpenMisPedidos={() => {
+          setPosInitialTab('pedidos');
+          setIsCartOpen(true);
+        }}
+        onPedidosChange={setActiveOrders}
+      />
+
       {/* Barra de Navegación Principal */}
       <Navbar
         marca={marca}
@@ -347,15 +358,6 @@ export const App: React.FC = () => {
           setIsCartOpen(true);
         }}
         onOpenCustomizer={handleOpenGeneralCustomizer}
-      />
-
-      {/* Banner de seguimiento de pedido en tiempo real */}
-      <OrderStatusBanner
-        onOpenMisPedidos={() => {
-          setPosInitialTab('pedidos');
-          setIsCartOpen(true);
-        }}
-        onPedidosChange={setActiveOrders}
       />
 
       {/* Contenido Principal */}
@@ -477,6 +479,33 @@ export const App: React.FC = () => {
             }}
             onClick={e => e.stopPropagation()}
           >
+            {/* Banner de Confirmación Ineludible (Punto 1) */}
+            <div
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                color: '#FFFFFF',
+                borderRadius: '16px',
+                padding: '12px 14px',
+                marginBottom: '10px',
+                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                textAlign: 'left',
+              }}
+            >
+              <div style={{ fontSize: '1.6rem', lineHeight: 1 }}>🎉</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '0.94rem', fontWeight: 900, letterSpacing: '0.2px' }}>
+                  ¡PEDIDO CONFIRMADO CON ÉXITO!
+                </div>
+                <div style={{ fontSize: '0.78rem', opacity: 0.95, fontWeight: 600 }}>
+                  Podés consultarlo y seguir su avance en la pantalla principal.
+                </div>
+              </div>
+            </div>
+
             {/* 1 y 2) Fila de Cabecera: Logo Nalú grande a la izquierda, Tick + Badge a la derecha */}
             <div
               style={{

@@ -6,7 +6,7 @@ import { FOOD_BACKEND_URL, uploadComprobanteTransferencia } from '../services/ap
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
-export type EstadoPedido = 'en_cocina' | 'listo' | 'en_camino' | 'abierto';
+export type EstadoPedido = 'esperando_confirmacion' | 'en_cocina' | 'listo' | 'en_camino' | 'abierto';
 
 export interface PedidoActivo {
   pedido_id: number;
@@ -28,6 +28,14 @@ const ESTADOS_CONFIG: Record<
   EstadoPedido,
   { label: string; shortLabel: string; sublabel: string; icon: React.ReactNode; colorClass: string; step: number }
 > = {
+  esperando_confirmacion: {
+    label: 'Esperando confirmación de cocina...',
+    shortLabel: 'Procesando ⏳',
+    sublabel: 'Tu orden fue enviada. Esperando ingreso a cocina…',
+    icon: <Clock size={18} className="osb-spin" />,
+    colorClass: 'osb-estado-esperando',
+    step: 0,
+  },
   abierto: {
     label: 'Pedido recibido',
     shortLabel: 'Recibido 📦',
@@ -62,7 +70,26 @@ const ESTADOS_CONFIG: Record<
   },
 };
 
-const POLL_INTERVAL_MS = 30_000; // 30 segundos
+const POLL_INTERVAL_MS = 20_000; // 20 segundos
+
+// ─── Helpers de Caché Local Inteligente ───────────────────────────────────────
+function getRecentCachedOrders(): PedidoActivo[] {
+  try {
+    const raw = localStorage.getItem('nalu_recent_orders');
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    const list: PedidoActivo[] = Array.isArray(parsed) ? parsed : [parsed];
+    const now = Date.now();
+    const threeHours = 3 * 60 * 60 * 1000;
+    return list.filter(item => {
+      if (!item || !item.numero_orden) return false;
+      const createdAt = item.created_at ? new Date(item.created_at).getTime() : now;
+      return now - createdAt < threeHours && (item.estado as string) !== 'entregado' && (item.estado as string) !== 'cancelado';
+    });
+  } catch {
+    return [];
+  }
+}
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 
@@ -72,16 +99,25 @@ interface OrderStatusBannerProps {
 }
 
 export const OrderStatusBanner: React.FC<OrderStatusBannerProps> = ({ onOpenMisPedidos, onPedidosChange }) => {
-  const [pedidos, setPedidos] = useState<PedidoActivo[]>([]);
-  const [selectedPedidoId, setSelectedPedidoId] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
+  // Inicialización instantánea desde la memoria caché del navegador (0ms de retraso)
+  const initialCache = getRecentCachedOrders();
+  const [pedidos, setPedidos] = useState<PedidoActivo[]>(initialCache);
+  const [selectedPedidoId, setSelectedPedidoId] = useState<number | null>(() => initialCache[0]?.pedido_id || null);
+  const [, setLoading] = useState(false);
   const [dismissed, setDismissed] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => initialCache.length > 0);
   const [animatingOut, setAnimatingOut] = useState(false);
   const [uploadingComprobante, setUploadingComprobante] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const prevCountRef = useRef<number>(0);
+  const prevCountRef = useRef<number>(initialCache.length);
+
+  // Notificar al componente padre de los pedidos en caché inicial
+  useEffect(() => {
+    if (initialCache.length > 0) {
+      onPedidosChange?.(initialCache);
+    }
+  }, []); // eslint-disable-line
 
   // Obtener email del usuario logueado con Google o de datos de perfil
   const getEmail = useCallback((): string | null => {
@@ -95,6 +131,26 @@ export const OrderStatusBanner: React.FC<OrderStatusBannerProps> = ({ onOpenMisP
       if (p) {
         const parsed = JSON.parse(p);
         if (parsed?.email) return parsed.email;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  // Obtener teléfono del usuario para consultar pedidos sin login de Google
+  const getTelefono = useCallback((): string | null => {
+    try {
+      const p = localStorage.getItem('nalu_customer_profile');
+      if (p) {
+        const parsed = JSON.parse(p);
+        if (parsed?.telefono) return parsed.telefono;
+      }
+      const raw = localStorage.getItem('nalu_recent_orders');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed[0]?.telefono) return parsed[0].telefono;
+        if (parsed?.telefono) return parsed.telefono;
       }
       return null;
     } catch {
@@ -124,22 +180,42 @@ export const OrderStatusBanner: React.FC<OrderStatusBannerProps> = ({ onOpenMisP
 
   const fetchEstado = useCallback(async () => {
     const email = getEmail();
-    if (!email) {
-      onPedidosChange?.([]);
+    const tel = getTelefono();
+
+    // Si no tenemos ni email ni teléfono pero hay caché local activa, mantenemos visible la caché
+    if (!email && !tel) {
+      const cached = getRecentCachedOrders();
+      if (cached.length > 0) {
+        setPedidos(cached);
+        setVisible(true);
+        onPedidosChange?.(cached);
+      }
       return;
     }
 
     try {
-      const url = `${FOOD_BACKEND_URL}/api/public/pedido-estado?email=${encodeURIComponent(email)}&tenant_id=1`;
+      const params = new URLSearchParams({ tenant_id: '1' });
+      if (email) params.set('email', email);
+      if (tel) params.set('telefono', tel);
+
+      const url = `${FOOD_BACKEND_URL}/api/public/pedido-estado?${params.toString()}`;
       const res = await fetch(url, { headers: { Accept: 'application/json' } });
       if (!res.ok) return;
 
       const data = await res.json();
       const lista: PedidoActivo[] = data.pedidos || (data.pedido ? [data.pedido] : []);
 
-      onPedidosChange?.(lista);
-
       if (lista.length === 0) {
+        // Si el backend no devolvió pedidos pero en memoria local hay un pedido de menos de 10 minutos, lo preservamos
+        const cached = getRecentCachedOrders();
+        const reciente = cached.filter(c => Date.now() - new Date(c.created_at).getTime() < 10 * 60 * 1000);
+        if (reciente.length > 0) {
+          setPedidos(reciente);
+          setVisible(true);
+          onPedidosChange?.(reciente);
+          return;
+        }
+
         // No hay pedidos activos → ocultar con animación suave
         if (pedidos.length > 0) {
           setAnimatingOut(true);
@@ -148,10 +224,19 @@ export const OrderStatusBanner: React.FC<OrderStatusBannerProps> = ({ onOpenMisP
             setSelectedPedidoId(null);
             setVisible(false);
             setAnimatingOut(false);
+            onPedidosChange?.([]);
+            try { localStorage.removeItem('nalu_recent_orders'); } catch {}
           }, 500);
         }
         return;
       }
+
+      // Guardar lista sincronizada en la memoria caché inteligente
+      try {
+        localStorage.setItem('nalu_recent_orders', JSON.stringify(lista));
+      } catch {}
+
+      onPedidosChange?.(lista);
 
       // Si entró un nuevo pedido, des-descartar y seleccionar el más reciente
       if (lista.length !== prevCountRef.current) {
@@ -162,7 +247,6 @@ export const OrderStatusBanner: React.FC<OrderStatusBannerProps> = ({ onOpenMisP
 
       setPedidos(lista);
       setSelectedPedidoId(prev => {
-        // Mantener el seleccionado si aún existe en la lista, sino el primero
         if (prev && lista.some(p => p.pedido_id === prev)) {
           return prev;
         }
@@ -174,14 +258,10 @@ export const OrderStatusBanner: React.FC<OrderStatusBannerProps> = ({ onOpenMisP
     } finally {
       setLoading(false);
     }
-  }, [getEmail, onPedidosChange, pedidos.length]);
+  }, [getEmail, getTelefono, onPedidosChange, pedidos.length]);
 
-  // Polling
+  // Polling continuo con el backend
   useEffect(() => {
-    const email = getEmail();
-    if (!email) return;
-
-    setLoading(true);
     fetchEstado();
 
     intervalRef.current = setInterval(fetchEstado, POLL_INTERVAL_MS);
@@ -190,23 +270,53 @@ export const OrderStatusBanner: React.FC<OrderStatusBannerProps> = ({ onOpenMisP
     };
   }, []); // eslint-disable-line
 
+  // Sincronización instantánea ante nuevos pedidos emitidos en la misma pestaña
+  useEffect(() => {
+    const handler = (e: any) => {
+      const detail = e?.detail;
+      const cached = getRecentCachedOrders();
+      if (detail && detail.numero_orden) {
+        const itemNuevo: PedidoActivo = {
+          pedido_id: detail.pedido_id || detail.numero_orden,
+          numero_orden: detail.numero_orden,
+          tipo_pedido: detail.tipo_pedido || 'delivery',
+          estado: detail.estado || 'esperando_confirmacion',
+          created_at: detail.created_at || new Date().toISOString(),
+          enviado_cocina_at: detail.enviado_cocina_at || null,
+          listo_cocina_at: null,
+          metodo_pago: detail.metodo_pago,
+        };
+
+        const listSinDupl = cached.filter(p => p.numero_orden !== itemNuevo.numero_orden);
+        const updated = [itemNuevo, ...listSinDupl];
+        try { localStorage.setItem('nalu_recent_orders', JSON.stringify(updated)); } catch {}
+        setPedidos(updated);
+        setSelectedPedidoId(itemNuevo.pedido_id);
+        setVisible(true);
+        setDismissed(false);
+        onPedidosChange?.(updated);
+      } else if (cached.length > 0) {
+        setPedidos(cached);
+        setVisible(true);
+        setDismissed(false);
+        onPedidosChange?.(cached);
+      }
+      fetchEstado();
+    };
+
+    window.addEventListener('nalu:order_status_updated', handler);
+    window.addEventListener('nalu:order_synced', handler);
+    return () => {
+      window.removeEventListener('nalu:order_status_updated', handler);
+      window.removeEventListener('nalu:order_synced', handler);
+    };
+  }, [fetchEstado, onPedidosChange]);
+
   // Escuchar cambios en localStorage (el usuario se loguea en otra pestaña)
   useEffect(() => {
     const handler = (e: StorageEvent) => {
-      if (e.key === 'nalu_google_user') {
-        if (e.newValue) {
-          setLoading(true);
-          fetchEstado();
-          if (!intervalRef.current) {
-            intervalRef.current = setInterval(fetchEstado, POLL_INTERVAL_MS);
-          }
-        } else {
-          // Logout: ocultar banner
-          setPedidos([]);
-          setSelectedPedidoId(null);
-          setVisible(false);
-          if (intervalRef.current) clearInterval(intervalRef.current);
-        }
+      if (e.key === 'nalu_google_user' || e.key === 'nalu_recent_orders') {
+        fetchEstado();
       }
     };
     window.addEventListener('storage', handler);
@@ -216,11 +326,7 @@ export const OrderStatusBanner: React.FC<OrderStatusBannerProps> = ({ onOpenMisP
   // Escuchar evento de login en la misma pestaña
   useEffect(() => {
     const handler = () => {
-      setLoading(true);
       fetchEstado();
-      if (!intervalRef.current) {
-        intervalRef.current = setInterval(fetchEstado, POLL_INTERVAL_MS);
-      }
     };
     window.addEventListener('nalu:google-login', handler);
     return () => window.removeEventListener('nalu:google-login', handler);
@@ -253,8 +359,8 @@ export const OrderStatusBanner: React.FC<OrderStatusBannerProps> = ({ onOpenMisP
     }
   };
 
-  // No mostrar si: no hay email, no hay pedidos, fue descartado, no es visible
-  if (!getEmail() || pedidos.length === 0 || dismissed || !visible) {
+  // Mostrar si hay pedidos, no fue descartado y es visible (sin importar si tiene Google login)
+  if (pedidos.length === 0 || dismissed || !visible) {
     return null;
   }
 

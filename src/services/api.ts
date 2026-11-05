@@ -332,13 +332,77 @@ export interface PedidoDetalle {
   items: PedidoDetalleItem[];
 }
 
-export async function fetchPedidoDetalle(pedidoId: number, email: string): Promise<PedidoDetalle | null> {
+export interface ActiveOrderCheckResponse {
+  tiene_activo: boolean;
+  pedido?: {
+    pedido_id: number;
+    numero_orden: number;
+    tipo_pedido: string;
+    estado: string;
+    created_at: string;
+    minutos_hace: number;
+    total: number;
+    cliente_nombre: string;
+    items_resumen: string;
+  } | null;
+}
+
+// Chequeo ultra rápido de pedido activo por teléfono (< 20ms) para prevención de duplicados
+export async function consultarPedidoActivoPorTelefono(
+  telefono: string,
+  tenantId = 1,
+  marcaId = 1
+): Promise<ActiveOrderCheckResponse> {
+  if (!telefono || !telefono.trim()) {
+    return { tiene_activo: false, pedido: null };
+  }
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1600); // Max 1.6s para no trabar jamás
+    const params = new URLSearchParams({
+      telefono: telefono.trim(),
+      tenant_id: String(tenantId),
+      marca_id: String(marcaId),
+    });
+    const res = await fetch(`${FOOD_BACKEND_URL}/api/public/pedidos/consultar-activo?${params.toString()}`, {
+      signal: controller.signal,
+      headers: { Accept: 'application/json' },
+    });
+    clearTimeout(timeoutId);
+    if (!res.ok) return { tiene_activo: false, pedido: null };
+    return await res.json();
+  } catch {
+    // Si falla o da timeout por red móvil inestable, nunca bloquea al cliente
+    return { tiene_activo: false, pedido: null };
+  }
+}
+
+// Consultar pedidos activos por email o teléfono para la barra superior
+export async function fetchPedidoEstado(options: { email?: string; telefono?: string; tenantId?: number }) {
+  try {
+    const params = new URLSearchParams({
+      tenant_id: String(options.tenantId || 1),
+    });
+    if (options.email) params.set('email', options.email.trim());
+    if (options.telefono) params.set('telefono', options.telefono.trim());
+    const res = await fetch(`${FOOD_BACKEND_URL}/api/public/pedido-estado?${params.toString()}`, {
+      headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) return { pedido: null, pedidos: [] };
+    return await res.json();
+  } catch {
+    return { pedido: null, pedidos: [] };
+  }
+}
+
+export async function fetchPedidoDetalle(pedidoId: number, email?: string, telefono?: string): Promise<PedidoDetalle | null> {
   try {
     const params = new URLSearchParams({
       pedido_id: String(pedidoId),
-      email,
       tenant_id: '1',
     });
+    if (email) params.set('email', email);
+    if (telefono) params.set('telefono', telefono);
     const res = await fetch(`${FOOD_BACKEND_URL}/api/public/pedido-detalle?${params.toString()}`, {
       headers: { Accept: 'application/json' },
     });

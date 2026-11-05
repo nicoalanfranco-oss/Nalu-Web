@@ -19,6 +19,13 @@ const ESTADOS_CONFIG: Record<
   EstadoPedido,
   { label: string; sublabel: string; icon: React.ReactNode; color: string; step: number }
 > = {
+  esperando_confirmacion: {
+    label: 'Esperando confirmación ⏳',
+    sublabel: 'Tu orden fue enviada. Esperando ingreso a cocina…',
+    icon: <Clock size={18} />,
+    color: '#D97706',
+    step: 0,
+  },
   abierto: {
     label: 'Pedido recibido',
     sublabel: 'Estamos procesando tu orden y asignando cocina',

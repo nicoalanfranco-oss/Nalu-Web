@@ -5522,6 +5522,7 @@ button {
 .osb-slide-out { animation: osb-slide-out-kf 0.4s cubic-bezier(0.55, 0, 1, 0.45) both; }
 
 /* Estados — paleta */
+.osb-estado-esperando { background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%); }
 .osb-estado-abierto { background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%); }
 .osb-estado-cocina  { background: linear-gradient(90deg, #fff7ed 0%, #ffedd5 100%); }
 .osb-estado-listo   { background: linear-gradient(90deg, #f0fdf4 0%, #dcfce7 100%); }
@@ -5548,6 +5549,7 @@ button {
   flex-shrink: 0;
   position: relative;
 }
+.osb-estado-esperando .osb-icon-pulse { background: rgba(217, 119, 6, 0.15); color: #d97706; }
 .osb-estado-cocina .osb-icon-pulse  { background: rgba(234, 88, 12, 0.12);  color: #ea580c; }
 .osb-estado-listo .osb-icon-pulse   { background: rgba(22, 163, 74, 0.12);   color: #16a34a; }
 .osb-estado-camino .osb-icon-pulse  { background: rgba(37, 99, 235, 0.12);   color: #2563eb; }
@@ -5651,6 +5653,7 @@ button {
   background: var(--osb-accent, #16a34a);
   animation: osb-dot-pulse 1.5s ease-in-out infinite;
 }
+.osb-estado-esperando { --osb-accent: #d97706; }
 .osb-estado-cocina  { --osb-accent: #ea580c; }
 .osb-estado-listo   { --osb-accent: #16a34a; }
 .osb-estado-camino  { --osb-accent: #2563eb; }
