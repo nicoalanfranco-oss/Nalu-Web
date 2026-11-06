@@ -495,7 +495,28 @@ export const App: React.FC = () => {
                 textAlign: 'left',
               }}
             >
-              <div style={{ fontSize: '1.6rem', lineHeight: 1 }}>🎉</div>
+              <div
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '10px',
+                  background: '#FFFFFF',
+                  padding: '3px',
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1.5px solid rgba(255, 255, 255, 0.4)',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                  overflow: 'hidden',
+                }}
+              >
+                <img
+                  src={marca?.logo_url || './Logo_nalu-sinfondo.png'}
+                  alt={marca?.nombre || 'Nalú Poke'}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
+              </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.94rem', fontWeight: 900, letterSpacing: '0.2px' }}>
                   ¡PEDIDO CONFIRMADO CON ÉXITO!
@@ -522,8 +543,8 @@ export const App: React.FC = () => {
               {/* Logo Nalú contra la izquierda */}
               <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
                 <img
-                  src="./Logo_nalu-sinfondo.png"
-                  alt="Nalú Poke"
+                  src={marca?.logo_url || './Logo_nalu-sinfondo.png'}
+                  alt={marca?.nombre || 'Nalú Poke'}
                   style={{
                     height: '68px',
                     width: 'auto',
