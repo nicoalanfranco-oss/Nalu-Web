@@ -60,6 +60,7 @@ function parseMarcaFromBackend(m: any, estadoAtencion?: any): MarcaInfo {
     logo_url: m.logo_url || MARCA_INFO.logo_url,
     numero_cuenta: m.numero_cuenta || '1472492',
     banco_nombre: m.banco_nombre || 'Prex',
+    banco_titular: m.banco_titular || m.titular_cuenta || m.titular || 'Bruma Beer',
     estado_atencion: estadoAtencion || m.estado_atencion,
   };
 }

@@ -46,6 +46,7 @@ export interface MarcaInfo {
   estado_atencion?: EstadoAtencion;
   numero_cuenta?: string;
   banco_nombre?: string;
+  banco_titular?: string;
 }
 
 export interface InsumoReceta {

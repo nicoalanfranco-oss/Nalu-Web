@@ -738,7 +738,7 @@ export const App: React.FC = () => {
                   </div>
 
                   <div style={{ fontSize: '0.84rem', color: '#475569', fontWeight: 700, marginBottom: '6px' }}>
-                    Titular: Cinthia Bottero
+                    Titular: {marca.banco_titular || 'Bruma Beer'}
                   </div>
 
                   {/* Mensaje en varios renglones a lo largo del cuadro */}
