@@ -737,9 +737,11 @@ export const App: React.FC = () => {
                     </span>
                   </div>
 
-                  <div style={{ fontSize: '0.84rem', color: '#475569', fontWeight: 700, marginBottom: '6px' }}>
-                    Titular: {marca.banco_titular || 'Bruma Beer'}
-                  </div>
+                  {marca.banco_titular && (
+                    <div style={{ fontSize: '0.84rem', color: '#475569', fontWeight: 700, marginBottom: '6px' }}>
+                      Titular: {marca.banco_titular}
+                    </div>
+                  )}
 
                   {/* Mensaje en varios renglones a lo largo del cuadro */}
                   <div
