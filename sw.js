@@ -1,4 +1,6 @@
-const CACHE_NAME = 'nalu-poke-v8';
+const BUILD_TIMESTAMP = '1794663781793';
+const CACHE_NAME = `nalu-poke-${BUILD_TIMESTAMP}`;
+
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -18,12 +20,13 @@ const STATIC_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.allSettled(
         STATIC_ASSETS.map((url) => cache.add(url).catch((err) => console.warn('SW cache miss for', url, err)))
       );
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
@@ -33,12 +36,19 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
+            console.log('[SW] Purgando cache anterior:', key);
             return caches.delete(key);
           }
         })
       );
     }).then(() => self.clients.claim())
   );
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('fetch', (event) => {
@@ -49,13 +59,34 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Nunca interceptar endpoints de la API (siempre frescos desde el backend)
-  if (url.pathname.startsWith('/api/')) {
+  // Nunca interceptar endpoints de la API ni version.json (siempre en vivo desde backend)
+  if (url.pathname.startsWith('/api/') || url.hostname.includes('hosted.app') || url.pathname.includes('version.json')) {
+    return;
+  }
+
+  // Para navegación (HTML principal / index.html): Network-First con fallback a cache
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-cache' })
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cached) => {
+            if (cached) return cached;
+            return caches.match('/index.html');
+          });
+        })
+    );
     return;
   }
 
   // Ingredientes e imágenes estáticas: Stale-While-Revalidate
-  if (url.pathname.startsWith('/ingredients/') || url.pathname.endsWith('.png') || url.pathname.endsWith('.jpg') || url.pathname.endsWith('.svg')) {
+  if (url.pathname.startsWith('/ingredients/') || url.pathname.endsWith('.png') || url.pathname.endsWith('.jpg') || url.pathname.endsWith('.svg') || url.pathname.endsWith('.PNG')) {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) => {
         return cache.match(event.request).then((cachedResponse) => {
@@ -74,24 +105,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Para el resto: Network-first con fallback a cache
+  // Para assets con hash y otros recursos: Cache-first con fallback a network
   event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const copy = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         }
         return networkResponse;
-      })
-      .catch(() => {
-        return caches.match(event.request).then((cached) => {
-          if (cached) return cached;
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
-          }
-          return new Response('Sin conexión', { status: 503, statusText: 'Offline' });
-        });
-      })
+      });
+    })
   );
 });
