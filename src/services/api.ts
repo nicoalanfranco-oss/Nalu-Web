@@ -130,8 +130,22 @@ export const FOOD_BACKEND_URL = (() => {
   return 'https://food--studio-4748759464-52942.us-east4.hosted.app';
 })();
 
+const LOCAL_STORAGE_CATALOG_KEY = 'nalu_cached_catalog_v2';
 const MEMORY_CACHE_KEY = 'nalu_catalogo_cache_v3';
-const CACHE_TTL_MS = 60 * 1000; // 1 minuto de caché para navegación rápida sin esperas
+const CACHE_TTL_MS = 15 * 1000;
+
+export function getInitialCatalog() {
+  try {
+    const saved = localStorage.getItem(LOCAL_STORAGE_CATALOG_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.elaborados && parsed.elaborados.length > 0) {
+        return parsed;
+      }
+    }
+  } catch {}
+  return getStaticCatalog();
+}
 
 /** Catálogo estático empaquetado en el build (siempre disponible de respaldo) */
 export function getStaticCatalog() {
@@ -144,30 +158,36 @@ export function getStaticCatalog() {
   };
 }
 
-export async function fetchNaluCatalogo(): Promise<{
+export async function fetchNaluCatalogo(forceRefresh = false): Promise<{
   elaborados: ProductoElaborado[];
   reventa: ProductoReventa[];
   gruposOpciones: GrupoOpciones[];
   tenant: TenantInfo;
   marca: MarcaInfo;
 }> {
-  // 1. Revisar si hay datos en caché de sesión recientes (< 1 min)
-  try {
-    const rawCache = sessionStorage.getItem(MEMORY_CACHE_KEY);
-    if (rawCache) {
-      const parsed = JSON.parse(rawCache);
-      if (Date.now() - parsed.timestamp < CACHE_TTL_MS) {
-        return parsed.data;
+  // 1. Revisar si hay datos en caché de sesión recientes (< 15 seg) si no se pidió refresh forzado
+  if (!forceRefresh) {
+    try {
+      const rawCache = sessionStorage.getItem(MEMORY_CACHE_KEY);
+      if (rawCache) {
+        const parsed = JSON.parse(rawCache);
+        if (Date.now() - parsed.timestamp < CACHE_TTL_MS) {
+          return parsed.data;
+        }
       }
-    }
-  } catch {}
+    } catch {}
+  }
 
-  // 2. Llamada directa a la API en vivo (idéntico a Lorena Web)
+  // 2. Llamada directa a la API en vivo con cache-busting estricto
   try {
-    const url = `${FOOD_BACKEND_URL}/api/public/catalogo?tenant_id=1&marca_id=1`;
+    const timestamp = Date.now();
+    const url = `${FOOD_BACKEND_URL}/api/public/catalogo?tenant_id=1&marca_id=1&_t=${timestamp}`;
     const res = await fetch(url, {
+      cache: 'no-store',
       headers: {
         'Accept': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
       },
     });
 
@@ -220,15 +240,27 @@ export async function fetchNaluCatalogo(): Promise<{
 
       try {
         sessionStorage.setItem(MEMORY_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: finalCatalog }));
+        localStorage.setItem(LOCAL_STORAGE_CATALOG_KEY, JSON.stringify(finalCatalog));
       } catch {}
 
       return finalCatalog;
     }
   } catch (error) {
-    console.warn('No se pudo conectar al backend en vivo, usando catálogo empaquetado de respaldo:', error);
+    console.warn('No se pudo conectar al backend en vivo, intentando recuperar último catálogo guardado:', error);
   }
 
-  // 3. Fallback seguro si no hay internet o el backend no responde
+  // 3. Fallback inteligente: el último catálogo que se descargó con éxito
+  try {
+    const saved = localStorage.getItem(LOCAL_STORAGE_CATALOG_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.elaborados && parsed.elaborados.length > 0) {
+        return parsed;
+      }
+    }
+  } catch {}
+
+  // 4. Último fallback seguro (estático de respaldo empaquetado)
   return getStaticCatalog();
 }
 

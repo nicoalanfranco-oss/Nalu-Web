@@ -4,7 +4,7 @@ import {
   MapPin, Navigation, ExternalLink, CreditCard, Banknote, Smartphone,
   Search, Loader2, Check, UserCheck, AlertCircle, Sparkles, Clock, MessageCircle
 } from 'lucide-react';
-import { CartItem, MarcaInfo } from '../types/food';
+import { CartItem, MarcaInfo, ProductoElaborado, ProductoReventa } from '../types/food';
 import { sendOrderToFood, searchAddress, AddressSuggestion, consultarPedidoActivoPorTelefono } from '../services/api';
 import { launchConfetti } from '../utils/confetti';
 
@@ -16,6 +16,9 @@ interface CheckoutModalProps {
   onClose: () => void;
   onOrderSuccess: (orderNumber: number, whatsappUrl: string, metodoPago?: 'efectivo' | 'tarjeta' | 'transferencia', pedidoId?: number) => void;
   marca?: MarcaInfo;
+  platosDisponibles?: ProductoElaborado[];
+  reventaDisponible?: ProductoReventa[];
+  onRemoveInvalidItem?: (id: string) => void;
 }
 
 interface GoogleUserData {
@@ -166,6 +169,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onClose,
   onOrderSuccess,
   marca,
+  platosDisponibles,
+  reventaDisponible,
+  onRemoveInvalidItem,
 }) => {
   // Cargar perfil guardado previamente en este dispositivo
   const savedCustomer = (() => {
@@ -477,6 +483,29 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setErrorMsg('Por favor ingresa tu dirección de entrega en Tacuarembó.');
       scrollToTop();
       return;
+    }
+
+    // ── 0. Verificación estricta de existencia de productos en la carta activa de cocina ──
+    if (platosDisponibles && platosDisponibles.length > 0) {
+      const itemInvalido = items.find(it => {
+        if (it.tipo === 'elaborado') {
+          return !platosDisponibles.some(p => p.producto_elaborado_id === it.producto_id && p.activo !== false);
+        }
+        if (it.tipo === 'reventa' && reventaDisponible) {
+          return !reventaDisponible.some(r => r.producto_reventa_id === it.producto_id && r.activo !== false && !r.sin_stock);
+        }
+        return false;
+      });
+
+      if (itemInvalido) {
+        setErrorMsg(`El artículo "${itemInvalido.nombre}" ya no está disponible en cocina. Fue retirado de tu pedido.`);
+        if (onRemoveInvalidItem) {
+          onRemoveInvalidItem(itemInvalido.id);
+        }
+        setEnviando(false);
+        scrollToTop();
+        return;
+      }
     }
 
     // ── 1. Chequeo ultra rápido de pedidos previos activos (Punto 4 de prevención de duplicados) ──
