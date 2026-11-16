@@ -459,7 +459,7 @@ export interface AddressSuggestion {
 }
 
 // Clave de Google Maps Platform (Places New & Geocoding oficial)
-const GOOGLE_MAPS_KEY = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyAQ8ASq1tqPVm8_q_4lootr0Q8-2EV05Ck';
+const GOOGLE_MAPS_KEY = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY || '';
 
 export async function searchAddress(query: string, tenantId = 1, ciudadBias = 'Tacuarembó'): Promise<AddressSuggestion[]> {
   if (!query || query.trim().length < 3) return [];
