@@ -445,7 +445,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setDireccion(finalDir);
     setLatitud(s.latitud);
     setLongitud(s.longitud);
-    setGoogleMapsUrl(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${finalDir}, ${s.ciudad || 'Tacuarembó'}, Uruguay`)}`);
+    const mapsLink = (s.latitud && s.longitud)
+      ? `https://www.google.com/maps/search/?api=1&query=${s.latitud},${s.longitud}`
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${finalDir}, ${s.ciudad || 'Tacuarembó'}, Uruguay`)}`;
+    setGoogleMapsUrl(mapsLink);
     setSugerencias([]);
     setMostrarSugerencias(false);
   };
@@ -546,32 +549,47 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setErrorRef('');
     setErrorFallbackWa('');
 
-    // Auto-geocodificar si el usuario escribió la dirección pero no seleccionó del autocompletado
-    // Esto garantiza que SIEMPRE tengamos coordenadas para el delivery
+    // Auto-geocodificar con Google Maps si el usuario escribió la dirección pero no seleccionó del autocompletado
     let resolvedLat = latitud;
     let resolvedLon = longitud;
     let resolvedGmapsUrl = googleMapsUrl;
 
     if (tipoEntrega === 'delivery' && direccion.trim() && (!resolvedLat || !resolvedLon)) {
       try {
-        const geoResults = await searchAddress(direccion.trim(), 1, 'Tacuarembó');
+        // Limpiar notas/paréntesis (ej: "Av.Torres Medeiros 822 (Comercio Viera.)" -> "Av. Torres Medeiros 822")
+        const qLimpia = direccion.trim()
+          .replace(/\(.*?\)/g, '')
+          .replace(/\b([Aa]v|[Bb]var|[Gg]ral|[Cc]nel)\.([^\s])/g, '$1. $2')
+          .replace(/\s{2,}/g, ' ')
+          .trim();
+
+        const geoResults = await searchAddress(qLimpia || direccion.trim(), 1, 'Tacuarembó');
         if (geoResults.length > 0) {
           const best = geoResults[0];
-          resolvedLat = best.latitud;
-          resolvedLon = best.longitud;
-          resolvedGmapsUrl = best.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${best.latitud},${best.longitud}`;
-          // Actualizar el estado para el perfil guardado
-          setLatitud(resolvedLat);
-          setLongitud(resolvedLon);
-          setGoogleMapsUrl(resolvedGmapsUrl);
+
+          // Validación de coherencia léxica: asegurarnos de que la calle devuelta no sea un disparate
+          const tokensInput = (qLimpia || direccion.trim()).toLowerCase().split(/\s+/).filter((w: string) => w.length > 2);
+          const tokensResultado = (best.direccion + ' ' + best.display_name).toLowerCase();
+          const coincide = tokensInput.some((tok: string) => tokensResultado.includes(tok));
+
+          if (coincide && best.latitud && best.longitud) {
+            resolvedLat = best.latitud;
+            resolvedLon = best.longitud;
+            resolvedGmapsUrl = `https://www.google.com/maps/search/?api=1&query=${best.latitud},${best.longitud}`;
+            setLatitud(resolvedLat);
+            setLongitud(resolvedLon);
+            setGoogleMapsUrl(resolvedGmapsUrl);
+          }
         }
       } catch {
         // Si falla el geocode, continuar sin coordenadas — el pedido se envía igual con la dirección en texto
       }
     }
 
+    // Regla de Oro: Si no hay coordenadas 100% verificadas, NUNCA sobreescribir con otra calle.
+    // Usar la dirección textual exacta del cliente en Google Maps:
     if (!resolvedGmapsUrl && direccion.trim()) {
-      resolvedGmapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', Tacuarembó')}`;
+      resolvedGmapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion.trim() + ', Tacuarembó, Uruguay')}`;
     }
 
     const parsedBday = parseFlexibleDate(fechaNacimiento);

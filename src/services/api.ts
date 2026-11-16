@@ -458,22 +458,28 @@ export interface AddressSuggestion {
   google_maps_url: string;
 }
 
+// Clave de Google Maps Platform (Places New & Geocoding oficial)
+const GOOGLE_MAPS_KEY = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyAQ8ASq1tqPVm8_q_4lootr0Q8-2EV05Ck';
+
 export async function searchAddress(query: string, tenantId = 1, ciudadBias = 'Tacuarembó'): Promise<AddressSuggestion[]> {
   if (!query || query.trim().length < 3) return [];
   const cleanQ = query.trim();
 
-  // Extraer el número de puerta al final (ej: "18 de julio 258" -> calle "18 de julio", número "258")
-  const trailingMatch = cleanQ.match(/^(.*?)\s+(\d{1,5}(?:\s*(?:bis|a|b|c))?)$/i);
+  // Limpieza inteligente de prefijos pegados (Av.Torres -> Av. Torres) y extracción de número de puerta
+  const normalizada = cleanQ.replace(/\b([Aa]v|[Bb]var|[Gg]ral|[Cc]nel)\.([^\s])/g, '$1. $2').replace(/\s{2,}/g, ' ');
+  const sinParentesis = normalizada.replace(/\(.*?\)/g, '').trim();
+
+  const trailingMatch = sinParentesis.match(/^(.*?)\s+(\d{1,5}(?:\s*(?:bis|a|b|c))?)$/i);
   const streetOnly = trailingMatch ? trailingMatch[1].trim() : '';
   const userDoorNumber = trailingMatch ? trailingMatch[2].trim() : '';
 
-  // 1. Intentar endpoint backend de Food
+  // 1. Intentar endpoint backend de Food (conectado a Google Maps Platform)
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
 
     const params = new URLSearchParams({
-      q: cleanQ,
+      q: sinParentesis || cleanQ,
       tenant_id: String(tenantId),
       ciudad: ciudadBias,
     });
@@ -487,22 +493,77 @@ export async function searchAddress(query: string, tenantId = 1, ciudadBias = 'T
     if (res.ok && contentType.includes('application/json')) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
-        // Asegurar que si el usuario tipeó un número de puerta, se mantenga en el resultado
         return data.map((item: AddressSuggestion) => {
-          if (userDoorNumber && !new RegExp(`\\b${userDoorNumber}$`, 'i').test(item.direccion)) {
-            return {
-              ...item,
-              direccion: `${item.direccion} ${userDoorNumber}`,
-              display_name: `${item.direccion} ${userDoorNumber}, ${item.ciudad}, ${item.departamento}, ${item.pais}`,
-              google_maps_url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${item.direccion} ${userDoorNumber}, ${item.ciudad}, Uruguay`)}`,
-            };
+          let dirFinal = item.direccion;
+          if (userDoorNumber && !new RegExp(`\\b${userDoorNumber}$`, 'i').test(dirFinal)) {
+            dirFinal = `${dirFinal} ${userDoorNumber}`;
           }
-          return item;
+          const mapsUrl = (item.latitud && item.longitud)
+            ? `https://www.google.com/maps/search/?api=1&query=${item.latitud},${item.longitud}`
+            : (item.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${dirFinal}, ${item.ciudad || ciudadBias}, Uruguay`)}`);
+
+          return {
+            ...item,
+            direccion: dirFinal,
+            display_name: item.display_name || `${dirFinal}, ${item.ciudad || ciudadBias}, ${item.pais || 'Uruguay'}`,
+            google_maps_url: mapsUrl,
+          };
         });
       }
     }
   } catch (err) {
-    // Continuar a fallback OSM
+    // Continuar a fallback directo de Google Geocoding
+  }
+
+  // 2. Fallback directo a Google Geocoding API (cliente web con CORS oficial)
+  if (GOOGLE_MAPS_KEY) {
+    try {
+      const gController = new AbortController();
+      const gTimeout = setTimeout(() => gController.abort(), 2500);
+
+      const queryParaGoogle = `${sinParentesis || cleanQ}, ${ciudadBias}, Uruguay`;
+      const gUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(queryParaGoogle)}&key=${GOOGLE_MAPS_KEY}&region=uy&language=es`;
+      const gRes = await fetch(gUrl, { signal: gController.signal });
+      clearTimeout(gTimeout);
+
+      if (gRes.ok) {
+        const gData = await gRes.json();
+        if (gData.status === 'OK' && Array.isArray(gData.results) && gData.results.length > 0) {
+          const list: AddressSuggestion[] = [];
+          for (const r of gData.results) {
+            const lat = r.geometry?.location?.lat;
+            const lng = r.geometry?.location?.lng;
+            if (lat == null || lng == null) continue;
+
+            const components = r.address_components || [];
+            const getComp = (type: string) => components.find((c: any) => c.types.includes(type))?.long_name || '';
+
+            const streetNumber = getComp('street_number') || userDoorNumber;
+            const route = getComp('route');
+            const direccion = [route, streetNumber].filter(Boolean).join(' ') || r.formatted_address.split(',')[0];
+            const ciudad = getComp('locality') || getComp('sublocality') || ciudadBias;
+            const departamento = getComp('administrative_area_level_1') || ciudadBias;
+            const pais = getComp('country') || 'Uruguay';
+
+            list.push({
+              display_name: r.formatted_address,
+              direccion,
+              ciudad,
+              departamento,
+              pais,
+              latitud: lat,
+              longitud: lng,
+              google_maps_url: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`,
+            });
+          }
+          if (list.length > 0) {
+            return list.slice(0, 5);
+          }
+        }
+      }
+    } catch (gErr) {
+      console.warn('Error en fallback directo Google Geocoding:', gErr);
+    }
   }
 
   // 2. Fallback resiliente directo con Photon (OpenStreetMap Autocomplete para Tacuarembó / Uruguay)
