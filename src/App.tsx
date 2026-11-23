@@ -73,6 +73,7 @@ export const App: React.FC = () => {
   const [orderSuccessPedidoId, setOrderSuccessPedidoId] = useState<number | null>(null);
   const [comprobanteUrlSuccess, setComprobanteUrlSuccess] = useState<string | null>(null);
   const [uploadingComprobanteSuccess, setUploadingComprobanteSuccess] = useState<boolean>(false);
+  const [comprobanteErrorSuccess, setComprobanteErrorSuccess] = useState<string | null>(null);
   const [orderWhatsAppUrl, setOrderWhatsAppUrl] = useState<string>('');
   const [orderPaymentMethod, setOrderPaymentMethod] = useState<'efectivo' | 'tarjeta' | 'transferencia' | null>(null);
   const [copiedPrex, setCopiedPrex] = useState<boolean>(false);
@@ -921,12 +922,13 @@ export const App: React.FC = () => {
                   <input
                     id="input-comprobante-success"
                     type="file"
-                    accept="image/*,.pdf"
+                    accept="image/*,image/heic,image/heif,.pdf"
                     style={{ display: 'none' }}
                     onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
                       setUploadingComprobanteSuccess(true);
+                      setComprobanteErrorSuccess(null);
                       let targetId = orderSuccessPedidoId;
                       if (!targetId) {
                         for (let i = 0; i < 20; i++) {
@@ -939,12 +941,15 @@ export const App: React.FC = () => {
                       }
                       if (!targetId) {
                         setUploadingComprobanteSuccess(false);
+                        setComprobanteErrorSuccess('No se pudo identificar el pedido. Intentá de nuevo.');
                         return;
                       }
                       const res = await uploadComprobanteTransferencia(targetId, file);
                       setUploadingComprobanteSuccess(false);
                       if (res.success && res.comprobante_url) {
                         setComprobanteUrlSuccess(res.comprobante_url);
+                      } else if (!res.success) {
+                        setComprobanteErrorSuccess(res.error || 'Error al subir el comprobante. Intentá de nuevo.');
                       }
                     }}
                   />
@@ -954,30 +959,37 @@ export const App: React.FC = () => {
                       <a href={comprobanteUrlSuccess} target="_blank" rel="noopener noreferrer" style={{ color: '#5F259F', textDecoration: 'underline', fontSize: '0.76rem' }}>Ver ↗</a>
                     </div>
                   ) : (
-                    <button
-                      type="button"
-                      disabled={uploadingComprobanteSuccess}
-                      onClick={() => document.getElementById('input-comprobante-success')?.click()}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '6px',
-                        width: '100%',
-                        padding: '8px 12px',
-                        background: '#5F259F',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        borderRadius: '10px',
-                        fontWeight: 800,
-                        fontSize: '0.82rem',
-                        cursor: uploadingComprobanteSuccess ? 'wait' : 'pointer',
-                        boxShadow: '0 2px 8px rgba(95, 37, 159, 0.25)',
-                      }}
-                    >
-                      <Paperclip size={14} />
-                      <span>{uploadingComprobanteSuccess ? 'Subiendo comprobante...' : 'Adjuntar comprobante de pago'}</span>
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        disabled={uploadingComprobanteSuccess}
+                        onClick={() => { setComprobanteErrorSuccess(null); document.getElementById('input-comprobante-success')?.click(); }}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          width: '100%',
+                          padding: '8px 12px',
+                          background: '#5F259F',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          borderRadius: '10px',
+                          fontWeight: 800,
+                          fontSize: '0.82rem',
+                          cursor: uploadingComprobanteSuccess ? 'wait' : 'pointer',
+                          boxShadow: '0 2px 8px rgba(95, 37, 159, 0.25)',
+                        }}
+                      >
+                        <Paperclip size={14} />
+                        <span>{uploadingComprobanteSuccess ? 'Subiendo comprobante...' : 'Adjuntar comprobante de pago'}</span>
+                      </button>
+                      {comprobanteErrorSuccess && (
+                        <p style={{ color: '#EF4444', fontSize: '0.75rem', margin: '4px 0 0', textAlign: 'center' }}>
+                          ⚠️ {comprobanteErrorSuccess}
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
               </div>

@@ -653,25 +653,38 @@ export async function searchAddress(query: string, tenantId = 1, ciudadBias = 'T
 
 export async function uploadComprobanteTransferencia(
   pedidoId: number,
-  file: File
+  fileOrBase64: File | string
 ): Promise<{ success: boolean; comprobante_url?: string; error?: string }> {
   try {
-    const base64 = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+    let base64: string;
+    let filename = 'comprobante.jpg';
+    let mimeType = 'image/jpeg';
+
+    if (typeof fileOrBase64 === 'string') {
+      base64 = fileOrBase64;
+    } else {
+      // Comprimir imagen antes de enviar (máx 1600px, 82% calidad)
+      const { procesarComprobante } = await import('../utils/imageCompressor');
+      const processed = await procesarComprobante(fileOrBase64);
+      filename = processed.filename;
+      mimeType = processed.mimeType;
+      base64 = processed.base64;
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 25000);
 
     const res = await fetch(`${FOOD_BACKEND_URL}/api/public/pedidos/${pedidoId}/comprobante`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         base64,
-        filename: file.name,
-        mimeType: file.type || 'image/jpeg',
+        comprobante_base64: base64,
+        filename,
+        mimeType,
       }),
-    });
+      signal: controller.signal,
+    }).finally(() => clearTimeout(timeout));
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
@@ -681,6 +694,9 @@ export async function uploadComprobanteTransferencia(
     const data = await res.json();
     return { success: true, comprobante_url: data.comprobante_url };
   } catch (err: any) {
+    if (err.name === 'AbortError') {
+      return { success: false, error: 'La subida tardó demasiado. Intentá con una foto más chica.' };
+    }
     console.error('Error al subir comprobante a Food backend:', err);
     return { success: false, error: err.message || 'Error de red' };
   }
