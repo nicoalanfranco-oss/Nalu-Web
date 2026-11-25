@@ -2,35 +2,36 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
-import { checkAppVersionAndPurge } from './utils/versionCheck';
+import { checkAppVersionAndPurge, cleanVersionQueryParam, isAppReloading } from './utils/versionCheck';
+
+// Limpiar ?_app_v=... de la URL si venimos de una recarga forzada sin caché
+cleanVersionQueryParam();
 
 // Verificación inmediata de versión al iniciar
-checkAppVersionAndPurge().catch(() => {});
+checkAppVersionAndPurge(true).catch(() => {});
 
-// Registrar Service Worker para PWA con detección activa de nuevas versiones
+// Registrar Service Worker para PWA con actualización sin caché HTTP
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    const hadController = Boolean(navigator.serviceWorker.controller);
+
     navigator.serviceWorker
-      .register('/sw.js')
+      .register('/sw.js', { updateViaCache: 'none' })
       .then((registration) => {
-        // Chequeo forzado inmediato al registrar
         registration.update().catch(() => {});
 
-        // Chequeo cuando la app vuelve al primer plano (desbloqueo del móvil o cambio de app)
         document.addEventListener('visibilitychange', () => {
           if (document.visibilityState === 'visible') {
             registration.update().catch(() => {});
-            checkAppVersionAndPurge().catch(() => {});
           }
         });
 
-        // Chequeo periódico cada 60 segundos en segundo plano
         setInterval(() => {
-          registration.update().catch(() => {});
-          checkAppVersionAndPurge().catch(() => {});
+          if (document.visibilityState === 'visible') {
+            registration.update().catch(() => {});
+          }
         }, 60 * 1000);
 
-        // Detectar si hay un nuevo Service Worker instalado
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (newWorker) {
@@ -46,13 +47,15 @@ if ('serviceWorker' in navigator) {
         console.warn('SW registration failed:', err);
       });
 
-    // Recargar la página automáticamente cuando el nuevo Service Worker toma el control
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) {
-        refreshing = true;
-        window.location.reload();
-      }
+      if (!hadController || refreshing || isAppReloading()) return;
+      refreshing = true;
+      checkAppVersionAndPurge(true).then((didReload) => {
+        if (!didReload) {
+          window.location.reload();
+        }
+      });
     });
   });
 }

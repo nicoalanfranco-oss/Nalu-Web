@@ -3,16 +3,17 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import fs from 'fs';
 
+const BUILD_TIMESTAMP = Date.now();
+
 // Plugin para inyectar automáticamente un timestamp único en el Service Worker y version.json en cada build
 function versionManagerPlugin(): Plugin {
   return {
     name: 'version-manager-plugin',
     closeBundle() {
-      const timestamp = Date.now();
       const versionData = {
-        version: '1.1.0',
-        buildTime: timestamp,
-        timestamp: new Date().toISOString()
+        version: '1.2.0',
+        buildTime: BUILD_TIMESTAMP,
+        timestamp: new Date(BUILD_TIMESTAMP).toISOString(),
       };
 
       // 1. Escribir dist/version.json
@@ -23,10 +24,10 @@ function versionManagerPlugin(): Plugin {
       const swDistPath = path.resolve(__dirname, 'dist/sw.js');
       if (fs.existsSync(swDistPath)) {
         let content = fs.readFileSync(swDistPath, 'utf8');
-        content = content.replace(/__BUILD_TIMESTAMP__/g, String(timestamp));
+        content = content.replace(/__BUILD_TIMESTAMP__/g, String(BUILD_TIMESTAMP));
         fs.writeFileSync(swDistPath, content, 'utf8');
       }
-      console.log(`[Version Plugin] Injected build timestamp ${timestamp} into dist/version.json and dist/sw.js`);
+      console.log(`[Version Plugin] Injected build timestamp ${BUILD_TIMESTAMP} into dist/version.json and dist/sw.js`);
     },
   };
 }
@@ -34,6 +35,9 @@ function versionManagerPlugin(): Plugin {
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',
+  define: {
+    __APP_BUILD_TIME__: JSON.stringify(String(BUILD_TIMESTAMP)),
+  },
   plugins: [react(), versionManagerPlugin()],
   resolve: {
     alias: {

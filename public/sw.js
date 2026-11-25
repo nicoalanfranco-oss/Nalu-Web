@@ -2,9 +2,6 @@ const BUILD_TIMESTAMP = '__BUILD_TIMESTAMP__';
 const CACHE_NAME = `nalu-poke-${BUILD_TIMESTAMP}`;
 
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
   '/pwa-192x192.png',
   '/pwa-512x512.png',
   '/pwa-maskable-192x192.png',
@@ -22,9 +19,20 @@ const STATIC_ASSETS = [
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return Promise.allSettled(
-        STATIC_ASSETS.map((url) => cache.add(url).catch((err) => console.warn('SW cache miss for', url, err)))
+    caches.open(CACHE_NAME).then(async (cache) => {
+      // Guardar index.html sin usar caché HTTP como respaldo offline
+      try {
+        const indexReq = new Request('/index.html', { cache: 'no-store' });
+        const indexRes = await fetch(indexReq);
+        if (indexRes && indexRes.ok) {
+          await cache.put('/index.html', indexRes);
+        }
+      } catch (err) {
+        console.warn('[SW] No se pudo pre-cachear index.html:', err);
+      }
+
+      await Promise.allSettled(
+        STATIC_ASSETS.map((url) => cache.add(url).catch((err) => console.warn('[SW] Cache miss for', url, err)))
       );
     })
   );
@@ -51,48 +59,101 @@ self.addEventListener('message', (event) => {
   }
 });
 
+function sanitizeNavigationResponse(response) {
+  if (!response || !response.redirected) {
+    return response;
+  }
+  const cloned = response.clone();
+  return new Response(cloned.body, {
+    status: cloned.status,
+    statusText: cloned.statusText,
+    headers: cloned.headers,
+  });
+}
+
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Skip non-GET requests and chrome extensions
+  // Skip non-GET requests and non-HTTP(S)
   if (event.request.method !== 'GET' || !url.protocol.startsWith('http')) {
     return;
   }
 
-  // Nunca interceptar endpoints de la API ni version.json (siempre en vivo desde backend)
-  if (url.pathname.startsWith('/api/') || url.hostname.includes('hosted.app') || url.pathname.includes('version.json')) {
+  // Nunca interceptar endpoints de la API, version.json ni sw.js
+  if (
+    url.pathname.startsWith('/api/') ||
+    url.hostname.includes('hosted.app') ||
+    url.pathname.endsWith('/version.json') ||
+    url.pathname.endsWith('/sw.js')
+  ) {
     return;
   }
 
-  // Para navegación (HTML principal / index.html): Network-First con fallback a cache
+  // Navegación (HTML / SPA entry): Network-First saltando caché HTTP con fallback offline a /index.html
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request, { cache: 'no-cache' })
+      fetch(new Request(event.request.url, { cache: 'no-store' }))
         .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
+          if (networkResponse && networkResponse.ok) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
+          }
+          return sanitizeNavigationResponse(networkResponse);
+        })
+        .catch(() => caches.match('/index.html'))
+    );
+    return;
+  }
+
+  // manifest.json: Network-First para reflejar cambios de PWA
+  if (url.pathname.endsWith('/manifest.json')) {
+    event.respondWith(
+      fetch(new Request(event.request.url, { cache: 'no-store' }))
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.ok) {
             const copy = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
           }
           return networkResponse;
         })
-        .catch(() => {
-          return caches.match(event.request).then((cached) => {
-            if (cached) return cached;
-            return caches.match('/index.html');
-          });
-        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Assets compilados por Vite con hash en el nombre (/assets/...): Cache-First seguro
+  if (url.origin === self.location.origin && url.pathname.startsWith('/assets/')) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.ok) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
+          return networkResponse;
+        });
+      })
     );
     return;
   }
 
   // Ingredientes e imágenes estáticas: Stale-While-Revalidate
-  if (url.pathname.startsWith('/ingredients/') || url.pathname.endsWith('.png') || url.pathname.endsWith('.jpg') || url.pathname.endsWith('.svg') || url.pathname.endsWith('.PNG')) {
+  if (
+    url.pathname.startsWith('/ingredients/') ||
+    url.pathname.endsWith('.png') ||
+    url.pathname.endsWith('.PNG') ||
+    url.pathname.endsWith('.jpg') ||
+    url.pathname.endsWith('.jpeg') ||
+    url.pathname.endsWith('.svg') ||
+    url.pathname.endsWith('.webp')
+  ) {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) => {
         return cache.match(event.request).then((cachedResponse) => {
           const fetchPromise = fetch(event.request)
             .then((networkResponse) => {
-              if (networkResponse && networkResponse.status === 200) {
+              if (networkResponse && networkResponse.ok) {
                 cache.put(event.request, networkResponse.clone());
               }
               return networkResponse;
@@ -105,17 +166,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Para assets con hash y otros recursos: Cache-first con fallback a network
+  // Resto de recursos: Network-First con fallback a cache
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.ok && url.origin === self.location.origin) {
           const copy = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         }
         return networkResponse;
-      });
-    })
+      })
+      .catch(() => caches.match(event.request))
   );
 });

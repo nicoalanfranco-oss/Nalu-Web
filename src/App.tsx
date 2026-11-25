@@ -184,7 +184,7 @@ export const App: React.FC = () => {
         // Si la app quedó abierta desde hace más de 2 horas (ej: desde anoche o días atrás)
         if (shouldHardReload) {
           console.warn(`[Inactivity] Sesión abierta hace ${minutesIdle} minutos. Refrescando versión y datos limpios...`);
-          checkAppVersionAndPurge().then(purged => {
+          checkAppVersionAndPurge(true).then(purged => {
             if (!purged) {
               syncCatalog(true);
             }
@@ -195,6 +195,8 @@ export const App: React.FC = () => {
         // Si pasaron más de 30 minutos de inactividad
         if (isStale) {
           console.log(`[Inactivity] App reanudada tras ${minutesIdle} min de inactividad.`);
+          checkAppVersionAndPurge(true).catch(() => {});
+        } else {
           checkAppVersionAndPurge().catch(() => {});
         }
 
@@ -212,7 +214,7 @@ export const App: React.FC = () => {
     // 4. Al recuperar conexión a internet
     const handleOnline = () => {
       setIsOnline(true);
-      checkAppVersionAndPurge().catch(() => {});
+      checkAppVersionAndPurge(true).catch(() => {});
       syncCatalog(true);
     };
 
