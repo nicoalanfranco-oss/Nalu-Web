@@ -1114,7 +1114,7 @@
         {
           "opcion_id": 81,
           "nombre": "Camarones (premium - costo extra)",
-          "precio_extra": 0,
+          "precio_extra": 90,
           "costo_extra": 116.7,
           "cantidad_insumo": 0.12,
           "unidad_insumo": "kg",

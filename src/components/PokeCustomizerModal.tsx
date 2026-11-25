@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { X, Check, ArrowRight, ArrowLeft, Plus, Sparkles, AlertCircle } from 'lucide-react';
+import { X, Check, ArrowRight, ArrowLeft, Plus, Sparkles, AlertCircle, HelpCircle } from 'lucide-react';
 import { ProductoElaborado, GrupoOpciones, OpcionPersonalizacion, CartItem } from '../types/food';
 import { triggerHaptic } from '../utils/haptics';
 
@@ -62,7 +62,31 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
   const [opcionesElegidas, setOpcionesElegidas] = useState<{ grupo_id: number; opcion: OpcionPersonalizacion }[]>([]);
   const [notasCocina, setNotasCocina] = useState<string>('');
 
+  // Estado para el modal de decisión cuando se elige solo camarón en paso de proteínas
+  const [camaronPromptModal, setCamaronPromptModal] = useState<{
+    visible: boolean;
+    grupo: GrupoOpciones;
+    opcionCamaron: OpcionPersonalizacion;
+  } | null>(null);
+
+  // Flag para saber si el usuario ya tomó una decisión explícita sobre camarones
+  const [decisionCamaronTomada, setDecisionCamaronTomada] = useState<boolean>(false);
+
   const grupoActual = gruposOrdenados[pasoActivo] || gruposOrdenados[0];
+
+  // Helper para detectar si un grupo es de proteínas
+  const esGrupoProteina = (g?: GrupoOpciones | null) => {
+    if (!g) return false;
+    const nom = (g.nombre || '').toLowerCase();
+    return nom.includes('proteína') || nom.includes('proteina');
+  };
+
+  // Helper para detectar si una opción es camarón
+  const esOpcionCamaron = (opc?: OpcionPersonalizacion | null) => {
+    if (!opc) return false;
+    const nom = (opc.nombre || '').toLowerCase();
+    return nom.includes('camar');
+  };
 
   // Alternar selección
   const handleToggleOpcion = (grupo: GrupoOpciones, opc: OpcionPersonalizacion) => {
@@ -72,10 +96,12 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
     );
 
     if (yaSeleccionada) {
+      setDecisionCamaronTomada(false);
       setOpcionesElegidas(prev =>
         prev.filter(item => !(item.grupo_id === grupo.grupo_id && item.opcion.opcion_id === opc.opcion_id))
       );
     } else {
+      setDecisionCamaronTomada(false);
       const seleccionadasEnGrupo = opcionesElegidas.filter(item => item.grupo_id === grupo.grupo_id);
       const maximo = grupo.max_opciones || 99;
 
@@ -94,6 +120,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
   // Remover opción desde el visualizador en vivo
   const handleRemoveOpcion = (opcId: number) => {
     triggerHaptic('light');
+    setDecisionCamaronTomada(false);
     setOpcionesElegidas(prev => prev.filter(item => item.opcion.opcion_id !== opcId));
   };
 
@@ -110,7 +137,24 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
   const precioFinalUnitario = Number(plato.precio_venta) + extrasTotal;
 
   // Confirmar y agregar al carrito
-  const handleConfirmar = () => {
+  const handleConfirmar = (forzarSinPrompt = false) => {
+    // Si en el paso de proteínas quedó únicamente 1 porción de camarón y no se le preguntó aún:
+    const grupoProteina = gruposOrdenados.find(g => esGrupoProteina(g));
+    if (grupoProteina && !decisionCamaronTomada && !forzarSinPrompt) {
+      const seleccionadasEnPaso = opcionesElegidas.filter(i => i.grupo_id === grupoProteina.grupo_id);
+      const soloTieneCamaron = seleccionadasEnPaso.length === 1 && esOpcionCamaron(seleccionadasEnPaso[0].opcion);
+      const maxPermitido = grupoProteina.max_opciones || 2;
+      if (soloTieneCamaron && maxPermitido >= 2 && !camaronPromptModal) {
+        triggerHaptic('medium');
+        setCamaronPromptModal({
+          visible: true,
+          grupo: grupoProteina,
+          opcionCamaron: seleccionadasEnPaso[0].opcion,
+        });
+        return;
+      }
+    }
+
     const modificadores = opcionesElegidas.map(item => {
       const grupo = gruposOrdenados.find(g => g.grupo_id === item.grupo_id);
       return {
@@ -142,9 +186,80 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
 
   const esUltimoPaso = pasoActivo === gruposOrdenados.length - 1;
 
-  // Navegación entre pasos con scroll suave arriba
+  // Acciones desde el diálogo de camarón:
+  // 1. Doble camarón (+$180): agrega una 2da porción de camarón (con precio extra 90 cada una) y avanza
+  const handleElegirDobleCamaron = () => {
+    if (!camaronPromptModal) return;
+    const { grupo, opcionCamaron } = camaronPromptModal;
+    triggerHaptic('success');
+
+    // Clonamos la opción de camarón con ID ficticio negativo para no colisionar en keys pero garantizar que viaje como 2da porción
+    const segundaPorcion: OpcionPersonalizacion = {
+      ...opcionCamaron,
+      opcion_id: -Math.abs(opcionCamaron.opcion_id * 100 + 2),
+      nombre: 'Camarones (2ª porción extra)',
+      precio_extra: 90,
+    };
+
+    setOpcionesElegidas(prev => [
+      ...prev.filter(i => i.grupo_id !== grupo.grupo_id),
+      { grupo_id: grupo.grupo_id, opcion: { ...opcionCamaron, precio_extra: 90 } },
+      { grupo_id: grupo.grupo_id, opcion: segundaPorcion },
+    ]);
+
+    setDecisionCamaronTomada(true);
+    setCamaronPromptModal(null);
+
+    // Continuar al siguiente paso
+    if (!esUltimoPaso) {
+      setPasoActivo(prev => prev + 1);
+      const scrollEl = document.getElementById('customizer-scroll-body');
+      if (scrollEl) scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      handleConfirmar(true);
+    }
+  };
+
+  // 2. Mantener solo 1 porción de camarón (+$90) y continuar
+  const handleMantenerUnaPorcion = () => {
+    setDecisionCamaronTomada(true);
+    setCamaronPromptModal(null);
+    triggerHaptic('light');
+    if (!esUltimoPaso) {
+      setPasoActivo(prev => prev + 1);
+      const scrollEl = document.getElementById('customizer-scroll-body');
+      if (scrollEl) scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      handleConfirmar(true);
+    }
+  };
+
+  // 3. Completar con otra proteína: cierra el prompt y deja al usuario en el selector
+  const handleCompletarConOtraProteina = () => {
+    setCamaronPromptModal(null);
+    triggerHaptic('light');
+  };
   const handleAvanzarPaso = () => {
     if (!pasoValido) return;
+
+    // Chequeo especial para el paso de Proteínas si eligió únicamente camarón
+    if (grupoActual && esGrupoProteina(grupoActual)) {
+      const seleccionadasEnPaso = opcionesElegidas.filter(i => i.grupo_id === grupoActual.grupo_id);
+      const soloTieneCamaron = seleccionadasEnPaso.length === 1 && esOpcionCamaron(seleccionadasEnPaso[0].opcion);
+      const maxPermitido = grupoActual.max_opciones || 2;
+
+      // Si sólo eligió 1 porción de camarón y el bowl permite 2 o 3 proteínas:
+      if (soloTieneCamaron && maxPermitido >= 2) {
+        triggerHaptic('medium');
+        setCamaronPromptModal({
+          visible: true,
+          grupo: grupoActual,
+          opcionCamaron: seleccionadasEnPaso[0].opcion,
+        });
+        return;
+      }
+    }
+
     triggerHaptic('light');
     if (!esUltimoPaso) {
       setPasoActivo(prev => prev + 1);
@@ -392,7 +507,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
             ) : (
               <button
                 type="button"
-                onClick={handleConfirmar}
+                onClick={() => handleConfirmar(false)}
                 disabled={!pasoValido}
                 className="btn-primary customizer-inline-confirm-btn"
               >
@@ -461,7 +576,7 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
             ) : (
               <button
                 type="button"
-                onClick={handleConfirmar}
+                onClick={() => handleConfirmar(false)}
                 disabled={!pasoValido}
                 className="btn-primary"
                 style={{
@@ -479,6 +594,170 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
             )}
           </div>
         </div>
+
+        {/* Modal Diálogo Elegante de Selección de Camarones */}
+        {camaronPromptModal && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              background: 'rgba(0, 0, 0, 0.75)',
+              backdropFilter: 'blur(6px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px',
+              animation: 'fadeIn 0.2s ease-out',
+            }}
+            onClick={() => setCamaronPromptModal(null)}
+          >
+            <div
+              style={{
+                background: 'var(--bg-card, #ffffff)',
+                color: 'var(--text-main, #111827)',
+                borderRadius: '24px',
+                padding: '24px 20px',
+                maxWidth: '440px',
+                width: '100%',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+                border: '1.5px solid rgba(120, 140, 80, 0.25)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                animation: 'scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header con Ícono */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+                <div
+                  style={{
+                    width: '46px',
+                    height: '46px',
+                    borderRadius: '16px',
+                    background: 'rgba(120, 140, 80, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.6rem',
+                    flexShrink: 0,
+                  }}
+                >
+                  🍤
+                </div>
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ margin: '0 0 4px', fontSize: '1.15rem', fontWeight: 900, color: 'var(--text-main, #1f2937)' }}>
+                    Porción de Camarones
+                  </h4>
+                  <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-muted, #6b7280)', lineHeight: 1.4 }}>
+                    Elegiste <strong>1 porción de Camarones</strong>. Tu bowl admite hasta{' '}
+                    <strong>{camaronPromptModal.grupo.max_opciones || 2} proteínas</strong>.
+                  </p>
+                </div>
+              </div>
+
+              {/* Mensaje explicativo */}
+              <div
+                style={{
+                  background: 'rgba(120, 140, 80, 0.08)',
+                  borderRadius: '14px',
+                  padding: '12px 14px',
+                  fontSize: '0.85rem',
+                  color: 'var(--text-main, #374151)',
+                  lineHeight: 1.45,
+                }}
+              >
+                💡 Podés completar tu bowl con otra proteína (Pollo, Carne, Cerdo o Huevo sin costo) o pedir <strong>doble porción de camarones</strong> por $180 extra ($90 c/u).
+              </div>
+
+              {/* Opciones interactivas */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {/* 1. Doble camarón */}
+                <button
+                  type="button"
+                  onClick={handleElegirDobleCamaron}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '14px 16px',
+                    borderRadius: '16px',
+                    background: '#788c50',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontWeight: 800,
+                    fontSize: '0.92rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 14px rgba(120, 140, 80, 0.35)',
+                    transition: 'transform 0.15s, opacity 0.15s',
+                  }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>🍤🍤</span>
+                    <span>Quiero Doble Camarón</span>
+                  </span>
+                  <span
+                    style={{
+                      background: 'rgba(255,255,255,0.25)',
+                      padding: '4px 10px',
+                      borderRadius: '10px',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    +$180
+                  </span>
+                </button>
+
+                {/* 2. Completar con otra proteína */}
+                <button
+                  type="button"
+                  onClick={handleCompletarConOtraProteina}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 16px',
+                    borderRadius: '16px',
+                    background: 'var(--bg-page, #f3f4f6)',
+                    color: 'var(--text-main, #1f2937)',
+                    border: '1.5px solid var(--border-light, #e5e7eb)',
+                    fontWeight: 700,
+                    fontSize: '0.88rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>🍗</span>
+                    <span>Completar con otra proteína</span>
+                  </span>
+                  <span style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 800 }}>
+                    Sin costo
+                  </span>
+                </button>
+
+                {/* 3. Dejar solo 1 porción */}
+                <button
+                  type="button"
+                  onClick={handleMantenerUnaPorcion}
+                  style={{
+                    padding: '10px 14px',
+                    borderRadius: '12px',
+                    background: 'transparent',
+                    color: 'var(--text-muted, #6b7280)',
+                    border: 'none',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                  }}
+                >
+                  Dejar solo 1 porción de camarón (+$90) y continuar &rarr;
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
