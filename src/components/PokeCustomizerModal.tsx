@@ -78,14 +78,14 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
   const esGrupoProteina = (g?: GrupoOpciones | null) => {
     if (!g) return false;
     const nom = (g.nombre || '').toLowerCase();
-    return nom.includes('proteína') || nom.includes('proteina');
+    return nom.includes('proteína') || nom.includes('proteina') || nom.includes('protein');
   };
 
   // Helper para detectar si una opción es camarón
   const esOpcionCamaron = (opc?: OpcionPersonalizacion | null) => {
     if (!opc) return false;
     const nom = (opc.nombre || '').toLowerCase();
-    return nom.includes('camar');
+    return nom.includes('camar') || nom.includes('shrimp') || opc.opcion_id === 25 || opc.opcion_id === 81;
   };
 
   // Alternar selección
@@ -112,7 +112,18 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
           { grupo_id: grupo.grupo_id, opcion: opc },
         ]);
       } else if (seleccionadasEnGrupo.length < maximo) {
+        const nuevasSeleccionadas = [...seleccionadasEnGrupo, { grupo_id: grupo.grupo_id, opcion: opc }];
         setOpcionesElegidas(prev => [...prev, { grupo_id: grupo.grupo_id, opcion: opc }]);
+
+        // Si es el grupo de proteínas y se acaba de seleccionar camarón quedando como única proteína elegida en un bowl de 2 o 3:
+        if (esGrupoProteina(grupo) && esOpcionCamaron(opc) && nuevasSeleccionadas.length === 1 && maximo >= 2) {
+          triggerHaptic('medium');
+          setCamaronPromptModal({
+            visible: true,
+            grupo,
+            opcionCamaron: opc,
+          });
+        }
       }
     }
   };
@@ -340,6 +351,22 @@ export const PokeCustomizerModal: React.FC<PokeCustomizerModalProps> = ({
                   key={grp.grupo_id}
                   type="button"
                   onClick={() => {
+                    // Si el usuario está en el paso de proteínas y eligió solo camarón antes de saltar a otro paso:
+                    if (grupoActual && esGrupoProteina(grupoActual) && idx !== pasoActivo) {
+                      const seleccionadasEnPaso = opcionesElegidas.filter(i => i.grupo_id === grupoActual.grupo_id);
+                      const soloTieneCamaron = seleccionadasEnPaso.length === 1 && esOpcionCamaron(seleccionadasEnPaso[0].opcion);
+                      const maxPermitido = grupoActual.max_opciones || 2;
+                      if (soloTieneCamaron && maxPermitido >= 2 && !decisionCamaronTomada) {
+                        triggerHaptic('medium');
+                        setCamaronPromptModal({
+                          visible: true,
+                          grupo: grupoActual,
+                          opcionCamaron: seleccionadasEnPaso[0].opcion,
+                        });
+                        return;
+                      }
+                    }
+
                     setPasoActivo(idx);
                     const scrollEl = document.getElementById('customizer-scroll-body');
                     if (scrollEl) scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
