@@ -453,9 +453,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setMostrarSugerencias(false);
   };
 
-  // Enviar pedido a POS Food y luego abrir WhatsApp
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Enviar pedido a POS Food
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (enviando) return; // Prevenir doble-tap en iOS
 
     // Limpiar espacios en campos clave (iOS Safari autocorrect puede agregar espacios)
@@ -758,53 +758,24 @@ ${lineasItems}
 💰 *TOTAL A PAGAR: $${total} UYU*${notas.trim() ? `\n\n💬 *Comentarios:* ${notas.trim()}` : ''}`;
       };
 
-      // Preparar orden optimista inmediata
-      const numOrdenOptimista = Math.floor(1000 + Math.random() * 9000);
-      const textoWhatsAppOptimista = generarTextoWhatsApp(`Pedido #N${numOrdenOptimista}`);
-      const whatsappUrlOptimista = `https://api.whatsapp.com/send?phone=59899127786&text=${encodeURIComponent(textoWhatsAppOptimista)}`;
+      // Enviar a la base de datos de Food y esperar confirmación real antes de confirmar al cliente
+      const res = await sendOrderToFood(payload);
 
-      // Enviar a la base de datos de Food en segundo plano con Fast Path (máximo 2 segundos de espera)
-      const sendPromise = sendOrderToFood(payload);
-
-      const timeoutPromise = new Promise<{ fastTimeout: true }>(resolve => 
-        setTimeout(() => resolve({ fastTimeout: true }), 2000)
-      );
-
-      const raceResult = await Promise.race([sendPromise, timeoutPromise]);
-
-      if ('fastTimeout' in raceResult) {
-        // El servidor tardó más de 2s (arranque o red móvil lenta):
-        // CERO DEMORA Y CERO ERROR: pasamos de inmediato a la pantalla de éxito
-        triggerSuccessAndSaveCache(numOrdenOptimista, whatsappUrlOptimista, metodoPago, undefined, 'esperando_confirmacion');
-
-        // En segundo plano el servidor sigue procesando; cuando responda actualizamos el ID silenciosamente
-        sendPromise.then(res => {
-          if (res.success && res.pedido_id) {
-            window.dispatchEvent(new CustomEvent('nalu:order_synced', {
-              detail: { pedido_id: res.pedido_id, numero_orden: res.numero_orden }
-            }));
-          }
-        }).catch(() => {});
-        return;
-      }
-
-      const res = raceResult;
-      if (res.success) {
-        const numOrdenReal = res.numero_orden || numOrdenOptimista;
-        const textoWhatsAppReal = generarTextoWhatsApp(`Pedido #N${numOrdenReal}`);
+      if (res.success && res.pedido_id && res.numero_orden) {
+        const textoWhatsAppReal = generarTextoWhatsApp(`Pedido #N${res.numero_orden}`);
         const whatsappUrlReal = `https://api.whatsapp.com/send?phone=59899127786&text=${encodeURIComponent(textoWhatsAppReal)}`;
-        triggerSuccessAndSaveCache(numOrdenReal, whatsappUrlReal, metodoPago, res.pedido_id, 'en_cocina');
+        triggerSuccessAndSaveCache(res.numero_orden, whatsappUrlReal, metodoPago, res.pedido_id, 'en_cocina');
       } else {
-        // En caso de que el backend reporte intermitencia, confirmamos optimísticamente al cliente
-        triggerSuccessAndSaveCache(numOrdenOptimista, whatsappUrlOptimista, metodoPago, undefined, 'en_cocina');
+        // No se recibió confirmación de la cocina: informar al cliente para que reenvíe el pedido
+        setErrorMsg(res.error || 'No pudimos confirmar la recepción de tu pedido en cocina. Por favor tocá "Reintentar envío" para volver a enviarlo.');
+        setErrorRef(res.error_ref || '');
+        setErrorFallbackWa('');
       }
     } catch (err: any) {
       console.error('Error enviando pedido:', err);
-      const numOrdenEmergencia = Math.floor(1000 + Math.random() * 9000);
-      const waUrl = `https://api.whatsapp.com/send?phone=59899127786&text=${encodeURIComponent(
-        `*¡Hola Nalú Poke Bowls Tacuarembó!* 🥗🌊\nAcabo de realizar mi pedido desde la web oficial (Orden #N${numOrdenEmergencia}). Mi nombre es ${nombre.trim()} y mi teléfono es ${telefono.trim()}.`
-      )}`;
-      triggerSuccessAndSaveCache(numOrdenEmergencia, waUrl, metodoPago, undefined, 'en_cocina');
+      setErrorMsg(err?.message || 'Error de conexión al enviar tu pedido. Por favor tocá "Reintentar envío" para volver a enviarlo.');
+      setErrorRef('NALU-' + Math.random().toString(36).substring(2, 7).toUpperCase());
+      setErrorFallbackWa('');
     } finally {
       setEnviando(false);
     }
@@ -844,31 +815,30 @@ ${lineasItems}
           </div>
         </div>
 
-        {errorFallbackWa && (
-          <a
-            href={errorFallbackWa}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              background: '#25D366',
-              color: '#FFFFFF',
-              padding: '10px 14px',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontWeight: 700,
-              fontSize: '0.86rem',
-              boxShadow: '0 2px 6px rgba(37, 211, 102, 0.35)',
-              textAlign: 'center',
-            }}
-          >
-            <MessageCircle size={17} />
-            <span>📲 Confirmar este pedido directo por WhatsApp</span>
-          </a>
-        )}
+        <button
+          type="button"
+          disabled={enviando}
+          onClick={() => handleSubmit()}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            background: '#DC2626',
+            color: '#FFFFFF',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            border: 'none',
+            cursor: enviando ? 'not-allowed' : 'pointer',
+            fontWeight: 700,
+            fontSize: '0.86rem',
+            boxShadow: '0 2px 6px rgba(220, 38, 38, 0.25)',
+            opacity: enviando ? 0.6 : 1,
+          }}
+        >
+          <Send size={16} />
+          <span>{enviando ? 'Reenviando pedido...' : 'Reintentar envío del pedido'}</span>
+        </button>
       </div>
     );
   };
@@ -1001,13 +971,7 @@ ${lineasItems}
                 onClick={() => {
                   skipDuplicateCheckRef.current = true;
                   setPedidoActivoDetectado(null);
-                  // NO ponemos setEnviando(true) aquí — handleSubmit lo activa él mismo
-                  // Si lo ponemos antes, el guard "if (enviando) return" aborta silenciosamente
-                  setTimeout(() => {
-                    if (formRef.current) {
-                      formRef.current.requestSubmit();
-                    }
-                  }, 50);
+                  handleSubmit();
                 }}
                 style={{
                   width: '100%',

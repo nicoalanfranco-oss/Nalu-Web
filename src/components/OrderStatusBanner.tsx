@@ -83,6 +83,7 @@ function getRecentCachedOrders(): PedidoActivo[] {
     const threeHours = 3 * 60 * 60 * 1000;
     return list.filter(item => {
       if (!item || !item.numero_orden) return false;
+      if (item.estado === 'esperando_confirmacion') return false;
       const createdAt = item.created_at ? new Date(item.created_at).getTime() : now;
       return now - createdAt < threeHours && (item.estado as string) !== 'entregado' && (item.estado as string) !== 'cancelado';
     });
@@ -287,7 +288,9 @@ export const OrderStatusBanner: React.FC<OrderStatusBannerProps> = ({ onOpenMisP
           metodo_pago: detail.metodo_pago,
         };
 
-        const listSinDupl = cached.filter(p => p.numero_orden !== itemNuevo.numero_orden);
+        const listSinDupl = cached.filter(
+          p => p.numero_orden !== itemNuevo.numero_orden && p.estado !== 'esperando_confirmacion'
+        );
         const updated = [itemNuevo, ...listSinDupl];
         try { localStorage.setItem('nalu_recent_orders', JSON.stringify(updated)); } catch {}
         setPedidos(updated);

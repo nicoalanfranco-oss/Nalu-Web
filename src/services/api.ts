@@ -276,8 +276,8 @@ export async function sendOrderToFood(orderPayload: any): Promise<{
     enviar_a_cocina: true,
   };
 
-  const MAX_RETRIES = 2;
-  const TIMEOUT_MS = 35000;
+  const MAX_RETRIES = 3;
+  const TIMEOUT_MS = 25000;
   let lastErrorDetail = '';
   let lastErrorRef = '';
 
